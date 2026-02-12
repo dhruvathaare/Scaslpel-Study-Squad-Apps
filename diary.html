@@ -5,159 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scalpel Study Diary</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #0e1621; color: white; margin: 0; display: flex; 
-            flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; 
-        }
-        
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0e1621; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .user-badge { 
-            background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; 
-            padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; 
-            font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
-        }
-
-        .logo { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #5288c1; margin-bottom: 10px; }
-        h1 { color: #5288c1; font-size: 22px; margin: 5px 0; font-weight: bold; }
-        .sub-title { font-size: 11px; color: #888; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        
-        .countdown-box { width: 100%; background: #17212b; padding: 12px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 15px; box-sizing: border-box; }
-        .count-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #2b5278; }
-        .count-item:last-child { border-bottom: none; }
-        .exam-name { font-size: 11px; color: #b1c3d5; }
-        .days-left { font-weight: bold; color: #f39c12; font-size: 14px; }
-
-        .timer-card { background: #17212b; padding: 20px; border-radius: 20px; border: 2px solid #5288c1; width: 100%; box-sizing: border-box; }
-        .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; }
-        
-        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; appearance: none; }
-        
-        #timer-label { font-size: 14px; color: #f39c12; font-weight: bold; margin-top: 15px; }
-        #timer-display { font-size: 50px; font-weight: bold; margin: 5px 0; color: #fff; }
-        
-        .btn { background: #2481cc; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .btn-stop { background: #ef5350; }
-        .btn-clear { background: transparent; color: #ef5350; border: 1px solid #ef5350; font-size: 12px; padding: 8px; margin-top: 30px; opacity: 0.6; }
-
-        /* Reading Stats Section */
-        .stats-card { width: 100%; background: #17212b; border-radius: 15px; padding: 15px; margin-top: 15px; border: 1px solid #2b5278; box-sizing: border-box; text-align: center; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .stat-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; font-size: 12px; }
-        .stat-num { display: block; font-weight: bold; color: #f39c12; font-size: 16px; }
-
-        .profile-card { width: 100%; background: #17212b; border-radius: 15px; padding: 20px; margin-top: 15px; border: 1px solid #2b5278; box-sizing: border-box; text-align: left; }
-        .log-day-header { color: #5288c1; font-weight: bold; font-size: 16px; border-bottom: 1px solid #2b5278; padding-bottom: 5px; margin-top: 15px; text-align: center; }
-        .log-detail { font-size: 13px; color: #b1c3d5; line-height: 1.6; padding: 10px 0; border-bottom: 1px dashed #2b5278; }
-
-        #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; }
-        .popup-box { background:#17212b; padding:25px; border-radius:20px; border:1px solid #5288c1; width:85%; max-width:300px; text-align:center; }
+        .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #5288c1; margin-bottom: 10px; }
+        h1 { color: #5288c1; font-size: 20px; margin: 5px 0; }
+        .countdown-box { width: 100%; background: #17212b; padding: 12px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 15px; box-sizing: border-box; font-size: 11px; }
+        .count-item { display: flex; justify-content: space-between; padding: 4px 0; }
+        .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; margin-top: 5px; box-sizing: border-box; }
+        .btn { background: #2481cc; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        .chart-container { width: 100%; height: 180px; margin-top: 15px; }
+        .analysis-text { font-size: 12px; color: #b1c3d5; text-align: left; margin-top: 10px; line-height: 1.4; border-top: 1px solid #2b5278; padding-top: 10px; }
+        .reading-badge { background: #f39c12; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="popup-overlay">
-        <div class="popup-box">
-            <h3 style="margin:0;">Session Result</h3>
+    <div id="popup-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:#17212b; padding:25px; border-radius:20px; border:1px solid #5288c1; width:80%; text-align:center;">
             <p>Did you solve any MCQs?</p>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button style="flex:1; padding:12px; background:#2ecc71; color:white; border:none; border-radius:10px; font-weight:bold;" onclick="handleMcqResponse(true)">YES</button>
-                <button style="flex:1; padding:12px; background:#ef5350; color:white; border:none; border-radius:10px; font-weight:bold;" onclick="handleMcqResponse(false)">NO</button>
-            </div>
+            <button class="btn" onclick="handleMcqResponse(true)" style="background:#2ecc71;">YES</button>
+            <button class="btn" onclick="handleMcqResponse(false)" style="background:#ef5350;">NO</button>
         </div>
     </div>
 
     <div class="container">
-        <div class="header-ui">
-            <div class="user-badge" onclick="document.getElementById('statsSection').scrollIntoView({behavior:'smooth'})">
-                <span>👤</span> <span id="uName">@User</span>
-            </div>
-        </div>
-
+        <div class="header-ui"><div class="user-badge" onclick="document.getElementById('gtSection').scrollIntoView({behavior:'smooth'})">👤 <span id="uName">@User</span></div></div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Diary</h1>
-        <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
 
         <div class="countdown-box">
-            <div class="count-item"><span>INICET July</span><span class="days-left" id="d1">--</span></div>
-            <div class="count-item"><span>UPSC CMS</span><span class="days-left" id="d2">--</span></div>
-            <div class="count-item"><span>NEET PG 2026</span><span class="days-left" id="d3">--</span></div>
-            <div class="count-item"><span>INICET Jan 27</span><span class="days-left" id="d4">--</span></div>
+            <div class="count-item"><span>INICET / UPSC CMS</span><span id="d1">--</span> / <span id="d2">--</span></div>
+            <div class="count-item"><span>NEET PG / INICET Jan</span><span id="d3">--</span> / <span id="d4">--</span></div>
         </div>
 
-        <div class="timer-card">
-            <span class="setting-label">Reading Stage</span>
-            <select id="readingStage">
-                <option value="First Reading 📓">First Reading 📓</option>
-                <option value="Second Reading 🧑🏻‍💻">Second Reading 🧑🏻‍💻</option>
-                <option value="Third Reading 💯">Third Reading 💯</option>
-                <option value="Extra Bonus Reading 🔥">Extra Bonus Reading 🔥</option>
-            </select>
-
-            <span class="setting-label">Subject</span>
-            <input type="text" id="subject" placeholder="e.g. Pathology">
-            
-            <div style="display:flex; gap:10px; margin-top:5px;">
-                <div style="flex:1;"><span class="setting-label">Study (M)</span><input type="number" id="studyTime" value="120"></div>
-                <div style="flex:1;"><span class="setting-label">Break (M)</span><input type="number" id="breakTime" value="15"></div>
-            </div>
-
-            <div id="timer-label">READY</div>
-            <div id="timer-display">00:00</div>
+        <div class="card">
+            <select id="readingStage"><option>First Reading 📓</option><option>Second Reading 🧑🏻‍💻</option><option>Third Reading 💯</option><option>Extra Bonus 🔥</option></select>
+            <input type="text" id="subject" placeholder="Subject Name">
+            <div style="display:flex; gap:5px;"><input type="number" id="studyTime" value="120"><input type="number" id="breakTime" value="15"></div>
+            <div id="timer-display" style="font-size:40px; font-weight:bold; margin:10px 0;">00:00</div>
             <button id="startBtn" class="btn">Start Session</button>
-            <button id="stopBtn" class="btn btn-stop" style="display:none;">Stop & Record</button>
+            <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop & Record</button>
         </div>
 
-        <div class="stats-card" id="statsSection">
-            <h3 style="margin:0; color:#5288c1; font-size:16px;">Days Spent per Stage</h3>
-            <div class="stat-grid">
-                <div class="stat-item"><span class="stat-num" id="s1">0</span>📓 First</div>
-                <div class="stat-item"><span class="stat-num" id="s2">0</span>🧑🏻‍💻 Second</div>
-                <div class="stat-item"><span class="stat-num" id="s3">0</span>💯 Third</div>
-                <div class="stat-item"><span class="stat-num" id="s4">0</span>🔥 Extra</div>
-            </div>
+        <div class="card">
+            <h3 style="margin:0; color:#f39c12;">Daily Tracker Analytics</h3>
+            <div class="chart-container"><canvas id="hoursChart"></canvas></div>
+            <div class="chart-container"><canvas id="mcqChart"></canvas></div>
         </div>
 
-        <div class="profile-card">
-            <h3 style="margin:0; color:#f39c12; font-size:16px; text-align:center;">Daily Progress Tracker</h3>
-            <div id="logContainer">No records yet.</div>
+        <div class="card" id="gtSection">
+            <h3 style="margin:0; color:#2ecc71;">Grand Test Intelligence</h3>
+            <select id="gtStage"><option>First Reading 📓</option><option>Second Reading 🧑🏻‍💻</option><option>Third Reading 💯</option><option>Extra Bonus 🔥</option></select>
+            <div style="display:flex; gap:5px;"><input type="date" id="gtDate"><input type="number" id="gtScore" placeholder="Score"></div>
+            <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Record GT Performance</button>
+            
+            <div class="chart-container"><canvas id="gtChart"></canvas></div>
+            <div id="gtAnalysis" class="analysis-text"></div>
         </div>
 
-        <button class="btn-clear" onclick="clearHistory()">Clear Track History</button>
+        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; padding:5px; margin-bottom:50px;">Clear Track History</button>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand();
-
+        const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
         const user = tg.initDataUnsafe?.user;
         if (user) document.getElementById('uName').innerText = user.username ? `@${user.username}` : user.first_name;
 
-        let timerInterval, mode = "study", timeLeft = 0, activeSub = "", activeStage = "", setMins = 0;
+        let timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
         const examDates = [new Date("May 16, 2026"), new Date("August 2, 2026"), new Date("August 30, 2026"), new Date("November 1, 2026")];
+        examDates.forEach((d, i) => { document.getElementById(`d${i+1}`).innerText = Math.ceil((d - new Date()) / 86400000) + "d"; });
 
-        function updateCountdown() {
-            examDates.forEach((date, i) => {
-                const diff = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
-                document.getElementById(`d${i+1}`).innerText = diff > 0 ? diff + "d" : "Today!";
-            });
-        }
-        updateCountdown();
-
-        const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), label = document.getElementById('timer-label'), subjectInput = document.getElementById('subject');
+        const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subjectInput = document.getElementById('subject');
 
         startBtn.onclick = () => {
-            if (!subjectInput.value.trim()) { tg.showAlert("Please enter a subject!"); return; }
-            activeSub = subjectInput.value; activeStage = document.getElementById('readingStage').value;
-            setMins = parseInt(document.getElementById('studyTime').value);
+            if (!subjectInput.value.trim()) return tg.showAlert("Enter Subject!");
+            activeSub = subjectInput.value; setMins = parseInt(document.getElementById('studyTime').value);
             mode = "study"; timeLeft = setMins * 60; startTimer();
         };
 
         function startTimer() {
-            clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block'; subjectInput.disabled = true;
-            label.innerText = mode.toUpperCase(); label.style.color = mode === "study" ? "#f39c12" : "#2ecc71";
+            clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block';
             timerInterval = setInterval(() => {
                 timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
                 display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
@@ -165,61 +96,82 @@
             }, 1000);
         }
 
-        function handleTransition() {
-            clearInterval(timerInterval);
-            if (mode === "study") document.getElementById('popup-overlay').style.display = 'flex';
-            else { tg.showAlert("Break finished!"); resetUI(); }
-        }
-
-        stopBtn.onclick = () => {
-            if (mode === "study") {
-                setMins = Math.floor(((setMins * 60) - timeLeft) / 60);
-                document.getElementById('popup-overlay').style.display = 'flex';
-            } else resetUI();
-        };
+        function handleTransition() { clearInterval(timerInterval); if (mode === "study") document.getElementById('popup-overlay').style.display = 'flex'; else resetUI(); }
+        stopBtn.onclick = () => { if (mode === "study") { setMins = Math.floor(((setMins * 60) - timeLeft) / 60); document.getElementById('popup-overlay').style.display = 'flex'; } else resetUI(); };
 
         function handleMcqResponse(isYes) {
             document.getElementById('popup-overlay').style.display = 'none';
-            let mcqs = isYes ? (parseInt(prompt("How many MCQs?", "0")) || 0) : 0;
-            saveLog(activeSub, mcqs, setMins, activeStage);
+            let mcqs = isYes ? (parseInt(prompt("MCQs solved?")) || 0) : 0;
+            saveLog(activeSub, mcqs, setMins, document.getElementById('readingStage').value);
             mode = "break"; timeLeft = document.getElementById('breakTime').value * 60; startTimer();
         }
 
-        function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; subjectInput.disabled = false; label.innerText = "READY"; display.innerText = "00:00"; }
+        function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.value = ""; }
 
-        function saveLog(sub, mcqs, mins, stage) {
-            const logs = JSON.parse(localStorage.getItem('scalpel_v6') || "[]");
-            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: sub, mcqs: mcqs, duration: mins, stage: stage });
-            localStorage.setItem('scalpel_v6', JSON.stringify(logs)); renderData();
+        function saveLog(s, m, d, st) {
+            const logs = JSON.parse(localStorage.getItem('scalpel_v8') || "[]");
+            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, stage: st });
+            localStorage.setItem('scalpel_v8', JSON.stringify(logs)); renderData();
         }
 
+        function saveGT() {
+            const date = document.getElementById('gtDate').value;
+            const score = document.getElementById('gtScore').value;
+            const stage = document.getElementById('gtStage').value;
+            if(!date || !score) return;
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_v2') || "[]");
+            gts.push({ date, score: parseInt(score), stage });
+            gts.sort((a,b) => new Date(a.date) - new Date(b.date));
+            localStorage.setItem('scalpel_gt_v2', JSON.stringify(gts));
+            renderGT();
+        }
+
+        let hChart, mChart, gChart;
         function renderData() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_v6') || "[]");
-            const container = document.getElementById('logContainer');
-            const grouped = {}, stagesCount = {"First Reading 📓":new Set(),"Second Reading 🧑🏻‍💻":new Set(),"Third Reading 💯":new Set(),"Extra Bonus Reading 🔥":new Set()};
+            const logs = JSON.parse(localStorage.getItem('scalpel_v8') || "[]");
+            const grouped = {};
+            logs.forEach(l => { if (!grouped[l.date]) grouped[l.date] = { hours: 0, mcqs: 0 }; grouped[l.date].hours += l.duration / 60; grouped[l.date].mcqs += l.mcqs; });
+            const labels = Object.keys(grouped).reverse().slice(-7);
+            const hData = labels.map(l => grouped[l].hours);
+            const mData = labels.map(l => grouped[l].mcqs);
+
+            if(hChart) hChart.destroy(); if(mChart) mChart.destroy();
+            hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Study Hours', data: hData, borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false }});
+            mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: mData, borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false }});
+        }
+
+        function renderGT() {
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_v2') || "[]");
+            if (gts.length === 0) return;
             
-            logs.forEach(l => {
-                if (!grouped[l.date]) grouped[l.date] = { cycles: 0, subjects: [], mcqs: 0, totalMins: 0 };
-                grouped[l.date].cycles++;
-                if (!grouped[l.date].subjects.includes(l.subject)) grouped[l.date].subjects.push(l.subject);
-                grouped[l.date].mcqs += l.mcqs; grouped[l.date].totalMins += l.duration;
-                if(stagesCount[l.stage]) stagesCount[l.stage].add(l.date);
+            const labels = gts.map(g => `${g.date} (${g.stage.split(' ')[1]})`);
+            const scores = gts.map(g => g.score);
+
+            if(gChart) gChart.destroy();
+            gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels, datasets: [{ label: 'GT Progression', data: scores, borderColor: '#2ecc71', tension: 0.2, fill: true, backgroundColor: 'rgba(46, 204, 113, 0.1)' }] }, options: { maintainAspectRatio: false }});
+
+            const stats = {};
+            gts.forEach(g => {
+                if(!stats[g.stage]) stats[g.stage] = { count: 0, total: 0 };
+                stats[g.stage].count++; stats[g.stage].total += g.score;
             });
 
-            document.getElementById('s1').innerText = stagesCount["First Reading 📓"].size;
-            document.getElementById('s2').innerText = stagesCount["Second Reading 🧑🏻‍💻"].size;
-            document.getElementById('s3').innerText = stagesCount["Third Reading 💯"].size;
-            document.getElementById('s4').innerText = stagesCount["Extra Bonus Reading 🔥"].size;
-
-            container.innerHTML = Object.keys(grouped).map(date => `<div class="log-day-header">${date}</div><div class="log-detail"><b>1. Cycles:</b> ${grouped[date].cycles}<br><b>2. Subjects:</b> ${grouped[date].subjects.join(", ")}<br><b>3. Study:</b> ${(grouped[date].totalMins / 60).toFixed(1)} hrs<br><b>4. MCQs:</b> ${grouped[date].mcqs}</div>`).join('') || "No records.";
+            let analysis = "<b>Reading-Wise Performance:</b><br>";
+            let prevAvg = null;
+            Object.keys(stats).forEach(st => {
+                let avg = (stats[st].total / stats[st].count).toFixed(1);
+                let diff = prevAvg ? (avg - prevAvg).toFixed(1) : 0;
+                let trend = diff > 0 ? `📈 +${diff}` : (diff < 0 ? `📉 ${diff}` : "—");
+                analysis += `${st}: <b>${stats[st].count} GTs</b> | Avg: <b>${avg}</b> (${trend})<br>`;
+                prevAvg = avg;
+            });
+            
+            const freq = gts.length > 1 ? (Math.ceil((new Date(gts[gts.length-1].date) - new Date(gts[0].date)) / 86400000) / gts.length).toFixed(1) : 0;
+            document.getElementById('gtAnalysis').innerHTML = analysis + `<br><b>Frequency: One GT every ${freq} days.</b>`;
         }
 
-        function clearHistory() {
-            if (confirm("Your Track Record will be lost forever. Are you sure?")) {
-                localStorage.removeItem('scalpel_v6'); renderData(); tg.showAlert("History cleared.");
-            }
-        }
-        renderData();
+        function clearHistory() { if(confirm("This will erase ALL track data forever!")) { localStorage.clear(); location.reload(); }}
+        renderData(); renderGT();
     </script>
 </body>
 </html>
