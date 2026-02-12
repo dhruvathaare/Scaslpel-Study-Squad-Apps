@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scalpel Study Diary</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #0e1621; color: white; margin: 0; display: flex; 
+            flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; 
+        }
+        .container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; }
+        .logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #5288c1; margin-bottom: 10px; object-fit: cover; }
+        h1 { color: #5288c1; font-size: 24px; margin: 5px 0; font-weight: bold; }
+        .sub-title { font-size: 12px; color: #888; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        /* Countdown Section */
+        .countdown-box { width: 100%; background: #17212b; padding: 15px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 20px; box-sizing: border-box; }
+        .count-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #2b5278; }
+        .count-item:last-child { border-bottom: none; }
+        .exam-name { font-size: 13px; color: #b1c3d5; }
+        .days-left { font-weight: bold; color: #f39c12; font-size: 16px; }
+
+        /* Pomodoro Timer Section */
+        .timer-card { background: #17212b; padding: 25px; border-radius: 20px; border: 2px solid #5288c1; width: 100%; box-sizing: border-box; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; margin-bottom: 15px; text-align: center; box-sizing: border-box; font-size: 14px; }
+        #timer-display { font-size: 54px; font-weight: bold; margin: 10px 0; color: #fff; }
+        .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; margin-top: 5px; }
+        .btn-stop { background: #ef5350; }
+
+        /* Profile Log Section */
+        .profile-card { width: 100%; background: #17212b; border-radius: 15px; padding: 20px; margin-top: 25px; border: 1px solid #2b5278; box-sizing: border-box; text-align: left; }
+        .log-entry { padding: 10px 0; border-bottom: 1px solid #2b5278; font-size: 13px; }
+        .log-entry:last-child { border: none; }
+        .log-date { color: #5288c1; font-weight: bold; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
+        <h1>Scalpel Study Diary</h1>
+        <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
+
+        <div class="countdown-box">
+            <div class="count-item"><span class="exam-name">INICET July 2026 (May 16)</span><span class="days-left" id="d1">--</span></div>
+            <div class="count-item"><span class="exam-name">NEET PG 2026 (Aug 30)</span><span class="days-left" id="d2">--</span></div>
+            <div class="count-item"><span class="exam-name">INICET Jan 2027 (Nov 1)</span><span class="days-left" id="d3">--</span></div>
+        </div>
+
+        <div class="timer-card">
+            <input type="text" id="subject" placeholder="Enter Subject (e.g. Anatomy)">
+            <div id="timer-display">120:00</div>
+            <button id="startBtn" class="btn">Start 2h Session</button>
+            <button id="stopBtn" class="btn btn-stop" style="display:none;">Stop Session</button>
+        </div>
+
+        <div class="profile-card">
+            <h3 style="margin:0 0 15px 0; color:#5288c1; font-size:16px;">Personal Study Log</h3>
+            <div id="logContainer">No records yet. Time to study!</div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // Date Calculations
+        const examDates = [
+            new Date("May 16, 2026"),
+            new Date("August 30, 2026"),
+            new Date("November 1, 2026")
+        ];
+
+        function updateCountdown() {
+            const now = new Date();
+            examDates.forEach((date, i) => {
+                const diff = Math.ceil((date - now) / (1000 * 60 * 60 * 24));
+                document.getElementById(`d${i+1}`).innerText = diff > 0 ? diff + "d" : "Exam Day!";
+            });
+        }
+        updateCountdown();
+
+        // Timer Logic
+        let timerInterval;
+        let timeLeft = 120 * 60; 
+        
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const display = document.getElementById('timer-display');
+        const subjectInput = document.getElementById('subject');
+
+        startBtn.onclick = () => {
+            if (!subjectInput.value.trim()) {
+                tg.showAlert("Please enter a subject name!");
+                return;
+            }
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            subjectInput.disabled = true;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if (timeLeft <= 0) finishSession();
+            }, 1000);
+        };
+
+        stopBtn.onclick = finishSession;
+
+        function finishSession() {
+            clearInterval(timerInterval);
+            
+            // MCQ Flow
+            const solved = confirm("Did you solve any MCQs this session?");
+            let count = 0;
+            if (solved) {
+                count = prompt("How many MCQs did you solve?", "0") || 0;
+            }
+
+            // Save Data to LocalStorage
+            const logEntry = {
+                date: new Date().toLocaleDateString('en-GB'),
+                subject: subjectInput.value,
+                mcqs: count
+            };
+            const logs = JSON.parse(localStorage.getItem('scalpel_logs') || "[]");
+            logs.unshift(logEntry);
+            localStorage.setItem('scalpel_logs', JSON.stringify(logs));
+
+            // Reset UI
+            timeLeft = 120 * 60;
+            display.innerText = "120:00";
+            startBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            subjectInput.disabled = false;
+            subjectInput.value = "";
+            renderLogs();
+            tg.showAlert("Progress Saved! Take your 15-minute break.");
+        }
+
+        function renderLogs() {
+            const logs = JSON.parse(localStorage.getItem('scalpel_logs') || "[]");
+            const container = document.getElementById('logContainer');
+            if (logs.length === 0) return;
+            container.innerHTML = logs.map(entry => `
+                <div class="log-entry">
+                    <div class="log-date">${entry.date}</div>
+                    <b>${entry.subject}</b><br>
+                    ⏱ 2 Hours | 📝 ${entry.mcqs} MCQs
+                </div>
+            `).join('');
+        }
+        renderLogs();
+    </script>
+</body>
+</html>
