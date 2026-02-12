@@ -12,29 +12,18 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0e1621; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        
-        /* Top-Right Header */
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
-        /* Branding */
         .logo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #5288c1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
         h1 { color: #5288c1; font-size: 26px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
-        
-        /* Streak & Quote */
         .streak-section { margin-bottom: 20px; }
         .streak-text { font-size: 16px; font-weight: bold; color: #f39c12; }
-        .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 13px; text-transform: uppercase; margin-top: 5px; letter-spacing: 0.5px; }
-
+        .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 13px; text-transform: uppercase; margin-top: 5px; }
         .sub-title { font-size: 11px; color: #888; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
-        
-        /* Vertical Countdown Layout */
         .countdown-box { width: 100%; background: #17212b; padding: 12px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 20px; box-sizing: border-box; }
         .count-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #2b5278; }
         .count-item:last-child { border-bottom: none; }
         .days-left { font-weight: bold; color: #f39c12; font-size: 14px; }
-        
-        /* Cards */
         .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 20px; }
         .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 5px; }
@@ -63,44 +52,30 @@
         <div class="header-ui">
             <div class="user-badge" onclick="document.getElementById('progressSection').scrollIntoView({behavior:'smooth'})">👤 <span id="uName">@User</span></div>
         </div>
-
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
-        
         <div class="streak-section">
             <div class="streak-text" id="streakText">Consistency: 0 Days Logged</div>
             <div id="streakIcons" style="font-size:18px; margin:5px 0;"></div>
             <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
         </div>
-
         <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
-
         <div class="countdown-box">
-            <div class="count-item"><span>INICET July 2026 (May 16)</span><span class="days-left" id="d1">--</span></div>
-            <div class="count-item"><span>UPSC CMS 2026 (Aug 2)</span><span class="days-left" id="d2">--</span></div>
-            <div class="count-item"><span>NEET PG 2026 (Aug 30)</span><span class="days-left" id="d3">--</span></div>
-            <div class="count-item"><span>INICET Jan 2027 (Nov 1)</span><span class="days-left" id="d4">--</span></div>
+            <div class="count-item"><span>INICET July 2026</span><span class="days-left" id="d1">--</span></div>
+            <div class="count-item"><span>UPSC CMS 2026</span><span class="days-left" id="d2">--</span></div>
+            <div class="count-item"><span>NEET PG 2026</span><span class="days-left" id="d3">--</span></div>
+            <div class="count-item"><span>INICET Jan 2027</span><span class="days-left" id="d4">--</span></div>
         </div>
-
         <div class="card">
             <span class="setting-label">Reading Stage</span>
             <select id="readingStage"><option>First Reading 📓</option><option>Second Reading 🧑🏻‍💻</option><option>Third Reading 💯</option><option>Extra Bonus 🔥</option></select>
             <span class="setting-label">Subject</span>
-            <select id="subject">
-                <option value="" disabled selected>Select Subject</option>
-                <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
-                <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
-                <option>FMT</option><option>PSM</option><option>Ophthalmology</option>
-                <option>ENT</option><option>Medicine</option><option>Surgery</option>
-                <option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option>
-                <option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
-            </select>
+            <select id="subject"><option value="" disabled selected>Select Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option></select>
             <div style="display:flex; gap:10px;"><div style="flex:1;"><span class="setting-label">Study (M)</span><input type="number" id="studyTime" value="120"></div><div style="flex:1;"><span class="setting-label">Break (M)</span><input type="number" id="breakTime" value="15"></div></div>
             <div id="timer-display">00:00</div>
             <button id="startBtn" class="btn">Start Session</button>
             <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop & Record</button>
         </div>
-
         <div class="card" id="progressSection">
             <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
             <div id="subjectTotals" style="margin-top:10px; text-align:left;"></div>
@@ -108,7 +83,6 @@
             <div class="chart-container"><canvas id="mcqChart"></canvas></div>
             <div id="logContainer"></div>
         </div>
-
         <div class="card">
             <h3 style="margin:0; color:#2ecc71;">GT Intelligence</h3>
             <input type="text" id="gtPlatform" placeholder="Platform Name">
@@ -118,8 +92,8 @@
             <div class="chart-container"><canvas id="gtChart"></canvas></div>
             <div id="gtAnalysis" style="font-size:12px; text-align:left; color:#f39c12; margin-top:10px; line-height:1.5;"></div>
         </div>
-
-        <button class="btn" onclick="exportToPDF()" style="background:#5288c1; margin-bottom:10px;">📄 Export Report to PDF</button>
+        <button class="btn" onclick="exportToPDF()" style="background:#5288c1;">📄 Generate PDF Report</button>
+        <button class="btn" onclick="copyTextReport()" style="background:#2ecc71;">📋 Copy Text Summary</button>
         <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; padding:5px; width:auto; margin-bottom:50px;">Clear Data</button>
     </div>
 
@@ -221,36 +195,41 @@
             document.getElementById('gtAnalysis').innerHTML = a;
         }
 
-        // PERFECTED PDF EXPORT: No gaps, full content, correct background
         async function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('pdfContent');
-            const btns = document.querySelectorAll('.btn, .btn-stop');
-            
-            // Hide buttons for export
-            btns.forEach(b => b.style.visibility = 'hidden');
+            const btns = document.querySelectorAll('.btn');
+            btns.forEach(b => b.style.display = 'none');
 
             try {
-                const canvas = await html2canvas(element, { 
-                    scale: 2, 
-                    useCORS: true, 
-                    backgroundColor: '#0e1621',
-                    logging: false
-                });
-                
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#0e1621' });
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
                 
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save("Scalpel_Squad_Report.pdf");
-                tg.showAlert("Report Saved Successfully!");
-            } catch (error) {
-                alert("PDF Error: Please try a screenshot.");
+                const blob = pdf.output('blob');
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                tg.showAlert("If download didn't start, check the new tab in your browser.");
+            } catch (err) {
+                tg.showAlert("PDF Export Blocked. Use 'Copy Text Summary' instead.");
             } finally {
-                btns.forEach(b => b.style.visibility = 'visible');
+                btns.forEach(b => b.style.display = 'block');
+                document.getElementById('stopBtn').style.display = 'none';
             }
+        }
+
+        function copyTextReport() {
+            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal') || "[]");
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal') || "[]");
+            let report = "SCALPEL STUDY SQUAD REPORT\n\nSTUDY LOGS:\n";
+            logs.forEach(l => report += `${l.date} | ${l.subject} | ${l.duration}m | MCQs: ${l.mcqs}\n`);
+            report += "\nGT RECORDS:\n";
+            gts.forEach(g => report += `${g.date} | ${g.platform} | Score: ${g.score}\n`);
+            
+            navigator.clipboard.writeText(report).then(() => {
+                tg.showAlert("Report copied! Paste it into your Notes app.");
+            });
         }
 
         function clearHistory() { if(confirm("Erase all tracking data?")) { localStorage.clear(); location.reload(); }}
