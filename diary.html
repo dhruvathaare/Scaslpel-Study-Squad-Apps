@@ -61,10 +61,10 @@
         </div>
         <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
         <div class="countdown-box">
-            <div class="count-item"><span>INICET July 2026 (May 16)</span><span class="days-left" id="d1">--</span></div>
-            <div class="count-item"><span>UPSC CMS 2026 (Aug 2)</span><span class="days-left" id="d2">--</span></div>
-            <div class="count-item"><span>NEET PG 2026 (Aug 30)</span><span class="days-left" id="d3">--</span></div>
-            <div class="count-item"><span>INICET Jan 2027 (Nov 1)</span><span class="days-left" id="d4">--</span></div>
+            <div class="count-item"><span>INICET July 2026</span><span class="days-left" id="d1">--</span></div>
+            <div class="count-item"><span>UPSC CMS 2026</span><span class="days-left" id="d2">--</span></div>
+            <div class="count-item"><span>NEET PG 2026</span><span class="days-left" id="d3">--</span></div>
+            <div class="count-item"><span>INICET Jan 2027</span><span class="days-left" id="d4">--</span></div>
         </div>
         <div class="card">
             <span class="setting-label">Reading Stage</span>
@@ -92,7 +92,7 @@
             <div class="chart-container"><canvas id="gtChart"></canvas></div>
             <div id="gtAnalysis" style="font-size:12px; text-align:left; color:#f39c12; margin-top:10px; line-height:1.5;"></div>
         </div>
-        <button class="btn" onclick="exportToPDF()" style="background:#5288c1; margin-bottom:50px;">📄 Download PDF Report</button>
+        <button class="btn" onclick="generateAndDownloadPDF()" style="background:#5288c1; margin-bottom:50px;">📄 DOWNLOAD PDF REPORT</button>
         <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; padding:5px; width:auto; margin-bottom:50px;">Clear Data</button>
     </div>
 
@@ -103,14 +103,10 @@
 
         let timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
         const examDates = [new Date("May 16, 2026"), new Date("August 2, 2026"), new Date("August 30, 2026"), new Date("November 1, 2026")];
-        
-        function updateUI() {
-            examDates.forEach((d, i) => { document.getElementById(`d${i+1}`).innerText = Math.ceil((d - new Date()) / 86400000) + "d"; });
-            renderData(); renderGT(); updateConsistency();
-        }
+        examDates.forEach((d, i) => { document.getElementById(`d${i+1}`).innerText = Math.ceil((d - new Date()) / 86400000) + "d"; });
 
         function updateConsistency() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_v2') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_PRO') || "[]");
             const uniqueDays = new Set(logs.map(l => l.date)).size;
             document.getElementById('streakText').innerText = `Consistency: ${uniqueDays} Days Logged`;
             const flames = Math.floor(uniqueDays / 50);
@@ -148,24 +144,24 @@
         function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.selectedIndex = 0; }
 
         function saveLog(s, m, d, st) {
-            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_v2') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_PRO') || "[]");
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s.toUpperCase(), mcqs: m, duration: d, stage: st });
-            localStorage.setItem('scalpel_vFinal_v2', JSON.stringify(logs)); updateUI();
+            localStorage.setItem('scalpel_vFinal_PRO', JSON.stringify(logs)); renderData(); updateConsistency();
         }
 
         function saveGT() {
             const date = document.getElementById('gtDate').value, score = document.getElementById('gtScore').value, plat = document.getElementById('gtPlatform').value;
             const cor = parseInt(document.getElementById('gtCorrect').value) || 0, inc = parseInt(document.getElementById('gtIncorrect').value) || 0;
             if(!date || !score) return;
-            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal_v2') || "[]");
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal_PRO') || "[]");
             gts.push({ date, score: parseInt(score), platform: plat, correct: cor, incorrect: inc });
             gts.sort((a,b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('scalpel_gt_vFinal_v2', JSON.stringify(gts)); updateUI();
+            localStorage.setItem('scalpel_gt_vFinal_PRO', JSON.stringify(gts)); renderGT();
         }
 
         let hChart, mChart, gChart;
         function renderData() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_v2') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_PRO') || "[]");
             const grouped = {}, subTots = {};
             logs.forEach(l => {
                 if (!grouped[l.date]) grouped[l.date] = { h: 0, m: 0, c: 0, s: [] };
@@ -182,7 +178,7 @@
         }
 
         function renderGT() {
-            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal_v2') || "[]");
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal_PRO') || "[]");
             if (gts.length === 0) return;
             if(gChart) gChart.destroy();
             gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: gts.map(g => g.date), datasets: [{ label: 'Score', data: gts.map(g => g.score), borderColor: '#2ecc71' }] }, options: { maintainAspectRatio: false }});
@@ -194,55 +190,50 @@
             document.getElementById('gtAnalysis').innerHTML = a;
         }
 
-        // OFFICIAL FIX FOR PDF EXPORT
-        async function exportToPDF() {
+        // FAIL-SAFE PDF DOWNLOAD LOGIC
+        async function generateAndDownloadPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('pdfContent');
             const btns = document.querySelectorAll('.btn');
             
-            // Temporary UI clean up for capture
-            btns.forEach(b => b.style.display = 'none');
-            const originalTransform = element.style.transform;
-            element.style.transform = 'none';
+            btns.forEach(b => b.style.visibility = 'hidden');
 
             try {
-                // Generate Canvas with high scale for clarity
                 const canvas = await html2canvas(element, { 
-                    scale: 3, 
+                    scale: 2, 
                     useCORS: true, 
-                    backgroundColor: '#0e1621',
-                    allowTaint: true
+                    backgroundColor: '#0e1621' 
                 });
                 
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                 
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                 
-                // Force open in new tab (This triggers system download handler on Mobile)
-                const pdfBlob = pdf.output('blob');
-                const blobURL = URL.createObjectURL(pdfBlob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = blobURL;
-                downloadLink.download = "Scalpel_Squad_Report.pdf";
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                // Convert to Base64 URI (The most aggressive trigger)
+                const pdfDataUri = pdf.output('datauristring');
                 
-                tg.showAlert("PDF Generated! Check your browser downloads.");
+                // Try to create a link and click it
+                const link = document.createElement('a');
+                link.href = pdfDataUri;
+                link.download = 'Scalpel_Squad_Report.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                tg.showAlert("If no download started, long-press the 'Open in Browser' icon in the top right and try there.");
             } catch (err) {
-                alert("Capture Error. Please ensure you allow popups/downloads in your browser.");
+                alert("PDF Blocked. Please take a screenshot for now.");
             } finally {
-                btns.forEach(b => b.style.display = 'block');
+                btns.forEach(b => b.style.visibility = 'visible');
                 document.getElementById('stopBtn').style.display = 'none';
-                element.style.transform = originalTransform;
             }
         }
 
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
-        updateUI();
+        renderData(); renderGT(); updateConsistency();
     </script>
 </body>
 </html>
