@@ -7,38 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #0e1621; color: white; margin: 0; display: flex; 
-            flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; 
-        }
-        .container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0e1621; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
-        /* Motivational Quote Styles */
-        .quote { 
-            font-family: 'Oswald', sans-serif; 
-            color: #ef5350; 
-            font-weight: 700; 
-            font-size: 18px; 
-            text-transform: uppercase; 
-            margin-bottom: 20px; 
-            line-height: 1.3;
-        }
-
-        .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .user-badge { 
-            background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; 
-            padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; 
-            font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
-        }
-        .logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #5288c1; margin-bottom: 5px; }
-        h1 { color: #5288c1; font-size: 20px; margin: 5px 0; font-weight: bold; }
+        /* Bigger Logo & Branding */
+        .logo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #5288c1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(82, 136, 193, 0.3); }
+        h1 { color: #5288c1; font-size: 28px; margin: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         
-        .streak-section { margin-bottom: 15px; }
-        .streak-text { font-size: 14px; font-weight: bold; color: #f39c12; margin-bottom: 5px; }
-        .streak-icons { font-size: 18px; letter-spacing: 2px; }
+        /* Consistency & Smaller Quote */
+        .streak-section { margin: 10px 0; }
+        .streak-text { font-size: 16px; font-weight: bold; color: #f39c12; }
+        .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 13px; text-transform: uppercase; margin-top: 5px; opacity: 0.9; }
 
         .sub-title { font-size: 11px; color: #888; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
         .countdown-box { width: 100%; background: #17212b; padding: 12px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 20px; box-sizing: border-box; }
@@ -47,9 +29,10 @@
         .days-left { font-weight: bold; color: #f39c12; font-size: 14px; }
         
         .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 20px; }
+        .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 8px; }
-        #timer-display { font-size: 48px; font-weight: bold; margin: 10px 0; color: #fff; }
-        .btn { background: #2481cc; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        #timer-display { font-size: 52px; font-weight: bold; margin: 10px 0; color: #fff; }
+        .btn { background: #2481cc; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .btn-stop { background: #ef5350; }
         .chart-container { width: 100%; height: 160px; margin: 15px 0; }
         .subject-tag { display: inline-block; background: #2b5278; padding: 4px 8px; border-radius: 5px; font-size: 11px; margin: 2px; }
@@ -71,20 +54,17 @@
     </div>
 
     <div class="container" id="pdfContent">
-        <div class="quote">
-            "I am here to win, consistency is my kith and kin"
-        </div>
-
         <div class="header-ui">
             <div class="user-badge" onclick="document.getElementById('progressSection').scrollIntoView({behavior:'smooth'})">👤 <span id="uName">@User</span></div>
         </div>
 
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
-        <h1>Scalpel Study Diary</h1>
+        <h1>Scalpel Study Squad</h1>
         
         <div class="streak-section" id="streakSection">
             <div class="streak-text" id="streakText">Consistency: 0 Days Logged</div>
             <div class="streak-icons" id="streakIcons"></div>
+            <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
         </div>
 
         <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
@@ -99,12 +79,22 @@
         <div class="card">
             <span class="setting-label">Reading Stage</span>
             <select id="readingStage"><option>First Reading 📓</option><option>Second Reading 🧑🏻‍💻</option><option>Third Reading 💯</option><option>Extra Bonus 🔥</option></select>
+            
             <span class="setting-label">Subject</span>
-            <input type="text" id="subject" placeholder="Enter Subject">
+            <select id="subject">
+                <option value="" disabled selected>Select Subject</option>
+                <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+                <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
+                <option>FMT</option><option>PSM</option><option>Ophthalmology</option>
+                <option>ENT</option><option>Medicine</option><option>Surgery</option>
+                <option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option>
+                <option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
+            </select>
+
             <div style="display:flex; gap:10px;"><div style="flex:1;"><span class="setting-label">Study (M)</span><input type="number" id="studyTime" value="120"></div><div style="flex:1;"><span class="setting-label">Break (M)</span><input type="number" id="breakTime" value="15"></div></div>
             <div id="timer-display">00:00</div>
             <button id="startBtn" class="btn">Start Session</button>
-            <button id="stopBtn" class="btn btn-stop" style="display:none; margin-top:10px;">Stop & Record</button>
+            <button id="stopBtn" class="btn btn-stop" style="display:none;">Stop & Record</button>
         </div>
 
         <div class="card" id="progressSection">
@@ -117,7 +107,6 @@
 
         <div class="card">
             <h3 style="margin:0; color:#2ecc71;">GT Intelligence</h3>
-            <span class="setting-label">Platform</span>
             <input type="text" id="gtPlatform" placeholder="Platform Name">
             <div style="display:flex; gap:5px;"><input type="date" id="gtDate"><input type="number" id="gtScore" placeholder="Score"></div>
             <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Correct"><input type="number" id="gtIncorrect" placeholder="Incorrect"></div>
@@ -139,27 +128,23 @@
         const examDates = [new Date("May 16, 2026"), new Date("August 2, 2026"), new Date("August 30, 2026"), new Date("November 1, 2026")];
         
         function updateUI() {
-            examDates.forEach((d, i) => { 
-                const diff = Math.ceil((d - new Date()) / 86400000);
-                document.getElementById(`d${i+1}`).innerText = diff > 0 ? diff + "d" : "Exam!";
-            });
+            examDates.forEach((d, i) => { document.getElementById(`d${i+1}`).innerText = Math.ceil((d - new Date()) / 86400000) + "d"; });
             renderData(); renderGT(); updateConsistency();
         }
 
         function updateConsistency() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_v15') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_v16') || "[]");
             const uniqueDays = new Set(logs.map(l => l.date)).size;
             document.getElementById('streakText').innerText = `Consistency: ${uniqueDays} Days Logged`;
             const flames = Math.floor(uniqueDays / 50);
-            let iconStr = "";
-            for(let i=0; i<flames; i++) iconStr += "🔥";
+            let iconStr = ""; for(let i=0; i<flames; i++) iconStr += "🔥";
             document.getElementById('streakIcons').innerText = iconStr;
         }
 
         const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subjectInput = document.getElementById('subject');
 
         startBtn.onclick = () => {
-            if (!subjectInput.value.trim()) return tg.showAlert("Enter Subject!");
+            if (!subjectInput.value) return tg.showAlert("Select a Subject!");
             activeSub = subjectInput.value; setMins = parseInt(document.getElementById('studyTime').value);
             mode = "study"; timeLeft = setMins * 60; startTimer();
         };
@@ -178,32 +163,32 @@
 
         function handleMcqResponse(isYes) {
             document.getElementById('popup-overlay').style.display = 'none';
-            let mcqs = isYes ? (parseInt(prompt("How many MCQs solved?")) || 0) : 0;
+            let mcqs = isYes ? (parseInt(prompt("MCQs solved?")) || 0) : 0;
             saveLog(activeSub, mcqs, setMins, document.getElementById('readingStage').value);
             mode = "break"; timeLeft = document.getElementById('breakTime').value * 60; startTimer();
         }
 
-        function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.value = ""; }
+        function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.selectedIndex = 0; }
 
         function saveLog(s, m, d, st) {
-            const logs = JSON.parse(localStorage.getItem('scalpel_v15') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_v16') || "[]");
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s.toUpperCase(), mcqs: m, duration: d, stage: st });
-            localStorage.setItem('scalpel_v15', JSON.stringify(logs)); updateUI();
+            localStorage.setItem('scalpel_v16', JSON.stringify(logs)); updateUI();
         }
 
         function saveGT() {
             const date = document.getElementById('gtDate').value, score = document.getElementById('gtScore').value, plat = document.getElementById('gtPlatform').value;
             const cor = parseInt(document.getElementById('gtCorrect').value) || 0, inc = parseInt(document.getElementById('gtIncorrect').value) || 0;
             if(!date || !score) return;
-            const gts = JSON.parse(localStorage.getItem('scalpel_gt_v15') || "[]");
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_v16') || "[]");
             gts.push({ date, score: parseInt(score), platform: plat, correct: cor, incorrect: inc });
             gts.sort((a,b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('scalpel_gt_v15', JSON.stringify(gts)); updateUI();
+            localStorage.setItem('scalpel_gt_v16', JSON.stringify(gts)); updateUI();
         }
 
         let hChart, mChart, gChart;
         function renderData() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_v15') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_v16') || "[]");
             const grouped = {}, subTots = {};
             logs.forEach(l => {
                 if (!grouped[l.date]) grouped[l.date] = { h: 0, m: 0, c: 0, s: [] };
@@ -220,7 +205,7 @@
         }
 
         function renderGT() {
-            const gts = JSON.parse(localStorage.getItem('scalpel_gt_v15') || "[]");
+            const gts = JSON.parse(localStorage.getItem('scalpel_gt_v16') || "[]");
             if (gts.length === 0) return;
             if(gChart) gChart.destroy();
             gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: gts.map(g => g.date), datasets: [{ label: 'Score', data: gts.map(g => g.score), borderColor: '#2ecc71' }] }, options: { maintainAspectRatio: false }});
@@ -232,7 +217,30 @@
             document.getElementById('gtAnalysis').innerHTML = a;
         }
 
-        function exportPDF() { html2pdf().from(document.getElementById('pdfContent')).set({ margin: 10, filename: 'Scalpel_Study_Report.pdf', html2canvas: { scale: 2, backgroundColor: '#0e1621' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).save(); }
+        // IMPROVED PDF EXPORT LOGIC
+        async function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const element = document.getElementById('pdfContent');
+            
+            // Hide buttons during export
+            const buttons = document.querySelectorAll('.btn, .btn-stop, .btn-clear');
+            buttons.forEach(b => b.style.visibility = 'hidden');
+
+            try {
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#0e1621' });
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                doc.save('Scalpel_Study_Report.pdf');
+            } catch (err) {
+                alert("PDF Error: Try taking a screenshot instead.");
+            } finally {
+                buttons.forEach(b => b.style.visibility = 'visible');
+            }
+        }
+
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
         updateUI();
     </script>
