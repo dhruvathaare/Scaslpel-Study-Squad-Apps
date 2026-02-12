@@ -6,7 +6,7 @@
     <title>Scalpel Study Squad</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Centering the entire layout */
+        /* Perfect Centering for the whole screen */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: #0e1621; 
@@ -28,10 +28,10 @@
             border: 1px solid #2b5278; 
             box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
             width: 100%;
-            max-width: 350px; /* Limits width for better look on tablets */
+            max-width: 340px; 
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centers all items inside the card */
+            align-items: center; /* Centers items horizontally */
             text-align: center;
         }
 
@@ -40,17 +40,18 @@
             height: 100px; 
             border-radius: 50%; 
             border: 3px solid #5288c1; 
-            margin-bottom: 15px; 
+            margin-bottom: 20px; 
             object-fit: cover; 
+            display: block;
         }
 
         h1 { 
             color: #5288c1; 
-            margin: 10px 0; 
+            margin: 0 0 10px 0; 
             font-size: 22px; 
+            font-weight: bold;
         }
 
-        /* Centering and styling buttons */
         .btn { 
             color: white; 
             border: none; 
@@ -61,7 +62,7 @@
             cursor: pointer; 
             width: 100%; 
             transition: opacity 0.2s; 
-            margin-top: 12px; 
+            margin-top: 15px; 
             display: block; 
             text-decoration: none; 
             outline: none; 
@@ -69,21 +70,26 @@
         }
 
         .btn-tg { background: #2481cc; }
-        .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        
+        /* Instagram Branding Gradient */
+        .btn-ig { 
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); 
+        }
+
         .btn:active { opacity: 0.8; }
 
         .notice { 
             background: rgba(82, 136, 193, 0.1); 
             border-radius: 12px; 
             padding: 15px; 
-            margin-top: 20px; 
+            margin-top: 25px; 
             font-size: 14px; 
             color: #b1c3d5; 
-            line-height: 1.4; 
+            line-height: 1.5; 
             border-left: 4px solid #5288c1; 
-            text-align: center; /* Centered text for the notice */
             width: 100%;
             box-sizing: border-box;
+            text-align: center;
         }
 
         .footer { 
@@ -92,16 +98,18 @@
             font-size: 11px; 
             font-weight: bold; 
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo" alt="Scalpel Study Squad">
+        <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo" alt="Logo">
         
         <h1>Scalpel Study Squad</h1>
         
         <button id="tgButton" class="btn btn-tg">Generate Telegram Group Link</button>
+        
         <button id="igButton" class="btn btn-ig">Instagram Page</button>
         
         <div class="notice">
@@ -119,7 +127,7 @@
         const botToken = "8026430979:AAFY3pQX0FkRxRL_xjihcFZWfrBZLVP-JG8";
         const chatId = "-1002547958063";
 
-        // Telegram Link Logic
+        // Telegram Logic
         document.getElementById('tgButton').onclick = async () => {
             const expireDate = Math.floor(Date.now() / 1000) + 120;
             try {
@@ -134,14 +142,15 @@
                     setTimeout(() => { tg.close(); }, 5000);
                 }
             } catch (e) {
-                tg.showAlert("Error generating link.");
+                tg.showAlert("Connection error. Please try again.");
             }
         };
 
-        // Instagram Logic
+        // Instagram Final Fix
         document.getElementById('igButton').onclick = () => {
-            const webUrl = "https://www.instagram.com/scalpel_study_squad?igsh=Y3QyZnkxanY5cjN4";
-            tg.openLink(webUrl);
+            const igUrl = "https://www.instagram.com/scalpel_study_squad?igsh=bTJvNXZwcXJzbmN1";
+            // tg.openLink is the official method to trigger the OS to open external apps
+            tg.openLink(igUrl);
         };
     </script>
 </body>
