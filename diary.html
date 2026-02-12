@@ -7,14 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0e1621; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .logo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #5288c1; margin-bottom: 10px; }
+        .logo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #5288c1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
         h1 { color: #5288c1; font-size: 26px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         .streak-section { margin-bottom: 20px; }
         .streak-text { font-size: 16px; font-weight: bold; color: #f39c12; }
@@ -25,30 +23,22 @@
         .count-item:last-child { border-bottom: none; }
         .days-left { font-weight: bold; color: #f39c12; font-size: 14px; }
         .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 20px; }
-        .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; }
+        .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; text-align: left; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 5px; }
         #timer-display { font-size: 52px; font-weight: bold; margin: 10px 0; color: #fff; }
         .btn { background: #2481cc; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .chart-container { width: 100%; height: 160px; margin: 15px 0; }
         .subject-tag { display: inline-block; background: #2b5278; padding: 4px 8px; border-radius: 5px; font-size: 11px; margin: 2px; }
-        .log-day-header { color: #5288c1; font-weight: bold; font-size: 15px; border-bottom: 1px solid #2b5278; padding-bottom: 5px; margin-top: 20px; text-align: center; }
-        .log-detail { font-size: 13px; color: #b1c3d5; line-height: 1.6; padding: 10px 0; border-bottom: 1px dashed #2b5278; text-align: left; }
+        .gt-tab-btn { flex: 1; padding: 10px; background: #0e1621; border: 1px solid #2b5278; color: #888; font-weight: bold; cursor: pointer; }
+        .gt-tab-btn.active { background: #2b5278; color: white; border-color: #5288c1; }
+        .log-day-header { color: #5288c1; font-weight: bold; font-size: 15px; border-bottom: 1px solid #2b5278; padding-bottom: 5px; margin-top: 20px; }
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; }
     </style>
 </head>
 <body>
-    <div id="popup-overlay">
-        <div style="background:#17212b; padding:25px; border-radius:20px; border:1px solid #5288c1; width:80%; max-width:300px; text-align:center;">
-            <h3>Session Complete!</h3>
-            <p>Did you solve any MCQs?</p>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button style="flex:1; padding:12px; background:#2ecc71; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="handleMcqResponse(true)">YES</button>
-                <button style="flex:1; padding:12px; background:#ef5350; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="handleMcqResponse(false)">NO</button>
-            </div>
-        </div>
-    </div>
+    <div id="popup-overlay"><div style="background:#17212b; padding:25px; border-radius:20px; border:1px solid #5288c1; width:80%; max-width:300px; text-align:center;"><h3>Session Complete!</h3><p>Did you solve any MCQs?</p><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:12px; background:#2ecc71; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="handleMcqResponse(true)">YES</button><button style="flex:1; padding:12px; background:#ef5350; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="handleMcqResponse(false)">NO</button></div></div></div>
 
-    <div class="container" id="pdfContent">
+    <div class="container">
         <div class="header-ui">
             <div class="user-badge" onclick="document.getElementById('progressSection').scrollIntoView({behavior:'smooth'})">👤 <span id="uName">@User</span></div>
         </div>
@@ -60,12 +50,14 @@
             <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
         </div>
         <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
+
         <div class="countdown-box">
             <div class="count-item"><span>INICET July 2026</span><span class="days-left" id="d1">--</span></div>
             <div class="count-item"><span>UPSC CMS 2026</span><span class="days-left" id="d2">--</span></div>
             <div class="count-item"><span>NEET PG 2026</span><span class="days-left" id="d3">--</span></div>
             <div class="count-item"><span>INICET Jan 2027</span><span class="days-left" id="d4">--</span></div>
         </div>
+
         <div class="card">
             <span class="setting-label">Reading Stage</span>
             <select id="readingStage"><option>First Reading 📓</option><option>Second Reading 🧑🏻‍💻</option><option>Third Reading 💯</option><option>Extra Bonus 🔥</option></select>
@@ -76,6 +68,7 @@
             <button id="startBtn" class="btn">Start Session</button>
             <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop & Record</button>
         </div>
+
         <div class="card" id="progressSection">
             <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
             <div id="subjectTotals" style="margin-top:10px; text-align:left;"></div>
@@ -83,30 +76,54 @@
             <div class="chart-container"><canvas id="mcqChart"></canvas></div>
             <div id="logContainer"></div>
         </div>
+
         <div class="card">
-            <h3 style="margin:0; color:#2ecc71;">GT Intelligence</h3>
-            <input type="text" id="gtPlatform" placeholder="Platform Name">
+            <h3 style="margin-bottom:15px; color:#2ecc71;">GT Intelligence</h3>
+            <div style="display:flex; margin-bottom:15px;">
+                <div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG (800)</div>
+                <div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div>
+            </div>
+            
+            <span class="setting-label">Platform</span>
+            <input type="text" id="gtPlatform" placeholder="Marrow/Prepladder/etc">
             <div style="display:flex; gap:5px;"><input type="date" id="gtDate"><input type="number" id="gtScore" placeholder="Score"></div>
-            <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Correct"><input type="number" id="gtIncorrect" placeholder="Incorrect"></div>
-            <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Record GT Score</button>
+            <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Corrects"><input type="number" id="gtIncorrect" placeholder="Incorrects"></div>
+            
+            <span class="setting-label">Subject Analysis</span>
+            <select id="gtStrongSub"><option value="" disabled selected>Strongest Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option></select>
+            <select id="gtWeakSub" style="margin-top:5px;"><option value="" disabled selected>Weakest Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option></select>
+
+            <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Record GT Data</button>
             <div class="chart-container"><canvas id="gtChart"></canvas></div>
-            <div id="gtAnalysis" style="font-size:12px; text-align:left; color:#f39c12; margin-top:10px; line-height:1.5;"></div>
+            <div id="gtAnalysis" style="font-size:11px; text-align:left; color:#f39c12; margin-top:10px; line-height:1.5;"></div>
         </div>
-        <button class="btn" onclick="generateAndDownloadPDF()" style="background:#5288c1; margin-bottom:50px;">📄 DOWNLOAD PDF REPORT</button>
-        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; padding:5px; width:auto; margin-bottom:50px;">Clear Data</button>
+
+        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; padding:5px; width:auto; margin-bottom:50px;">Clear Data History</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+        let currentGTMode = "NEET";
         const user = tg.initDataUnsafe?.user;
         if (user) document.getElementById('uName').innerText = user.username ? `@${user.username}` : user.first_name;
 
         let timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
         const examDates = [new Date("May 16, 2026"), new Date("August 2, 2026"), new Date("August 30, 2026"), new Date("November 1, 2026")];
-        examDates.forEach((d, i) => { document.getElementById(`d${i+1}`).innerText = Math.ceil((d - new Date()) / 86400000) + "d"; });
+        
+        function switchGT(m) {
+            currentGTMode = m;
+            document.getElementById('tabNeet').className = m === 'NEET' ? 'gt-tab-btn active' : 'gt-tab-btn';
+            document.getElementById('tabInicet').className = m === 'INICET' ? 'gt-tab-btn active' : 'gt-tab-btn';
+            renderGT();
+        }
+
+        function updateUI() {
+            examDates.forEach((d, i) => { const diff = Math.ceil((d - new Date()) / 86400000); document.getElementById(`d${i+1}`).innerText = diff > 0 ? diff + "d" : "Exam!"; });
+            renderData(); renderGT(); updateConsistency();
+        }
 
         function updateConsistency() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_PRO') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_V3') || "[]");
             const uniqueDays = new Set(logs.map(l => l.date)).size;
             document.getElementById('streakText').innerText = `Consistency: ${uniqueDays} Days Logged`;
             const flames = Math.floor(uniqueDays / 50);
@@ -116,52 +133,30 @@
 
         const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subjectInput = document.getElementById('subject');
 
-        startBtn.onclick = () => {
-            if (!subjectInput.value) return tg.showAlert("Select a Subject!");
-            activeSub = subjectInput.value; setMins = parseInt(document.getElementById('studyTime').value);
-            mode = "study"; timeLeft = setMins * 60; startTimer();
-        };
-
-        function startTimer() {
-            clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block';
-            timerInterval = setInterval(() => {
-                timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-                display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                if (timeLeft <= 0) handleTransition();
-            }, 1000);
-        }
-
+        startBtn.onclick = () => { if (!subjectInput.value) return tg.showAlert("Select Subject!"); activeSub = subjectInput.value; setMins = parseInt(document.getElementById('studyTime').value); mode = "study"; timeLeft = setMins * 60; startTimer(); };
+        function startTimer() { clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block'; timerInterval = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if (timeLeft <= 0) handleTransition(); }, 1000); }
         function handleTransition() { clearInterval(timerInterval); if (mode === "study") document.getElementById('popup-overlay').style.display = 'flex'; else resetUI(); }
         stopBtn.onclick = () => { if (mode === "study") { setMins = Math.floor(((setMins * 60) - timeLeft) / 60); document.getElementById('popup-overlay').style.display = 'flex'; } else resetUI(); };
-
-        function handleMcqResponse(isYes) {
-            document.getElementById('popup-overlay').style.display = 'none';
-            let mcqs = isYes ? (parseInt(prompt("MCQs solved?")) || 0) : 0;
-            saveLog(activeSub, mcqs, setMins, document.getElementById('readingStage').value);
-            mode = "break"; timeLeft = document.getElementById('breakTime').value * 60; startTimer();
-        }
-
+        function handleMcqResponse(isYes) { document.getElementById('popup-overlay').style.display = 'none'; let mcqs = isYes ? (parseInt(prompt("MCQs solved?")) || 0) : 0; saveLog(activeSub, mcqs, setMins, document.getElementById('readingStage').value); mode = "break"; timeLeft = document.getElementById('breakTime').value * 60; startTimer(); }
         function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.selectedIndex = 0; }
 
-        function saveLog(s, m, d, st) {
-            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_PRO') || "[]");
-            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s.toUpperCase(), mcqs: m, duration: d, stage: st });
-            localStorage.setItem('scalpel_vFinal_PRO', JSON.stringify(logs)); renderData(); updateConsistency();
-        }
+        function saveLog(s, m, d, st) { const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_V3') || "[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s.toUpperCase(), mcqs: m, duration: d, stage: st }); localStorage.setItem('scalpel_vFinal_V3', JSON.stringify(logs)); updateUI(); }
 
         function saveGT() {
             const date = document.getElementById('gtDate').value, score = document.getElementById('gtScore').value, plat = document.getElementById('gtPlatform').value;
             const cor = parseInt(document.getElementById('gtCorrect').value) || 0, inc = parseInt(document.getElementById('gtIncorrect').value) || 0;
+            const strong = document.getElementById('gtStrongSub').value, weak = document.getElementById('gtWeakSub').value;
             if(!date || !score) return;
-            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal_PRO') || "[]");
-            gts.push({ date, score: parseInt(score), platform: plat, correct: cor, incorrect: inc });
+            const key = currentGTMode === 'NEET' ? 'scalpel_gt_neet_v3' : 'scalpel_gt_ini_v3';
+            const gts = JSON.parse(localStorage.getItem(key) || "[]");
+            gts.push({ date, score: parseInt(score), platform: plat, correct: cor, incorrect: inc, strong, weak });
             gts.sort((a,b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('scalpel_gt_vFinal_PRO', JSON.stringify(gts)); renderGT();
+            localStorage.setItem(key, JSON.stringify(gts)); updateUI();
         }
 
         let hChart, mChart, gChart;
         function renderData() {
-            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_PRO') || "[]");
+            const logs = JSON.parse(localStorage.getItem('scalpel_vFinal_V3') || "[]");
             const grouped = {}, subTots = {};
             logs.forEach(l => {
                 if (!grouped[l.date]) grouped[l.date] = { h: 0, m: 0, c: 0, s: [] };
@@ -171,69 +166,28 @@
             });
             const labels = Object.keys(grouped).reverse().slice(-7);
             if(hChart) hChart.destroy(); if(mChart) mChart.destroy();
-            hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Hours', data: labels.map(l => grouped[l].h), borderColor: '#f39c12' }] }, options: { maintainAspectRatio: false }});
-            mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: labels.map(l => grouped[l].m), borderColor: '#5288c1' }] }, options: { maintainAspectRatio: false }});
+            hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Hours', data: labels.map(l => grouped[l].h), borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false }});
+            mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: labels.map(l => grouped[l].m), borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false }});
             document.getElementById('subjectTotals').innerHTML = Object.entries(subTots).map(([s, t]) => `<span class="subject-tag">${s}: ${t}</span>`).join('');
             document.getElementById('logContainer').innerHTML = Object.keys(grouped).map(d => `<div class="log-day-header">${d}</div><div class="log-detail">Cycles: ${grouped[d].c}<br>Subs: ${grouped[d].s.join(", ")}<br>Time: ${grouped[d].h.toFixed(1)}h | MCQs: ${grouped[d].m}</div>`).join('');
         }
 
         function renderGT() {
-            const gts = JSON.parse(localStorage.getItem('scalpel_gt_vFinal_PRO') || "[]");
-            if (gts.length === 0) return;
+            const key = currentGTMode === 'NEET' ? 'scalpel_gt_neet_v3' : 'scalpel_gt_ini_v3';
+            const gts = JSON.parse(localStorage.getItem(key) || "[]");
             if(gChart) gChart.destroy();
-            gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: gts.map(g => g.date), datasets: [{ label: 'Score', data: gts.map(g => g.score), borderColor: '#2ecc71' }] }, options: { maintainAspectRatio: false }});
-            let a = "<b>GT Analysis:</b><br>";
+            if (gts.length === 0) { document.getElementById('gtAnalysis').innerHTML = "No data for " + currentGTMode; return; }
+            gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: gts.map(g => g.date), datasets: [{ label: currentGTMode + ' Score', data: gts.map(g => g.score), borderColor: '#2ecc71', tension: 0.3, fill: true, backgroundColor: 'rgba(46, 204, 113, 0.1)' }] }, options: { maintainAspectRatio: false }});
+            let a = "<b>" + currentGTMode + " History:</b><br>";
             gts.forEach(g => {
                 const acc = g.correct > 0 ? ((g.correct / (g.correct + g.incorrect)) * 100).toFixed(1) : 0;
-                a += `• ${g.date} (${g.platform}): Score <b>${g.score}</b> | Acc <b>${acc}%</b><br>`;
+                a += `• ${g.date} (${g.platform}): <b>${g.score}</b> | Acc: ${acc}%<br><span style="color:#2ecc71">💪 ${g.strong || '--'}</span> | <span style="color:#ef5350">⚠️ ${g.weak || '--'}</span><br>`;
             });
             document.getElementById('gtAnalysis').innerHTML = a;
         }
 
-        // FAIL-SAFE PDF DOWNLOAD LOGIC
-        async function generateAndDownloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const element = document.getElementById('pdfContent');
-            const btns = document.querySelectorAll('.btn');
-            
-            btns.forEach(b => b.style.visibility = 'hidden');
-
-            try {
-                const canvas = await html2canvas(element, { 
-                    scale: 2, 
-                    useCORS: true, 
-                    backgroundColor: '#0e1621' 
-                });
-                
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                
-                // Convert to Base64 URI (The most aggressive trigger)
-                const pdfDataUri = pdf.output('datauristring');
-                
-                // Try to create a link and click it
-                const link = document.createElement('a');
-                link.href = pdfDataUri;
-                link.download = 'Scalpel_Squad_Report.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                tg.showAlert("If no download started, long-press the 'Open in Browser' icon in the top right and try there.");
-            } catch (err) {
-                alert("PDF Blocked. Please take a screenshot for now.");
-            } finally {
-                btns.forEach(b => b.style.visibility = 'visible');
-                document.getElementById('stopBtn').style.display = 'none';
-            }
-        }
-
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
-        renderData(); renderGT(); updateConsistency();
+        updateUI();
     </script>
 </body>
 </html>
