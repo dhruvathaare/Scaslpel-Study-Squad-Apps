@@ -1,0 +1,1 @@
+# Scaslpel-Study-Squad-Apps
