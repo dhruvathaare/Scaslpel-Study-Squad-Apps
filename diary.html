@@ -13,14 +13,14 @@
         html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
         body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; }
-        .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: var(--accent); font-weight: bold; }
+        .header-ui { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 11px; color: var(--accent); font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .logo { width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 24px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
-        .streak-section { margin-bottom: 15px; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-top: 5px; }
         .countdown-box { width: 100%; background: var(--card); padding: 12px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; box-sizing: border-box; }
         .count-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .count-item:last-child { border-bottom: none; }
         .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
         .tab-btn { flex: 1; padding: 12px 5px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: white; opacity: 0.5; transition: 0.3s; }
         .tab-btn.active { opacity: 1; background: var(--accent); }
@@ -28,40 +28,25 @@
         .tab-content.active { display: block; }
         .card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 20px; }
         .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; text-align: left; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 14px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 14px; box-sizing: border-box; margin-bottom: 5px; }
         input[type="date"] { color-scheme: dark; }
         #timer-display { font-size: 54px; font-weight: bold; margin: 10px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
         .btn-row { display: flex; gap: 8px; width: 100%; margin-top: 10px; }
-        .btn-pause { background: #f39c12; flex: 1; }
-        .btn-skip { background: #8e44ad; flex: 1; }
-        .chart-container { width: 100%; height: 180px; margin: 15px 0; position: relative; }
+        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; }
         .log-table th { color: var(--accent); padding-bottom: 5px; border-bottom: 1px solid var(--border); }
         .log-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 80%; max-width: 300px; text-align: center; }
-        
-        /* RESTORED: Horizontal Calc Preview */
-        .calc-preview { 
-            background: rgba(82, 136, 193, 0.1); 
-            padding: 12px; 
-            border-radius: 10px; 
-            margin-top: 10px; 
-            font-size: 12px; 
-            border: 1px dashed var(--accent); 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center;
-        }
     </style>
 </head>
 <body>
     <div id="popup-overlay">
         <div class="popup-card" id="mcq-popup">
-            <h3>Cycle Complete!</h3>
+            <h3>Cycle Study Complete!</h3>
             <p>Enter MCQs solved in this cycle:</p>
-            <input type="number" id="cycleMcqs" placeholder="0" style="margin-bottom: 15px; width:100%;">
+            <input type="number" id="cycleMcqs" placeholder="0" style="width:100%;">
             <button class="btn" onclick="startBreak()">Save & Start Break</button>
         </div>
         <div class="popup-card" id="break-popup" style="display:none;">
@@ -73,7 +58,9 @@
     </div>
 
     <div class="container">
-        <div class="header-ui"><div class="user-badge" id="uName">👤 @User</div></div>
+        <div class="header-ui">
+            <div class="user-badge" id="uBadge">👤 <span id="uName">@Guest</span> (<span id="uID">0000</span>)</div>
+        </div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
         <div class="streak-section">
@@ -105,70 +92,61 @@
                 <div id="timer-display">00:00</div>
                 <button id="startBtn" class="btn">Start Session</button>
                 <div id="timer-controls" style="display:none;">
-                    <div class="btn-row">
-                        <button id="pauseBtn" class="btn btn-pause" onclick="togglePause()">Pause</button>
-                        <button id="skipBtn" class="btn btn-skip" onclick="handleTransition()">Skip Session</button>
-                    </div>
-                    <button class="btn" style="background:#ef5350;" onclick="stopEntireSession()">End Session Now</button>
+                    <div class="btn-row"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button id="skipBtn" class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
+                    <button class="btn" style="background:#ef5350;" onclick="stopEntireSession()">End Session</button>
                 </div>
             </div>
             <div class="card">
                 <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
                 <div class="chart-container"><canvas id="hoursChart"></canvas></div>
                 <div class="chart-container"><canvas id="mcqChart"></canvas></div>
-                <h4 style="text-align:left; color:var(--accent); font-size:13px; margin-top:20px;">Study Log History</h4>
-                <table class="log-table"><thead><tr><th>Date</th><th>Hrs</th><th>Cycles</th><th>MCQs</th><th>Subjects</th></tr></thead><tbody id="dailyLogBody"></tbody></table>
+                <table class="log-table"><thead><tr><th>Date</th><th>Hrs</th><th>Cyc</th><th>MCQs</th><th>Subjects</th></tr></thead><tbody id="dailyLogBody"></tbody></table>
             </div>
         </div>
 
         <div id="tab-swt" class="tab-content">
             <div class="card">
-                <h3 style="color:var(--accent);">SWT Analysis</h3>
-                <span class="setting-label">Select Subject</span>
-                <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
-                <span class="setting-label">Select Date</span>
+                <h3>SWT Analysis</h3>
+                <span class="setting-label">Date Tag</span>
                 <input type="date" id="swtDate">
-                <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
-                <div class="calc-preview">
-                    <span>Wrong: <b id="swtW">0</b></span>
-                    <span>Accuracy: <b id="swtP">0%</b></span>
-                </div>
-                <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save SWT Result</button>
+                <div style="display:flex; gap:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"></div>
+                <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
+                <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save Result</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
-                <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5;"></div>
+                <div id="swtAnalysis" style="font-size:11px; text-align:left;"></div>
             </div>
         </div>
 
         <div id="tab-gt" class="tab-content">
             <div class="card">
-                <h3 style="color:#2ecc71;">GT Intelligence</h3>
-                <div style="display:flex; margin-bottom:10px;">
-                    <div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG (800)</div>
-                    <div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div>
-                </div>
-                <span class="setting-label">Select Date</span>
+                <h3>GT Intelligence</h3>
+                <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET</div></div>
+                <span class="setting-label">Date Tag</span>
                 <input type="date" id="gtDate">
-                <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unat" oninput="calcGT()"></div>
-                <div class="calc-preview">
-                    <span>Wrong: <b id="gtW">0</b></span>
-                    <span>Score: <b id="gtS">0</b></span>
-                </div>
-                <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Save GT Result</button>
+                <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unat" oninput="calcGT()"></div>
+                <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
+                <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Save Result</button>
                 <div class="chart-container"><canvas id="gtChart"></canvas></div>
-                <div id="gtAnalysis" style="font-size:11px; text-align:left; color:#f39c12; line-height:1.5;"></div>
+                <div id="gtAnalysis" style="font-size:11px; text-align:left;"></div>
             </div>
         </div>
 
-        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; width:auto; margin-bottom:50px;">Clear Data History</button>
+        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; width:auto; margin-bottom:50px;">Clear Data</button>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        const LOG_KEY = 's_logs_standard', NEET_KEY = 's_neet_standard', INI_KEY = 's_ini_standard', SWT_KEY = 's_swt_standard';
+        const tg = window.Telegram.WebApp; tg.ready();
+        const user = tg.initDataUnsafe?.user || { id: "offline", username: "Guest", first_name: "Guest" };
+        
+        // IDENTIFIER-BASED STORAGE KEYS
+        const prefix = `SSS_${user.id}_`;
+        const KEYS = { LOGS: prefix + 'logs', NEET: prefix + 'neet', INI: prefix + 'ini', SWT: prefix + 'swt' };
+
+        document.getElementById('uName').innerText = user.username ? `@${user.username}` : user.first_name;
+        document.getElementById('uID').innerText = user.id;
+
         let timerInterval, activeSub = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
-
         const requestWakeLock = async () => { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} } };
-
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
         let alarmInterval = null;
@@ -184,26 +162,13 @@
 
         document.getElementById('startBtn').onclick = () => {
             if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!");
-            audioCtx.resume(); requestWakeLock();
-            activeSub = document.getElementById('subject').value;
-            startStudyTimer();
+            audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value;
+            mode = "study"; isPaused = false; timeLeft = parseInt(document.getElementById('studyTime').value) * 60;
+            document.getElementById('startBtn').style.display = 'none'; document.getElementById('timer-controls').style.display = 'block';
+            runTimer();
         };
 
-        function startStudyTimer() {
-            mode = "study"; isPaused = false;
-            timeLeft = parseInt(document.getElementById('studyTime').value) * 60;
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('timer-controls').style.display = 'block';
-            document.getElementById('pauseBtn').innerText = "Pause";
-            document.getElementById('skipBtn').innerText = "Skip Study";
-            runTimer();
-        }
-
-        function togglePause() {
-            isPaused = !isPaused;
-            document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause";
-        }
-
+        function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         function runTimer() {
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -219,52 +184,34 @@
         function handleTransition() {
             clearInterval(timerInterval);
             if (mode === "study") {
-                startAlarm(880);
-                document.getElementById('popup-overlay').style.display = 'flex';
-                document.getElementById('mcq-popup').style.display = 'block';
-                document.getElementById('break-popup').style.display = 'none';
+                startAlarm(880); document.getElementById('popup-overlay').style.display = 'flex';
+                document.getElementById('mcq-popup').style.display = 'block'; document.getElementById('break-popup').style.display = 'none';
             } else {
-                startAlarm(440);
-                document.getElementById('popup-overlay').style.display = 'flex';
-                document.getElementById('mcq-popup').style.display = 'none';
-                document.getElementById('break-popup').style.display = 'block';
+                startAlarm(440); document.getElementById('popup-overlay').style.display = 'flex';
+                document.getElementById('mcq-popup').style.display = 'none'; document.getElementById('break-popup').style.display = 'block';
             }
         }
 
         function startBreak() {
-            stopAlarm();
-            const mcqs = parseInt(document.getElementById('cycleMcqs').value) || 0;
+            stopAlarm(); const mcqs = parseInt(document.getElementById('cycleMcqs').value) || 0;
             saveStudyLog(activeSub, mcqs, parseInt(document.getElementById('studyTime').value));
-            document.getElementById('cycleMcqs').value = '';
-            document.getElementById('popup-overlay').style.display = 'none';
-            mode = "break"; isPaused = false;
-            timeLeft = parseInt(document.getElementById('breakTime').value) * 60;
-            document.getElementById('pauseBtn').innerText = "Pause";
-            document.getElementById('skipBtn').innerText = "Skip Break";
+            document.getElementById('cycleMcqs').value = ''; document.getElementById('popup-overlay').style.display = 'none';
+            mode = "break"; isPaused = false; timeLeft = parseInt(document.getElementById('breakTime').value) * 60;
             runTimer();
         }
 
-        function continueNextCycle() {
-            stopAlarm();
-            document.getElementById('popup-overlay').style.display = 'none';
-            startStudyTimer();
-        }
-
+        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; document.getElementById('startBtn').click(); }
         function stopEntireSession() {
-            stopAlarm(); clearInterval(timerInterval);
-            if (wakeLock) { wakeLock.release(); wakeLock = null; }
-            document.getElementById('popup-overlay').style.display = 'none';
-            document.getElementById('timer-display').innerText = "00:00";
-            document.getElementById('startBtn').style.display = 'block';
-            document.getElementById('timer-controls').style.display = 'none';
-            mode = "idle";
-            updateUI();
+            stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock = null; }
+            document.getElementById('popup-overlay').style.display = 'none'; document.getElementById('timer-display').innerText = "00:00";
+            document.getElementById('startBtn').style.display = 'block'; document.getElementById('timer-controls').style.display = 'none';
+            mode = "idle"; updateUI();
         }
 
         function saveStudyLog(s, m, d) {
-            const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d });
-            localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+            localStorage.setItem(KEYS.LOGS, JSON.stringify(logs));
         }
 
         function updateUI() {
@@ -276,11 +223,10 @@
         }
 
         function updateConsistency() {
-            const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             const unique = new Set(logs.map(l => l.date)).size;
             document.getElementById('streakText').innerText = `Consistency: ${unique} Days`;
-            const medals = Math.floor(unique / 75), fires = Math.floor((unique % 75) / 25);
-            document.getElementById('streakIcons').innerText = "🥇".repeat(medals) + "🔥".repeat(fires);
+            document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(unique / 75)) + "🔥".repeat(Math.floor((unique % 75) / 25));
         }
 
         function calcSWT() {
@@ -297,27 +243,27 @@
         }
 
         function saveSWT() {
-            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), u = parseInt(document.getElementById('swtUnat').value), sub = document.getElementById('swtSubject').value;
+            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), sub = document.getElementById('swtSubject').value;
             if(!d || isNaN(t)) return;
-            const data = JSON.parse(localStorage.getItem(SWT_KEY) || "[]");
-            data.push({ date: d, total: t, correct: c, unat: u, wrong: (t-c-u), subject: sub, percent: ((c/t)*100).toFixed(1) });
-            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(SWT_KEY, JSON.stringify(data)); updateUI();
+            const data = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
+            data.push({ date: d, total: t, correct: c, percent: ((c/t)*100).toFixed(1), subject: sub });
+            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI();
         }
 
         function saveGT() {
             const d = document.getElementById('gtDate').value, c = parseInt(document.getElementById('gtCorrect').value), u = parseInt(document.getElementById('gtUnat').value);
             if(!d) return;
-            const w = 200 - c - u; const score = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333));
-            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? NEET_KEY : INI_KEY) || "[]");
-            data.push({ date: d, score: parseFloat(score.toFixed(2)), correct: c, unat: u, wrong: w });
-            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? NEET_KEY : INI_KEY, JSON.stringify(data)); updateUI();
+            const w = 200 - c - u; const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
+            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI) || "[]");
+            data.push({ date: d, score: score, correct: c, unat: u, wrong: w });
+            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI, JSON.stringify(data)); updateUI();
         }
 
         function switchGT(m) { currentGTMode = m; document.getElementById('tabNeet').className = m==='NEET'?'gt-tab-btn active':'gt-tab-btn'; document.getElementById('tabInicet').className = m==='INICET'?'gt-tab-btn active':'gt-tab-btn'; calcGT(); renderGT(); }
 
         let hChart, mChart, gChart, sChart;
         function renderData() {
-            const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             const grouped = {};
             logs.forEach(l => {
                 if (!grouped[l.date]) grouped[l.date] = {h:0, m:0, subs:new Set(), cycles:0};
@@ -327,30 +273,24 @@
             const hours = labels.map(l => grouped[l].h), mcqs = labels.map(l => grouped[l].m);
             const avgH = hours.length ? (hours.reduce((a,b)=>a+b,0)/hours.length).toFixed(1) : 0;
             const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
-
             if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type:'line', data:{labels, datasets:[{label:'Hours', data:hours, borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', callback:v=>v+'h'}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
             if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type:'line', data:{labels, datasets:[{label:'MCQs', data:mcqs, borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', stepSize:1}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
-            
-            let html = ""; Object.keys(grouped).reverse().forEach(d => { 
-                html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cycles}</td><td>${grouped[d].m}</td><td style="max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${Array.from(grouped[d].subs).join(', ')}</td></tr>`; 
-            });
+            let html = ""; Object.keys(grouped).reverse().forEach(d => { html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cycles}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`; });
             document.getElementById('dailyLogBody').innerHTML = html;
         }
 
         function renderSWT() {
-            const sub = document.getElementById('swtSubject').value;
-            const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]").filter(x => x.subject === sub);
-            if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = "No Data"; return; }
+            const sub = document.getElementById('swtSubject').value; const swts = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]").filter(x => x.subject === sub);
+            if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = ""; return; }
             sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:swts.map(x=>x.date), datasets:[{label:sub+'%', data:swts.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
-            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b>`).reverse().join('<br>');
         }
 
         function renderGT() {
-            const key = currentGTMode === 'NEET' ? NEET_KEY : INI_KEY;
-            const data = JSON.parse(localStorage.getItem(key) || "[]");
-            if(gChart) gChart.destroy(); if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = "No Data"; return; }
+            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI) || "[]");
+            if(gChart) gChart.destroy(); if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = ""; return; }
             gChart = new Chart(document.getElementById('gtChart'), { type:'line', data:{labels:data.map(x=>x.date), datasets:[{label:currentGTMode, data:data.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff'}}}}});
-            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>${x.score}</b>`).reverse().join('<br>');
         }
 
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
