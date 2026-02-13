@@ -56,18 +56,17 @@
         <div class="popup-card" id="break-popup" style="display:none;">
             <h3>Break Over</h3>
             <button class="btn" onclick="continueNextCycle()" style="background:#2ecc71; width:100%;">Start Next Cycle</button>
-            <button class="btn" onclick="stopEntireSession()" style="background:#ef5350; margin-top:10px; width:100%;">End Today's Session</button>
+            <button class="btn" onclick="stopEntireSession()" style="background:#ef5350; margin-top:10px; width:100%;">End Session</button>
         </div>
     </div>
 
     <div class="container">
-        <div class="header-ui"><div class="user-badge" id="uBadge">👤 <span id="uName">Guest</span></div></div>
+        <div class="header-ui"><div class="user-badge">👤 <span id="uName">@...</span> (<span id="uID">0</span>)</div></div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
         <div class="streak-section">
             <div id="streakText" class="streak-text">Consistency: 0 Days</div>
             <div id="streakIcons" style="font-size:24px; margin:5px 0;"></div>
-            <div style="font-size:9px; color:#888;">🔥 every 25 days | 🥇 every 75 days</div>
         </div>
         <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
 
@@ -81,7 +80,10 @@
             <div class="card">
                 <span class="setting-label">Subject</span>
                 <select id="subject"><option value="" disabled selected>Select Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
-                <div style="display:flex; gap:10px; margin-top:10px;"><div style="flex:1;"><span class="setting-label">Study (M)</span><input type="number" id="studyTime" value="120"></div><div style="flex:1;"><span class="setting-label">Break (M)</span><input type="number" id="breakTime" value="15"></div></div>
+                <span class="setting-label">Set Study Time</span>
+                <div style="display:flex; gap:10px; margin-top:5px;"><div style="flex:1;"><input type="number" id="studyHr" placeholder="Hrs" value="2"></div><div style="flex:1;"><input type="number" id="studyMin" placeholder="Mins" value="0"></div></div>
+                <span class="setting-label">Break Time (M)</span>
+                <input type="number" id="breakTime" value="15" style="margin-top:5px;">
                 <div id="timer-display">00:00</div>
                 <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
                 <div id="timer-controls" style="display:none; width:100%;">
@@ -105,7 +107,7 @@
                 <h3>SWT Analysis</h3>
                 <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
                 <span class="setting-label">Date</span><input type="date" id="swtDate">
-                <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="swtTotal" placeholder="Total" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
+                <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
@@ -121,7 +123,6 @@
                 <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unat" oninput="calcGT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
                 <button class="btn" onclick="saveGT()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result</button>
-                
                 <div id="neet-area"><h4 style="color:#f39c12; margin-top:20px;">NEET PG (Max 800)</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
                 <div id="inicet-area" style="display:none;"><h4 style="color:#2ecc71; margin-top:20px;">INICET (Max 200)</h4><div class="chart-container"><canvas id="gtInicetChart"></canvas></div><div id="gtInicetAnalysis" style="font-size:11px; text-align:left;"></div></div>
             </div>
@@ -130,14 +131,18 @@
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        const user = tg.initDataUnsafe?.user || { id: "offline", username: "Guest" };
-        const prefix = `SSS_MASTER_v2_${user.id}_`; // Versioned prefix to prevent future data mix
+        
+        // FIX: PROPER TELEGRAM IDENTITY FETCHing
+        const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", username: "Guest" };
+        const prefix = `SSS_MASTER_FINAL_${tgUser.id}_`;
         const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT' };
-        document.getElementById('uName').innerText = user.username ? `@${user.username}` : "Guest";
+        
+        document.getElementById('uName').innerText = tgUser.username ? `@${tgUser.username}` : "Guest";
+        document.getElementById('uID').innerText = tgUser.id;
 
         let timerInterval, activeSub = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
 
-        const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
+        const requestWakeLock = async () => { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} } };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
         let alarmInterval = null;
@@ -146,13 +151,27 @@
 
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
-        document.getElementById('startBtn').onclick = () => { if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value; startStudyTimer(); };
-        function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = parseInt(document.getElementById('studyTime').value)*60; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
+        document.getElementById('startBtn').onclick = () => {
+            if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!");
+            audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value;
+            startStudyTimer();
+        };
+
+        function startStudyTimer() {
+            mode = "study"; isPaused = false;
+            let hrs = parseInt(document.getElementById('studyHr').value) || 0;
+            let mins = parseInt(document.getElementById('studyMin').value) || 0;
+            timeLeft = (hrs * 3600) + (mins * 60);
+            if(timeLeft <= 0) return tg.showAlert("Set valid time!");
+            document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block';
+            runTimer();
+        }
+
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
-        function runTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused) { timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`; if (timeLeft<=0) handleTransition(); } }, 1000); }
+        function runTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused) { timeLeft--; let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; document.getElementById('timer-display').innerText = `${h>0?h+':':''}${m<10?'0':''}${m}:${s<10?'0':''}${s}`; if (timeLeft<=0) handleTransition(); } }, 1000); }
         function handleTransition() { clearInterval(timerInterval); if (mode==="study") { startAlarm(880); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display='block'; document.getElementById('break-popup').style.display='none'; } else { startAlarm(440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display='none'; document.getElementById('break-popup').style.display='block'; } }
-        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, parseInt(document.getElementById('studyTime').value)); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
-        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; requestWakeLock(); startStudyTimer(); }
+        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; let h=parseInt(document.getElementById('studyHr').value)||0, min=parseInt(document.getElementById('studyMin').value)||0; saveStudyLog(activeSub, m, (h*60)+min); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
+        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
         function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
         function saveStudyLog(s, m, d) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
@@ -172,11 +191,10 @@
         function saveGT() {
             const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value);
             if(!d) return;
-            const w = Math.max(0, 200 - c - u); const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
-            const key = currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI;
-            const data = JSON.parse(localStorage.getItem(key)||"[]");
-            data.push({ date: d, score, correct: c, unat: u, wrong: w });
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(key, JSON.stringify(data)); updateUI();
+            const w = Math.max(0, 200 - c - u); const s = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
+            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI)||"[]");
+            data.push({ date: d, score: s, correct: c, unat: u, wrong: w });
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI, JSON.stringify(data)); updateUI();
         }
 
         function switchGT(m) { 
