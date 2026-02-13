@@ -100,13 +100,12 @@
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        // PERMANENT KEYS
         const LOG_KEY = 'scalpel_squad_logs';
         const NEET_GT_KEY = 'scalpel_squad_gt_neet';
         const INI_GT_KEY = 'scalpel_squad_gt_inicet';
 
         let currentGTMode = "NEET", timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
-        let wakeLock = null;
+        let wakeLock = null, alarmInterval = null;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(frequency, duration) {
@@ -115,6 +114,15 @@
             osc.frequency.value = frequency; gain.gain.value = 0.1;
             osc.start(); setTimeout(() => osc.stop(), duration);
         }
+
+        // --- Continuous Alarm Logic ---
+        function startAlarm(frequency) {
+            stopAlarm(); // Clear any existing
+            alarmInterval = setInterval(() => {
+                playBeep(frequency, 200);
+            }, 1000); // Beep every 1 second
+        }
+        function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
 
         const requestWakeLock = async () => {
             try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } 
@@ -147,14 +155,51 @@
         }
 
         const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subjectInput = document.getElementById('subject');
-        startBtn.onclick = () => { if (!subjectInput.value) return tg.showAlert("Select Subject!"); if (audioCtx.state === 'suspended') audioCtx.resume(); requestWakeLock(); activeSub = subjectInput.value; setMins = parseInt(document.getElementById('studyTime').value); mode = "study"; timeLeft = setMins * 60; startTimer(); };
-        function startTimer() { clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block'; timerInterval = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if (timeLeft <= 0) handleTransition(); }, 1000); }
-        function handleTransition() { clearInterval(timerInterval); if (mode === "study") { playBeep(880, 500); document.getElementById('popup-overlay').style.display = 'flex'; } else { playBeep(440, 800); tg.showAlert("Break Over!"); resetUI(); } }
-        stopBtn.onclick = () => { if (mode === "study") { setMins = Math.floor(((setMins * 60) - timeLeft) / 60); document.getElementById('popup-overlay').style.display = 'flex'; } else resetUI(); };
-        function handleMcqResponse(isYes) { document.getElementById('popup-overlay').style.display = 'none'; let mcqs = isYes ? (parseInt(prompt("MCQs?")) || 0) : 0; saveLog(activeSub, mcqs, setMins, document.getElementById('readingStage').value); mode = "break"; timeLeft = document.getElementById('breakTime').value * 60; startTimer(); }
-        function resetUI() { clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.selectedIndex = 0; if(wakeLock) wakeLock.release(); }
+        
+        startBtn.onclick = () => { 
+            if (!subjectInput.value) return tg.showAlert("Select Subject!"); 
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            stopAlarm(); // Ensure alarm is off on restart
+            requestWakeLock(); activeSub = subjectInput.value; setMins = parseInt(document.getElementById('studyTime').value); mode = "study"; timeLeft = setMins * 60; startTimer(); 
+        };
+
+        function startTimer() { 
+            clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block'; 
+            timerInterval = setInterval(() => { 
+                timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60; 
+                display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; 
+                if (timeLeft <= 0) handleTransition(); 
+            }, 1000); 
+        }
+
+        function handleTransition() { 
+            clearInterval(timerInterval); 
+            if (mode === "study") {
+                startAlarm(880); // Continuous High Alarm
+                document.getElementById('popup-overlay').style.display = 'flex'; 
+            } else {
+                startAlarm(440); // Continuous Low Alarm
+                tg.showConfirm("Break Over! Click OK to stop alarm.", (ok) => { if(ok) { stopAlarm(); resetUI(); } });
+            }
+        }
+
+        stopBtn.onclick = () => { 
+            if (mode === "study") { setMins = Math.floor(((setMins * 60) - timeLeft) / 60); document.getElementById('popup-overlay').style.display = 'flex'; startAlarm(880); } 
+            else { stopAlarm(); resetUI(); } 
+        };
+
+        function handleMcqResponse(isYes) { 
+            stopAlarm(); // Stop alarm on response
+            document.getElementById('popup-overlay').style.display = 'none'; 
+            let mcqs = isYes ? (parseInt(prompt("MCQs?")) || 0) : 0; 
+            saveLog(activeSub, mcqs, setMins, document.getElementById('readingStage').value); 
+            mode = "break"; timeLeft = document.getElementById('breakTime').value * 60; startTimer(); 
+        }
+
+        function resetUI() { stopAlarm(); clearInterval(timerInterval); startBtn.style.display = 'block'; stopBtn.style.display = 'none'; display.innerText = "00:00"; subjectInput.selectedIndex = 0; if(wakeLock) wakeLock.release(); }
 
         function saveLog(s, m, d, st) { const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s.toUpperCase(), mcqs: m, duration: d, stage: st }); localStorage.setItem(LOG_KEY, JSON.stringify(logs)); updateUI(); }
+        
         function saveGT() {
             const date = document.getElementById('gtDate').value, score = document.getElementById('gtScore').value, plat = document.getElementById('gtPlatform').value;
             const cor = parseInt(document.getElementById('gtCorrect').value) || 0, inc = parseInt(document.getElementById('gtIncorrect').value) || 0;
