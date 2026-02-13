@@ -30,7 +30,6 @@
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Compact Card Styling */
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
         input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; }
@@ -113,7 +112,7 @@
                 <h3>SWT Analysis</h3>
                 <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
                 <div style="display:flex; gap:5px; margin-top:8px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="swtDate"></div><div style="flex:1;"><span class="setting-label">Total Qs</span><input type="number" id="swtTotal" oninput="calcSWT()"></div></div>
-                <div style="display:flex; gap:5px; margin-top:5px;"><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="swtCorrect" oninput="calcSWT()"></div><div style="flex:1;"><span class="setting-label">Unat</span><input type="number" id="swtUnat" oninput="calcSWT()"></div></div>
+                <div style="display:flex; gap:5px; margin-top:5px;"><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="swtCorrect" oninput="calcSWT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="swtUnat" oninput="calcSWT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
@@ -125,7 +124,7 @@
             <div class="card">
                 <h3>GT Intelligence</h3>
                 <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:10px; text-align:center; background:var(--border); font-size:10px; cursor:pointer;" onclick="switchGT('NEET')">NEET PG (+4/-1)</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:10px; text-align:center; background:rgba(0,0,0,0.2); font-size:10px; cursor:pointer;" onclick="switchGT('INICET')">INICET (+1/-0.33)</div></div>
-                <div style="display:flex; gap:5px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="gtDate"></div><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="gtCorrect" oninput="calcGT()"></div><div style="flex:1;"><span class="setting-label">Unat</span><input type="number" id="gtUnat" oninput="calcGT()"></div></div>
+                <div style="display:flex; gap:5px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="gtDate"></div><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="gtCorrect" oninput="calcGT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="gtUnat" oninput="calcGT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
                 <button class="btn" onclick="saveGT()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result</button>
                 <div id="neet-area"><h4 style="color:#f39c12; margin-top:15px; font-size:13px;">NEET Progress (Max 800)</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
@@ -165,7 +164,7 @@
         function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
         function saveStudyLog(s, m, d) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
-        function updateUI() { const ist = new Date(new Date().getTime() + 330*60*1000).toISOString().split('T')[0]; document.getElementById('swtDate').max = ist; document.getElementById('gtDate').max = ist; renderData(); renderSWT(); renderGT(); updateConsistency(); }
+        function updateUI() { const ist = new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0]; renderData(); renderSWT(); renderGT(); updateConsistency(); }
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const unique = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${unique} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(unique/75)) + "🔥".repeat(Math.floor((unique % 75) / 25)); }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w = Math.max(0, 200 - c - u); const s = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333)); document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode==='NEET'?0:2); }
@@ -214,20 +213,20 @@
             const sub = document.getElementById('swtSubject').value; const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]").filter(x => x.subject === sub);
             if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = "No tests recorded."; return; }
             sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:swts.map(x=>x.date), datasets:[{label:sub+'%', data:swts.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
-            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (Correct:${x.correct} Wrong:${x.wrong} Unattempted:${x.unat})`).reverse().join('<br>');
         }
 
         function renderGT() {
             const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             if(gNeetChart) gNeetChart.destroy();
             if(nd.length > 0) {
-                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
-                document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'Score', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
+                document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>Score:${x.score}</b> (Correct:${x.correct} Wrong:${x.wrong} Unattempted:${x.unat})`).reverse().join('<br>');
             }
             if(gIniChart) gIniChart.destroy();
             if(id.length > 0) {
-                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
-                document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'Score', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+                document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>Score:${x.score}</b> (Correct:${x.correct} Wrong:${x.wrong} Unattempted:${x.unat})`).reverse().join('<br>');
             }
         }
         updateUI();
