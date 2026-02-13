@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Study Squad Master</title>
+    <title>Scalpel Master Standard</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,43 +14,47 @@
         body { display: flex; flex-direction: column; align-items: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; box-sizing: border-box; }
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
-        /* Header & Identity */
+        /* Fixed Header Identity Badge */
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 11px; color: var(--accent); font-weight: bold; }
+        .user-badge { 
+            background: rgba(82, 136, 193, 0.2); 
+            border: 1px solid var(--accent); 
+            padding: 8px 12px; 
+            border-radius: 15px; 
+            font-size: 11px; 
+            color: var(--accent); 
+            font-weight: bold; 
+            text-align: right;
+            line-height: 1.3;
+        }
+        .user-badge span { display: block; }
+        .user-id-tag { opacity: 0.7; font-size: 9px; font-family: monospace; }
+
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
-        
-        /* Consistency & Streak */
         .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
 
-        /* Tabs Navigation */
         .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
         .tab-btn { flex: 1; padding: 12px 5px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: white; opacity: 0.5; }
         .tab-btn.active { opacity: 1; background: var(--accent); }
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Components */
         .card { background: var(--card); padding: 15px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 8px 0 3px 0; display: block; font-weight: bold; text-align: left; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 14px; box-sizing: border-box; }
         input[type="date"] { color-scheme: dark; }
 
-        /* Timer UI */
         #timer-display { font-size: 58px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
         
-        /* Fixed Aligned Table */
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         .log-table th, .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
 
-        /* Scoring Previews */
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; }
         .chart-container { width: 100%; height: 170px; margin: 10px 0; }
-
-        /* Popup Overlays */
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
     </style>
@@ -65,14 +69,18 @@
         </div>
         <div class="popup-card" id="break-popup" style="display:none;">
             <h3>Break Over</h3>
-            <p>Cycle Complete. Start another?</p>
-            <button class="btn" onclick="continueNextCycle()" style="background:#2ecc71; width:100%;">Next Cycle</button>
+            <button class="btn" onclick="continueNextCycle()" style="background:#2ecc71; width:100%;">Start Next Cycle</button>
             <button class="btn" onclick="stopEntireSession()" style="background:#ef5350; margin-top:10px; width:100%;">Finish Session</button>
         </div>
     </div>
 
     <div class="container">
-        <div class="header-ui"><div class="user-badge" id="uBadge">👤 <span id="uName">Loading...</span> (<span id="uID">...</span>)</div></div>
+        <div class="header-ui">
+            <div class="user-badge" id="uBadge">
+                <span id="uFullName">Full Name</span>
+                <span id="uID" class="user-id-tag">ID: 0000000</span>
+            </div>
+        </div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
         
@@ -119,12 +127,12 @@
             <div class="card">
                 <h3>SWT Analysis</h3>
                 <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
-                <span class="setting-label">Select Date</span><input type="date" id="swtDate">
+                <span class="setting-label">Date</span><input type="date" id="swtDate">
                 <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="swtTotal" placeholder="Total"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save SWT</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
-                <div id="swtAnalysis" style="font-size:11px; text-align:left;"></div>
+                <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.6;"></div>
             </div>
         </div>
 
@@ -132,30 +140,31 @@
             <div class="card">
                 <h3>GT Intelligence</h3>
                 <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:10px; text-align:center; background:var(--border); font-size:10px; cursor:pointer;" onclick="switchGT('NEET')">NEET PG (+4/-1)</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:10px; text-align:center; background:rgba(0,0,0,0.2); font-size:10px; cursor:pointer;" onclick="switchGT('INICET')">INICET (+1/-0.33)</div></div>
-                <span class="setting-label">Select Date</span><input type="date" id="gtDate">
+                <span class="setting-label">Date</span><input type="date" id="gtDate">
                 <div style="display:flex; gap:5px; margin-top:10px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unat" oninput="calcGT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
                 <button class="btn" onclick="saveGT()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result</button>
-                
-                <div id="neet-area"><h4 style="color:#f39c12; margin-top:20px;">NEET PG Progress (Max 800)</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
-                <div id="inicet-area" style="display:none;"><h4 style="color:#2ecc71; margin-top:20px;">INICET Progress (Max 200)</h4><div class="chart-container"><canvas id="gtInicetChart"></canvas></div><div id="gtInicetAnalysis" style="font-size:11px; text-align:left;"></div></div>
+                <div id="neet-area"><h4 style="color:#f39c12; margin-top:20px;">NEET PG Progress</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
+                <div id="inicet-area" style="display:none;"><h4 style="color:#2ecc71; margin-top:20px;">INICET Progress</h4><div class="chart-container"><canvas id="gtInicetChart"></canvas></div><div id="gtInicetAnalysis" style="font-size:11px; text-align:left;"></div></div>
             </div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        const user = tg.initDataUnsafe?.user || { id: "OFFLINE", username: "Guest" };
         
-        // PERSISTENCE BLOCK
-        const prefix = `SCALPEL_MASTER_v3_${user.id}_`;
+        // Identity Fetch: Full Name + ID
+        const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Local", last_name: "User" };
+        const fullName = `${tgUser.first_name || ""} ${tgUser.last_name || ""}`.trim();
+        document.getElementById('uFullName').innerText = fullName || "Guest User";
+        document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
+
+        // Ultimate Persistent Keys
+        const prefix = `SSS_FINAL_PRO_${tgUser.id}_`;
         const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT' };
-        document.getElementById('uName').innerText = user.username ? `@${user.username}` : "Guest";
-        document.getElementById('uID').innerText = user.id;
 
         let timerInterval, activeSub = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
 
-        // FAIL-SAFE WAKE LOCK
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
@@ -166,13 +175,10 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value; startStudyTimer(); };
-        
         function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         function runTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused) { timeLeft--; let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; document.getElementById('timer-display').innerText = `${h>0?h+':':''}${m<10?'0':''}${m}:${s<10?'0':''}${s}`; if (timeLeft<=0) handleTransition(); } }, 1000); }
-        
-        function handleTransition() { clearInterval(timerInterval); if (mode==="study") { startAlarm(880); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display='block'; document.getElementById('break-popup').style.display='none'; } else { startAlarm(440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display='none'; document.getElementById('break-popup').style.display='block'; } }
-        
+        function handleTransition() { clearInterval(timerInterval); startAlarm(880); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display='block'; document.getElementById('break-popup').style.display='none'; }
         function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value)); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
         function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
         function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
@@ -180,7 +186,6 @@
         function saveStudyLog(s, m, d) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
         function updateUI() { const ist = new Date(new Date().getTime() + 330*60*1000).toISOString().split('T')[0]; document.getElementById('swtDate').max = ist; document.getElementById('gtDate').max = ist; renderData(); renderSWT(); renderGT(); updateConsistency(); }
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const unique = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${unique} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(unique/75)) + "🔥".repeat(Math.floor((unique%75)/25)); }
-        
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w = Math.max(0, 200 - c - u); const s = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333)); document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode==='NEET'?0:2); }
 
@@ -236,12 +241,12 @@
             const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             if(gNeetChart) gNeetChart.destroy();
             if(nd.length > 0) {
-                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'Score', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
+                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
                 document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
             }
             if(gIniChart) gIniChart.destroy();
             if(id.length > 0) {
-                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'Score', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
                 document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
             }
         }
