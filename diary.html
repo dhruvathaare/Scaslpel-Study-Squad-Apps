@@ -81,10 +81,13 @@
             <div id="streakIcons" style="font-size:18px; margin:5px 0;"></div>
             <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
         </div>
+        <div class="sub-title">PRE PG ENTRANCE EXAMS 2026</div>
 
         <div class="countdown-box">
             <div class="count-item"><span>INICET July 2026</span><span class="days-left" id="d1">--</span></div>
+            <div class="count-item"><span>UPSC CMS 2026</span><span class="days-left" id="d2">--</span></div>
             <div class="count-item"><span>NEET PG 2026</span><span class="days-left" id="d3">--</span></div>
+            <div class="count-item"><span>INICET Jan 2027</span><span class="days-left" id="d4">--</span></div>
         </div>
 
         <div class="card">
@@ -98,7 +101,7 @@
             <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop & Record</button>
         </div>
 
-        <div class="card">
+        <div class="card" id="progressSection">
             <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
             <div id="subjectTotals" style="margin-top:10px; text-align:left;"></div>
             <div class="chart-container"><canvas id="hoursChart"></canvas></div>
@@ -151,6 +154,10 @@
         const LOG_KEY = 'scalpel_logs_v11', NEET_GT_KEY = 'scalpel_gt_neet_v11', INI_GT_KEY = 'scalpel_gt_ini_v11', SWT_KEY = 'scalpel_swt_v11';
 
         let currentGTMode = "NEET", timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
+        let wakeLock = null;
+
+        const requestWakeLock = async () => { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} };
+        const releaseWakeLock = () => { if (wakeLock) { wakeLock.release(); wakeLock = null; } };
 
         function getISTToday() {
             const now = new Date();
@@ -200,8 +207,13 @@
 
         function updateUI() {
             restrictDates();
-            const exams = [new Date("May 16, 2026"), new Date("August 30, 2026")];
-            exams.forEach((d, i) => { const diff = Math.ceil((d - new Date()) / 86400000); let el = document.getElementById(`d${i===0?1:3}`); if(el) el.innerText = diff > 0 ? diff + "d" : "Exam!"; });
+            const exams = [
+                { id: 'd1', date: new Date("May 16, 2026") },
+                { id: 'd2', date: new Date("July 12, 2026") },
+                { id: 'd3', date: new Date("August 30, 2026") },
+                { id: 'd4', date: new Date("November 15, 2026") }
+            ];
+            exams.forEach(ex => { const diff = Math.ceil((ex.date - new Date()) / 86400000); document.getElementById(ex.id).innerText = diff > 0 ? diff + "d" : "Exam!"; });
             renderData(); renderGT(); renderSWT(); updateConsistency();
         }
 
@@ -214,14 +226,14 @@
         }
 
         const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subIn = document.getElementById('subject');
-        startBtn.onclick = () => { if (!subIn.value) return tg.showAlert("Select Subject!"); audioCtx.resume(); stopAlarm(); activeSub = subIn.value; setMins = parseInt(document.getElementById('studyTime').value); mode = "study"; timeLeft = setMins * 60; 
+        startBtn.onclick = () => { if (!subIn.value) return tg.showAlert("Select Subject!"); audioCtx.resume(); stopAlarm(); requestWakeLock(); activeSub = subIn.value; setMins = parseInt(document.getElementById('studyTime').value); mode = "study"; timeLeft = setMins * 60; 
             clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block';
             timerInterval = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if (timeLeft <= 0) handleTransition(); }, 1000);
         };
         function handleTransition() { clearInterval(timerInterval); startAlarm(880); document.getElementById('popup-overlay').style.display = 'flex'; }
         stopBtn.onclick = () => handleTransition();
         function handleMcqResponse(y) { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; let m = y ? (parseInt(prompt("MCQs?")) || 0) : 0; saveLog(activeSub, m, setMins, document.getElementById('readingStage').value); mode = "break"; timeLeft = document.getElementById('breakTime').value * 60;
-            display.innerText = "00:00"; startBtn.style.display = 'block'; stopBtn.style.display = 'none'; updateUI(); }
+            display.innerText = "00:00"; startBtn.style.display = 'block'; stopBtn.style.display = 'none'; releaseWakeLock(); updateUI(); }
 
         function saveLog(s, m, d, st) { const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, stage: st }); localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
         
@@ -261,7 +273,7 @@
             const sub = document.getElementById('swtSubject').value;
             const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]").filter(x => x.subject === sub);
             if(sChart) sChart.destroy();
-            if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = "No tests for " + sub; return; }
+            if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = "No data."; return; }
             sChart = new Chart(document.getElementById('swtChart'), { type: 'line', data: { labels: swts.map(x => x.date), datasets: [{ label: sub + ' (%)', data: swts.map(x => x.percent), borderColor: '#5288c1', backgroundColor: 'rgba(82,136,193,0.1)', fill: true, tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { color: '#ffffff' } }, x: { ticks: { color: '#ffffff' } } } }});
             document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
@@ -270,7 +282,7 @@
             const key = currentGTMode === 'NEET' ? NEET_GT_KEY : INI_GT_KEY;
             const data = JSON.parse(localStorage.getItem(key) || "[]");
             if(gChart) gChart.destroy();
-            if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = "No data for " + currentGTMode; return; }
+            if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = "No data."; return; }
             gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: data.map(x => x.date), datasets: [{ label: currentGTMode + ' Score', data: data.map(x => x.score), borderColor: '#2ecc71', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color: '#ffffff' } }, y: { ticks: { color: '#ffffff' } } } }});
             document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date} [${x.platform}]: <b>Score:${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
