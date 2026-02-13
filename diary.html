@@ -126,7 +126,8 @@
                 <div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG (800)</div>
                 <div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div>
             </div>
-            <input type="date" id="gtDate">
+            <input type="text" id="gtPlatform" placeholder="Platform Name (e.g. Marrow)">
+            <input type="date" id="gtDate" style="margin-top:5px;">
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnattempted" placeholder="Unattempted" oninput="calcGT()"></div>
             <div class="calc-preview">
                 <span>Wrong: <b id="gtW">0</b></span>
@@ -142,7 +143,7 @@
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        const LOG_KEY = 'scalpel_logs_v10', NEET_GT_KEY = 'scalpel_gt_neet_v10', INI_GT_KEY = 'scalpel_gt_ini_v10', SWT_KEY = 'scalpel_swt_v10';
+        const LOG_KEY = 'scalpel_logs_v11', NEET_GT_KEY = 'scalpel_gt_neet_v11', INI_GT_KEY = 'scalpel_gt_ini_v11', SWT_KEY = 'scalpel_swt_v11';
 
         let currentGTMode = "NEET", timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
 
@@ -228,13 +229,13 @@
         }
 
         function saveGT() {
-            const date = document.getElementById('gtDate').value, cor = parseInt(document.getElementById('gtCorrect').value), unat = parseInt(document.getElementById('gtUnattempted').value);
+            const date = document.getElementById('gtDate').value, cor = parseInt(document.getElementById('gtCorrect').value), unat = parseInt(document.getElementById('gtUnattempted').value), platform = document.getElementById('gtPlatform').value;
             if(!date || (cor+unat) > 200) return;
             const w = 200 - cor - unat;
             const s = (currentGTMode === 'NEET') ? (cor * 4 - w) : (cor - w * 0.33);
             const key = currentGTMode === 'NEET' ? NEET_GT_KEY : INI_GT_KEY;
             const gts = JSON.parse(localStorage.getItem(key) || "[]");
-            gts.push({ date, score: parseFloat(s.toFixed(2)), correct: cor, unattempted: unat, wrong: w });
+            gts.push({ date, score: parseFloat(s.toFixed(2)), correct: cor, unattempted: unat, wrong: w, platform: platform || "Unknown" });
             gts.sort((a,b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem(key, JSON.stringify(gts)); updateUI();
         }
@@ -266,7 +267,7 @@
             if(gChart) gChart.destroy();
             if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = "No data for " + currentGTMode; return; }
             gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: data.map(x => x.date), datasets: [{ label: currentGTMode + ' Score', data: data.map(x => x.score), borderColor: '#2ecc71', tension: 0.3 }] }, options: { maintainAspectRatio: false }});
-            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
+            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date} [${x.platform}]: <b>Score:${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
 
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
@@ -274,4 +275,3 @@
     </script>
 </body>
 </html>
-
