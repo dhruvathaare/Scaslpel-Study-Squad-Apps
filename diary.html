@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Study Squad Diary</title>
+    <title>Scalpel Study Squad Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,16 +13,13 @@
         html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
         body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; }
-        @media (orientation: landscape) { body { padding-top: 20px; } .container { max-width: 500px; } }
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: var(--accent); font-weight: bold; }
         .logo { width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 24px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
-        .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-top: 5px; }
+        .streak-section { margin-bottom: 15px; }
         .countdown-box { width: 100%; background: var(--card); padding: 12px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; box-sizing: border-box; }
         .count-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-        .count-item:last-child { border-bottom: none; }
-        .days-left { font-weight: bold; color: #f39c12; }
         .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
         .tab-btn { flex: 1; padding: 12px 5px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: white; opacity: 0.5; transition: 0.3s; }
         .tab-btn.active { opacity: 1; background: var(--accent); }
@@ -34,35 +31,43 @@
         #timer-display { font-size: 48px; font-weight: bold; margin: 10px 0; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
         .chart-container { width: 100%; height: 180px; margin: 15px 0; position: relative; }
-        .subject-tag { display: inline-block; background: var(--border); padding: 4px 8px; border-radius: 5px; font-size: 10px; margin: 2px; color: white; }
-        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; }
-        .log-table { width: 100%; font-size: 11px; text-align: left; border-collapse: collapse; margin-top: 10px; color: #ccc; }
-        .log-table th { color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        .log-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; }
+        .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; }
+        .log-table th { color: var(--accent); padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+        .log-table td { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; justify-content:center; align-items:center; flex-direction: column;}
+        .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 80%; max-width: 300px; text-align: center; }
     </style>
 </head>
 <body>
-    <div id="popup-overlay"><div style="background:var(--card); padding:25px; border-radius:20px; border:1px solid var(--accent); width:80%; max-width:300px; text-align:center;"><h3>Session Complete!</h3><p>Log MCQs?</p><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:12px; background:#2ecc71; color:white; border:none; border-radius:10px;" onclick="handleMcqResponse(true)">YES</button><button style="flex:1; padding:12px; background:#ef5350; color:white; border:none; border-radius:10px;" onclick="handleMcqResponse(false)">NO</button></div></div></div>
+    <div id="popup-overlay">
+        <div class="popup-card" id="mcq-popup">
+            <h3>Cycle Study Complete!</h3>
+            <p>Enter MCQs solved in this cycle:</p>
+            <input type="number" id="cycleMcqs" placeholder="0" style="margin-bottom: 15px;">
+            <button class="btn" onclick="startBreak()">Start Break Now</button>
+        </div>
+        <div class="popup-card" id="break-popup" style="display:none;">
+            <h3>Break Finished!</h3>
+            <p>One Cycle Complete.</p>
+            <button class="btn" onclick="continueNextCycle()" style="background:#2ecc71;">Start Next Cycle</button>
+            <button class="btn" onclick="stopEntireSession()" style="background:#ef5350; margin-top:10px;">End Session</button>
+        </div>
+    </div>
 
     <div class="container">
         <div class="header-ui"><div class="user-badge" id="uName">👤 @User</div></div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
-        
         <div class="streak-section">
             <div id="streakText" style="font-size:18px; font-weight:bold; color:#f39c12;">Consistency: 0 Days</div>
-            <div id="streakIcons" style="font-size:22px; margin:5px 0;"></div>
-            <div style="font-size:9px; color:#888; margin-bottom:10px;">Milestones: 🔥 every 25 days | 🥇 every 75 days</div>
+            <div id="streakIcons" style="font-size:22px;"></div>
         </div>
 
-        <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
-
         <div class="countdown-box">
-            <div class="count-item"><span>INICET July 2026</span><span class="days-left" id="d1">--</span></div>
-            <div class="count-item"><span>UPSC CMS 2026</span><span class="days-left" id="d2">--</span></div>
-            <div class="count-item"><span>NEET PG 2026</span><span class="days-left" id="d3">--</span></div>
-            <div class="count-item"><span>INICET Jan 2027</span><span class="days-left" id="d4">--</span></div>
+            <div class="count-item"><span>INICET July</span><span id="d1" class="days-left">--</span></div>
+            <div class="count-item"><span>UPSC CMS</span><span id="d2" class="days-left">--</span></div>
+            <div class="count-item"><span>NEET PG</span><span id="d3" class="days-left">--</span></div>
+            <div class="count-item"><span>INICET Jan '27</span><span id="d4" class="days-left">--</span></div>
         </div>
 
         <div class="nav-tabs">
@@ -78,46 +83,43 @@
                 <div style="display:flex; gap:10px; margin-top:10px;"><div style="flex:1;"><span class="setting-label">Study (M)</span><input type="number" id="studyTime" value="120"></div><div style="flex:1;"><span class="setting-label">Break (M)</span><input type="number" id="breakTime" value="15"></div></div>
                 <div id="timer-display">00:00</div>
                 <button id="startBtn" class="btn">Start Session</button>
-                <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop</button>
+                <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop Cycle</button>
             </div>
             <div class="card">
                 <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
                 <div class="chart-container"><canvas id="hoursChart"></canvas></div>
                 <div class="chart-container"><canvas id="mcqChart"></canvas></div>
-                
-                <h4 style="text-align:left; color:var(--accent); margin:20px 0 10px 0; font-size:14px;">Study Log History</h4>
-                <table class="log-table">
-                    <thead><tr><th>Date</th><th>Cycles</th><th>Subjects</th><th>MCQs</th></tr></thead>
-                    <tbody id="dailyLogBody"></tbody>
-                </table>
+                <h4 style="text-align:left; color:var(--accent); font-size:12px;">Numerical History</h4>
+                <table class="log-table"><thead><tr><th>Date</th><th>Cycles</th><th>Subjects</th><th>MCQs</th></tr></thead><tbody id="dailyLogBody"></tbody></table>
             </div>
         </div>
 
         <div id="tab-swt" class="tab-content">
             <div class="card">
-                <h3 style="margin:0; color:var(--accent);">Subject-Wise Tests</h3>
-                <span class="setting-label">Subject & Date</span>
+                <h3 style="color:var(--accent);">SWT Analysis</h3>
+                <span class="setting-label">Subject</span>
                 <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
+                <span class="setting-label">Date Tag</span>
                 <input type="date" id="swtDate">
-                <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"></div>
-                <input type="number" id="swtUnattempted" placeholder="Unattempted" oninput="calcSWT()" style="margin-top:5px;">
+                <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtTotal" placeholder="Total" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save SWT</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
-                <div id="swtAnalysis" style="font-size:11px; text-align:left; color:var(--accent); line-height:1.5;"></div>
+                <div id="swtAnalysis" style="font-size:11px; text-align:left;"></div>
             </div>
         </div>
 
         <div id="tab-gt" class="tab-content">
             <div class="card">
-                <h3 style="margin-bottom:15px; color:#2ecc71;">GT Intelligence</h3>
-                <div style="display:flex; margin-bottom:15px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET (800)</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div></div>
+                <h3 style="color:#2ecc71;">GT Intelligence</h3>
+                <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET</div></div>
+                <span class="setting-label">Date Tag</span>
                 <input type="date" id="gtDate">
-                <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnattempted" placeholder="Unattempted" oninput="calcGT()"></div>
+                <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unat" oninput="calcGT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
-                <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Record GT</button>
+                <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Save GT</button>
                 <div class="chart-container"><canvas id="gtChart"></canvas></div>
-                <div id="gtAnalysis" style="font-size:11px; text-align:left; color:#f39c12; line-height:1.5;"></div>
+                <div id="gtAnalysis" style="font-size:11px; text-align:left;"></div>
             </div>
         </div>
 
@@ -126,18 +128,100 @@
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        const LOG_KEY = 's_logs_v16', NEET_KEY = 's_gt_neet_v16', INI_KEY = 's_gt_ini_v16', SWT_KEY = 's_swt_v16';
-        let currentGTMode = "NEET", timerInterval, activeSub = "", wakeLock = null;
+        const STORAGE_VERSION = 'vMaster_'; 
+        const LOG_KEY = STORAGE_VERSION + 'logs', NEET_KEY = STORAGE_VERSION + 'neet', INI_KEY = STORAGE_VERSION + 'ini', SWT_KEY = STORAGE_VERSION + 'swt';
+        let currentGTMode = "NEET", timerInterval, activeSub = "", wakeLock = null, timeLeft = 0, mode = "idle";
 
-        function switchTab(tabId, btn) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
+        let alarmInterval = null;
+        function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
+        function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
+
+        function switchTab(id, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active'); document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active'); document.getElementById(id).classList.add('active');
             updateUI(); 
         }
 
-        const requestWakeLock = async () => { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} };
-        const releaseWakeLock = () => { if (wakeLock) { wakeLock.release(); wakeLock = null; } };
+        const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subIn = document.getElementById('subject');
+        
+        startBtn.onclick = () => {
+            if (!subIn.value) return tg.showAlert("Select Subject!");
+            audioCtx.resume(); stopAlarm(); 
+            if ('wakeLock' in navigator) navigator.wakeLock.request('screen').then(w => wakeLock = w);
+            activeSub = subIn.value;
+            startStudyTimer();
+        };
+
+        function startStudyTimer() {
+            mode = "study";
+            timeLeft = parseInt(document.getElementById('studyTime').value) * 60;
+            startBtn.style.display = 'none'; stopBtn.style.display = 'block';
+            runTimer();
+        }
+
+        function runTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if (timeLeft <= 0) handleTransition();
+            }, 1000);
+        }
+
+        function handleTransition() {
+            clearInterval(timerInterval);
+            if (mode === "study") {
+                startAlarm(880);
+                document.getElementById('popup-overlay').style.display = 'flex';
+                document.getElementById('mcq-popup').style.display = 'block';
+                document.getElementById('break-popup').style.display = 'none';
+            } else {
+                startAlarm(440);
+                document.getElementById('popup-overlay').style.display = 'flex';
+                document.getElementById('mcq-popup').style.display = 'none';
+                document.getElementById('break-popup').style.display = 'block';
+            }
+        }
+
+        function startBreak() {
+            stopAlarm();
+            const mcqs = parseInt(document.getElementById('cycleMcqs').value) || 0;
+            saveStudyLog(activeSub, mcqs, parseInt(document.getElementById('studyTime').value));
+            document.getElementById('cycleMcqs').value = '';
+            document.getElementById('popup-overlay').style.display = 'none';
+            mode = "break";
+            timeLeft = parseInt(document.getElementById('breakTime').value) * 60;
+            runTimer();
+        }
+
+        function continueNextCycle() {
+            stopAlarm();
+            document.getElementById('popup-overlay').style.display = 'none';
+            startStudyTimer();
+        }
+
+        function stopEntireSession() {
+            stopAlarm();
+            clearInterval(timerInterval);
+            if (wakeLock) wakeLock.release();
+            document.getElementById('popup-overlay').style.display = 'none';
+            display.innerText = "00:00";
+            startBtn.style.display = 'block'; stopBtn.style.display = 'none';
+            mode = "idle";
+            updateUI();
+        }
+
+        stopBtn.onclick = handleTransition;
+
+        function saveStudyLog(s, m, d) {
+            const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d });
+            localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+        }
 
         function updateUI() {
             const ist = new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0];
@@ -149,104 +233,81 @@
 
         function updateConsistency() {
             const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
-            const uniqueDays = new Set(logs.map(l => l.date)).size;
-            document.getElementById('streakText').innerText = `Consistency: ${uniqueDays} Days`;
-            
-            const medals = Math.floor(uniqueDays / 75);
-            const remainingForFire = uniqueDays % 75;
-            const fires = Math.floor(remainingForFire / 25);
-            
-            let icons = "";
-            for(let i=0; i<medals; i++) icons += "🥇";
-            for(let i=0; i<fires; i++) icons += "🔥";
-            document.getElementById('streakIcons').innerText = icons;
+            const unique = new Set(logs.map(l => l.date)).size;
+            document.getElementById('streakText').innerText = `Consistency: ${unique} Days`;
+            const medals = Math.floor(unique / 75), fires = Math.floor((unique % 75) / 25);
+            document.getElementById('streakIcons').innerText = "🥇".repeat(medals) + "🔥".repeat(fires);
         }
 
         function calcSWT() {
-            const t = parseInt(document.getElementById('swtTotal').value) || 0, c = parseInt(document.getElementById('swtCorrect').value) || 0, u = parseInt(document.getElementById('swtUnattempted').value) || 0;
+            const t = parseInt(document.getElementById('swtTotal').value) || 0, c = parseInt(document.getElementById('swtCorrect').value) || 0, u = parseInt(document.getElementById('swtUnat').value) || 0;
             document.getElementById('swtW').innerText = Math.max(0, t - c - u);
             document.getElementById('swtP').innerText = t > 0 ? ((c / t) * 100).toFixed(1) + "%" : "0%";
         }
 
         function calcGT() {
-            const c = parseInt(document.getElementById('gtCorrect').value) || 0, u = parseInt(document.getElementById('gtUnattempted').value) || 0;
+            const c = parseInt(document.getElementById('gtCorrect').value) || 0, u = parseInt(document.getElementById('gtUnat').value) || 0;
             const w = Math.max(0, 200 - c - u);
             const s = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333));
-            document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode === 'NEET' ? 0 : 2);
+            document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode==='NEET'?0:2);
         }
-
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
-        let alarmInterval = null;
-        function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
-        function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
-
-        const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display');
-        startBtn.onclick = () => { if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value; let tL = parseInt(document.getElementById('studyTime').value) * 60;
-            clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block';
-            timerInterval = setInterval(() => { tL--; let m = Math.floor(tL / 60), s = tL % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if (tL <= 0) handleTransition(); }, 1000);
-        };
-        function handleTransition() { clearInterval(timerInterval); startAlarm(880); document.getElementById('popup-overlay').style.display = 'flex'; }
-        stopBtn.onclick = () => handleTransition();
-        function handleMcqResponse(y) { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; let m = y ? (parseInt(prompt("MCQs solved?")) || 0) : 0;
-            const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: activeSub, mcqs: m, duration: parseInt(document.getElementById('studyTime').value) });
-            localStorage.setItem(LOG_KEY, JSON.stringify(logs)); display.innerText = "00:00"; startBtn.style.display = 'block'; stopBtn.style.display = 'none'; releaseWakeLock(); updateUI(); }
 
         function saveSWT() {
-            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), u = parseInt(document.getElementById('swtUnattempted').value), sub = document.getElementById('swtSubject').value;
-            if(!d || isNaN(t) || (c+u) > t) return;
-            const data = JSON.parse(localStorage.getItem(SWT_KEY) || "[]"); data.push({ date: d, total: t, correct: c, unattempted: u, wrong: (t-c-u), subject: sub, percent: ((c/t)*100).toFixed(1) });
+            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), u = parseInt(document.getElementById('swtUnat').value), sub = document.getElementById('swtSubject').value;
+            if(!d || isNaN(t)) return;
+            const data = JSON.parse(localStorage.getItem(SWT_KEY) || "[]");
+            data.push({ date: d, total: t, correct: c, unat: u, wrong: (t-c-u), subject: sub, percent: ((c/t)*100).toFixed(1) });
             data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(SWT_KEY, JSON.stringify(data)); updateUI();
         }
+
         function saveGT() {
-            const d = document.getElementById('gtDate').value, c = parseInt(document.getElementById('gtCorrect').value), u = parseInt(document.getElementById('gtUnattempted').value);
-            if(!d || (c+u) > 200) return;
+            const d = document.getElementById('gtDate').value, c = parseInt(document.getElementById('gtCorrect').value), u = parseInt(document.getElementById('gtUnat').value);
+            if(!d) return;
             const w = 200 - c - u; const score = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333));
             const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? NEET_KEY : INI_KEY) || "[]");
-            data.push({ date: d, score: parseFloat(score.toFixed(2)), correct: c, unattempted: u, wrong: w });
+            data.push({ date: d, score: parseFloat(score.toFixed(2)), correct: c, unat: u, wrong: w });
             data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? NEET_KEY : INI_KEY, JSON.stringify(data)); updateUI();
         }
+
+        function switchGT(m) { currentGTMode = m; document.getElementById('tabNeet').className = m==='NEET'?'gt-tab-btn active':'gt-tab-btn'; document.getElementById('tabInicet').className = m==='INICET'?'gt-tab-btn active':'gt-tab-btn'; calcGT(); renderGT(); }
 
         let hChart, mChart, gChart, sChart;
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
-            const grouped = {}; 
-            logs.forEach(l => { 
-                if (!grouped[l.date]) grouped[l.date] = {h:0, m:0, subjects: new Set(), cycles:0}; 
-                grouped[l.date].h += l.duration/60; 
-                grouped[l.date].m += l.mcqs;
-                grouped[l.date].subjects.add(l.subject);
-                grouped[l.date].cycles += 1;
+            const grouped = {};
+            logs.forEach(l => {
+                if (!grouped[l.date]) grouped[l.date] = {h:0, m:0, subs:new Set(), cycles:0};
+                grouped[l.date].h += l.duration/60; grouped[l.date].m += l.mcqs; grouped[l.date].subs.add(l.subject); grouped[l.date].cycles++;
             });
             const labels = Object.keys(grouped).reverse().slice(-7);
-            const hours = labels.map(l => grouped[l].h); 
-            const mcqs = labels.map(l => grouped[l].m);
+            const hours = labels.map(l => grouped[l].h), mcqs = labels.map(l => grouped[l].m);
             const avgH = hours.length ? (hours.reduce((a,b)=>a+b,0)/hours.length).toFixed(1) : 0;
             const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
 
-            if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Hours', data: hours, borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff', callback:v=>v+'hr'}}}, plugins: { annotation: { annotations: { l1: { type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(243, 156, 18, 0.4)', borderDash:[5,5], label: { display:true, content:'Avg: '+avgH+'h', position:'end', backgroundColor:'transparent', color:'rgba(255,255,255,0.6)', font:{size:10} } }}}}}});
-            if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: mcqs, borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff', stepSize:1, callback:v=>Math.floor(v)===v?v:''}}}, plugins: { annotation: { annotations: { l1: { type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(82, 136, 193, 0.4)', borderDash:[5,5], label: { display:true, content:'Avg: '+avgM, position:'end', backgroundColor:'transparent', color:'rgba(255,255,255,0.6)', font:{size:10} } }}}}}});
+            if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type:'line', data:{labels, datasets:[{label:'Hours', data:hours, borderColor:'#f39c12'}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', callback:v=>v+'h'}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
+            if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type:'line', data:{labels, datasets:[{label:'MCQs', data:mcqs, borderColor:'#5288c1'}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', stepSize:1}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
             
-            let html = "";
-            Object.keys(grouped).reverse().forEach(d => {
-                html += `<tr><td>${d}</td><td>${grouped[d].cycles}</td><td>${Array.from(grouped[d].subjects).join(', ')}</td><td>${grouped[d].m}</td></tr>`;
+            let html = ""; Object.keys(grouped).reverse().forEach(d => {
+                html += `<tr><td>${d}</td><td>${grouped[d].cycles}</td><td>${Array.from(grouped[d].subs).join(', ')}</td><td>${grouped[d].m}</td></tr>`;
             });
             document.getElementById('dailyLogBody').innerHTML = html;
         }
 
         function renderSWT() {
-            const sub = document.getElementById('swtSubject').value; const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]").filter(x => x.subject === sub);
-            if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = ""; return; }
-            sChart = new Chart(document.getElementById('swtChart'), { type: 'line', data: { labels: swts.map(x => x.date), datasets: [{ label: sub + ' (%)', data: swts.map(x => x.percent), borderColor: '#5288c1', backgroundColor: 'rgba(82,136,193,0.1)', fill: true, tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { y:{min:0, max:100, ticks:{color:'#fff'}}, x:{ticks:{color:'#fff'}}}}});
-            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
+            const sub = document.getElementById('swtSubject').value;
+            const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]").filter(x => x.subject === sub);
+            if(sChart) sChart.destroy(); if(swts.length === 0) return;
+            sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:swts.map(x=>x.date), datasets:[{label:sub+'%', data:swts.map(x=>x.percent), borderColor:'#5288c1'}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
+            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
         }
+
         function renderGT() {
             const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? NEET_KEY : INI_KEY) || "[]");
-            if(gChart) gChart.destroy(); if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = ""; return; }
-            gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: data.map(x => x.date), datasets: [{ label: currentGTMode + ' Score', data: data.map(x => x.score), borderColor: '#2ecc71', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff'}}}}});
-            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
+            if(gChart) gChart.destroy(); if(data.length === 0) return;
+            gChart = new Chart(document.getElementById('gtChart'), { type:'line', data:{labels:data.map(x=>x.date), datasets:[{label:currentGTMode, data:data.map(x=>x.score), borderColor:'#2ecc71'}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff'}}}}});
+            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
         }
-        function switchGT(m) { currentGTMode = m; document.getElementById('tabNeet').className = m==='NEET'?'gt-tab-btn active':'gt-tab-btn'; document.getElementById('tabInicet').className = m==='INICET'?'gt-tab-btn active':'gt-tab-btn'; calcGT(); renderGT(); }
+
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
         updateUI();
     </script>
