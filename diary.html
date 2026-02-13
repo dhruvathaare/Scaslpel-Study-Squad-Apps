@@ -32,12 +32,22 @@
         input[type="date"] { color-scheme: dark; }
         #timer-display { font-size: 54px; font-weight: bold; margin: 10px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
-        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
-        .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; }
-        .log-table th { color: var(--accent); padding-bottom: 5px; border-bottom: 1px solid var(--border); }
-        .log-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        
+        /* RESTORED: Table Alignment Styling */
+        .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        .log-table th { color: var(--accent); padding: 8px 4px; border-bottom: 1px solid var(--border); font-weight: bold; }
+        .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        /* Column Width Logic */
+        .col-date { width: 22%; }
+        .col-hrs { width: 15%; }
+        .col-cyc { width: 12%; }
+        .col-mcq { width: 15%; }
+        .col-sub { width: 36%; }
+
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 80%; max-width: 300px; text-align: center; }
+        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
     </style>
 </head>
 <body>
@@ -99,8 +109,19 @@
                 <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
                 <div class="chart-container"><canvas id="hoursChart"></canvas></div>
                 <div class="chart-container"><canvas id="mcqChart"></canvas></div>
-                <h4 style="text-align:left; color:var(--accent); font-size:12px; margin-top:15px;">Study Log</h4>
-                <table class="log-table"><thead><tr><th>Date</th><th>Hrs</th><th>Cyc</th><th>MCQs</th><th>Subjects</th></tr></thead><tbody id="dailyLogBody"></tbody></table>
+                <h4 style="text-align:left; color:var(--accent); font-size:12px; margin-top:15px;">Numerical Study Log</h4>
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th class="col-date">Date</th>
+                            <th class="col-hrs">Hrs</th>
+                            <th class="col-cyc">Cyc</th>
+                            <th class="col-mcq">MCQ</th>
+                            <th class="col-sub">Subjects</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailyLogBody"></tbody>
+                </table>
             </div>
         </div>
 
@@ -113,7 +134,7 @@
                 <input type="date" id="swtDate">
                 <div style="display:flex; gap:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
-                <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save Result</button>
+                <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save SWT Result</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
                 <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.6;"></div>
             </div>
@@ -122,12 +143,12 @@
         <div id="tab-gt" class="tab-content">
             <div class="card">
                 <h3>GT Intelligence</h3>
-                <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET</div></div>
+                <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG (800)</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div></div>
                 <span class="setting-label">Select Date</span>
                 <input type="date" id="gtDate">
                 <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unattempted" oninput="calcGT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
-                <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Save Result</button>
+                <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Save GT Result</button>
                 <div class="chart-container"><canvas id="gtChart"></canvas></div>
                 <div id="gtAnalysis" style="font-size:11px; text-align:left; line-height:1.6;"></div>
             </div>
@@ -163,10 +184,14 @@
         document.getElementById('startBtn').onclick = () => {
             if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!");
             audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value;
+            startStudyTimer();
+        };
+
+        function startStudyTimer() {
             mode = "study"; isPaused = false; timeLeft = parseInt(document.getElementById('studyTime').value) * 60;
             document.getElementById('startBtn').style.display = 'none'; document.getElementById('timer-controls').style.display = 'block';
             runTimer();
-        };
+        }
 
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         function runTimer() {
@@ -200,7 +225,7 @@
             runTimer();
         }
 
-        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; runTimer(); mode = "study"; timeLeft = parseInt(document.getElementById('studyTime').value) * 60; }
+        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
         function stopEntireSession() {
             stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock = null; }
             document.getElementById('popup-overlay').style.display = 'none'; document.getElementById('timer-display').innerText = "00:00";
@@ -254,13 +279,17 @@
             const d = document.getElementById('gtDate').value, c = parseInt(document.getElementById('gtCorrect').value), u = parseInt(document.getElementById('gtUnat').value);
             if(!d) return;
             const w = Math.max(0, 200 - c - u); const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
-            const key = currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI;
-            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI) || "[]");
             data.push({ date: d, score, correct: c, unat: u, wrong: w });
-            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(key, JSON.stringify(data)); updateUI();
+            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI, JSON.stringify(data)); updateUI();
         }
 
-        function switchGT(m) { currentGTMode = m; document.getElementById('tabNeet').className = m==='NEET'?'gt-tab-btn active':'gt-tab-btn'; document.getElementById('tabInicet').className = m==='INICET'?'gt-tab-btn active':'gt-tab-btn'; calcGT(); renderGT(); }
+        function switchGT(m) { 
+            currentGTMode = m; 
+            document.getElementById('tabNeet').className = m==='NEET'?'gt-tab-btn active':'gt-tab-btn'; 
+            document.getElementById('tabInicet').className = m==='INICET'?'gt-tab-btn active':'gt-tab-btn'; 
+            calcGT(); renderGT(); 
+        }
 
         let hChart, mChart, gChart, sChart;
         function renderData() {
@@ -276,7 +305,9 @@
             const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
             if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type:'line', data:{labels, datasets:[{label:'Hours', data:hours, borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', callback:v=>v+'h'}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
             if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type:'line', data:{labels, datasets:[{label:'MCQs', data:mcqs, borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', stepSize:1}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
-            let html = ""; Object.keys(grouped).reverse().forEach(d => { html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cycles}</td><td>${grouped[d].m}</td><td style="max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${Array.from(grouped[d].subs).join(', ')}</td></tr>`; });
+            let html = ""; Object.keys(grouped).reverse().forEach(d => { 
+                html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cycles}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`; 
+            });
             document.getElementById('dailyLogBody').innerHTML = html;
         }
 
