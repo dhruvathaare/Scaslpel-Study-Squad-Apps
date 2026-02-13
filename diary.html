@@ -14,6 +14,7 @@
         body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: white; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; }
         @media (orientation: landscape) { body { padding-top: 40px; } .container { max-width: 500px; } }
+        
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .logo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid #5288c1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
@@ -21,14 +22,19 @@
         .streak-text { font-size: 16px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 12px; text-transform: uppercase; margin-top: 5px; }
         .sub-title { font-size: 10px; color: #888; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
+        
         .countdown-box { width: 100%; background: #17212b; padding: 12px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 20px; box-sizing: border-box; }
         .count-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #2b5278; font-size: 13px; }
         .count-item:last-child { border-bottom: none; }
         .days-left { font-weight: bold; color: #f39c12; }
+        
         .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 20px; }
         .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; text-align: left; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 5px; }
-        input[type="date"] { color-scheme: dark; }
+        
+        /* Styling the date input for visibility */
+        input[type="date"] { color-scheme: dark; min-height: 45px; }
+        
         #timer-display { font-size: 48px; font-weight: bold; margin: 10px 0; color: #fff; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
         .chart-container { width: 100%; height: 180px; margin: 15px 0; position: relative; }
@@ -77,8 +83,9 @@
 
         <div class="card">
             <h3 style="margin:0; color:#5288c1;">Subject-Wise Tests</h3>
-            <span class="setting-label">Subject & Date</span>
+            <span class="setting-label">Select Subject</span>
             <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
+            <span class="setting-label">Select Date</span>
             <input type="date" id="swtDate">
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"></div>
             <input type="number" id="swtUnattempted" placeholder="Unattempted" oninput="calcSWT()" style="margin-top:5px;">
@@ -91,13 +98,15 @@
         <div class="card">
             <h3 style="margin-bottom:15px; color:#2ecc71;">GT Intelligence</h3>
             <div style="display:flex; margin-bottom:15px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET (800)</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div></div>
-            <input type="text" id="gtPlatform" placeholder="Platform">
-            <input type="date" id="gtDate" style="margin-top:5px;">
+            <span class="setting-label">Platform</span>
+            <input type="text" id="gtPlatform" placeholder="e.g. Marrow">
+            <span class="setting-label">Select Date</span>
+            <input type="date" id="gtDate">
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnattempted" placeholder="Unattempted" oninput="calcGT()"></div>
             <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
             <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Record GT</button>
             <div class="chart-container"><canvas id="gtChart"></canvas></div>
-            <div id="gtAnalysis" style="font-size:11px; text-align:left; color:#f39c12; line-height:1.5;"></div>
+            <div id="gtAnalysis" style="font-size:11px; text-align:left; color:#f39c12; margin-top:10px; line-height:1.5;"></div>
         </div>
 
         <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; width:auto; margin-bottom:50px;">Clear History</button>
@@ -175,19 +184,19 @@
             const avgH = hours.length ? (hours.reduce((a,b)=>a+b,0)/hours.length).toFixed(1) : 0;
             const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
 
-            if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Hours', data: hours, borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff', callback:v=>v+'hr'}}}, plugins: { annotation: { annotations: { line1: { type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(243, 156, 18, 0.4)', borderDash:[5,5], label: { display:true, content:'Avg: '+avgH+'h', position:'end', backgroundColor:'transparent', color:'rgba(255,255,255,0.6)', font:{size:10} } }}}}}});
-            if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: mcqs, borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff', stepSize:1, callback:v=>Math.floor(v)===v?v:''}}}, plugins: { annotation: { annotations: { line1: { type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(82, 136, 193, 0.4)', borderDash:[5,5], label: { display:true, content:'Avg: '+avgM, position:'end', backgroundColor:'transparent', color:'rgba(255,255,255,0.6)', font:{size:10} } }}}}}});
+            if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Study Hours', data: hours, borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff', callback:v=>v+'hr'}}}, plugins: { annotation: { annotations: { line1: { type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(243, 156, 18, 0.4)', borderDash:[5,5], label: { display:true, content:'Avg: '+avgH+'h', position:'end', backgroundColor:'transparent', color:'rgba(255,255,255,0.6)', font:{size:10} } }}}}}});
+            if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs Attempted', data: mcqs, borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff', stepSize:1, callback:v=>Math.floor(v)===v?v:''}}}, plugins: { annotation: { annotations: { line1: { type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(82, 136, 193, 0.4)', borderDash:[5,5], label: { display:true, content:'Avg: '+avgM, position:'end', backgroundColor:'transparent', color:'rgba(255,255,255,0.6)', font:{size:10} } }}}}}});
         }
 
         function renderSWT() {
             const sub = document.getElementById('swtSubject').value; const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]").filter(x => x.subject === sub);
-            if(sChart) sChart.destroy(); if(swts.length === 0) return;
+            if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = ""; return; }
             sChart = new Chart(document.getElementById('swtChart'), { type: 'line', data: { labels: swts.map(x => x.date), datasets: [{ label: sub + ' (%)', data: swts.map(x => x.percent), borderColor: '#5288c1', backgroundColor: 'rgba(82,136,193,0.1)', fill: true, tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { y:{min:0, max:100, ticks:{color:'#fff'}}, x:{ticks:{color:'#fff'}}}}});
             document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
         function renderGT() {
             const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? NEET_KEY : INI_KEY) || "[]");
-            if(gChart) gChart.destroy(); if(data.length === 0) return;
+            if(gChart) gChart.destroy(); if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = ""; return; }
             gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: data.map(x => x.date), datasets: [{ label: currentGTMode + ' Score', data: data.map(x => x.score), borderColor: '#2ecc71', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff'}}}}});
             document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date} [${x.platform}]: <b>Score:${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
