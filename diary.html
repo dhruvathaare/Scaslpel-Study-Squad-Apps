@@ -10,8 +10,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     <style>
         :root { --bg: #0e1621; --card: #17212b; --text: #ffffff; --border: #2b5278; --accent: #5288c1; --input-bg: #0e1621; }
-        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
-        body { display: flex; flex-direction: column; align-items: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+        
+        /* RESPONSIVE SCROLL WRAPPER */
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            padding: 15px; 
+            box-sizing: border-box; 
+            overflow-y: auto; /* Ensures scroll in landscape */
+            min-height: 100vh;
+        }
+        
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
@@ -46,6 +58,7 @@
 
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
         .chart-container { width: 100%; height: 160px; margin: 10px 0; }
+        
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
     </style>
@@ -77,6 +90,7 @@
         <div class="streak-section">
             <div id="streakText" class="streak-text">Consistency: 0 Days</div>
             <div id="streakIcons" style="font-size:24px; margin:5px 0;"></div>
+            <div style="font-size:9px; color:#888;">🔥 per 25 days | 🥇 per 75 days</div>
         </div>
         <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
 
@@ -182,7 +196,7 @@
 
         function saveStudyLog(s, m, d) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
         function updateUI() { const ist = new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0]; renderData(); renderSWT(); renderGT(); updateConsistency(); }
-        function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const unique = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${unique} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(unique/75)) + "🔥".repeat(Math.floor((unique % 75) / 25)); }
+        function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const unique = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${unique} Days`; const medals = Math.floor(unique / 75), fires = Math.floor((unique % 75) / 25); document.getElementById('streakIcons').innerText = "🥇".repeat(medals) + "🔥".repeat(fires); }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w = Math.max(0, 200 - c - u); const s = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333)); document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode==='NEET'?0:2); }
 
