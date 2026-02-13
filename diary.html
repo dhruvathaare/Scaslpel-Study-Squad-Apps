@@ -35,11 +35,11 @@
         input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; }
         input[type="date"] { color-scheme: dark; }
 
-        #timer-display { font-size: 58px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
-        .btn { background: #2481cc; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
+        #timer-display { font-size: 52px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
+        .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
         
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
-        .log-table th, .log-table td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .log-table th, .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
 
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
@@ -88,8 +88,22 @@
             <div class="card">
                 <span class="setting-label">Subject</span>
                 <select id="subject"><option value="" disabled selected>Select Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
-                <div style="display:flex; gap:10px; margin-top:8px;"><div style="flex:1;"><span class="setting-label">Hrs</span><input type="number" id="studyHr" value="2"></div><div style="flex:1;"><span class="setting-label">Mins</span><input type="number" id="studyMin" value="0"></div><div style="flex:1;"><span class="setting-label">Break</span><input type="number" id="breakTime" value="15"></div></div>
-                <div id="timer-display">00:00</div>
+                
+                <div style="display:flex; gap:10px; margin-top:8px; text-align:left;">
+                    <div style="flex:2;">
+                        <span class="setting-label">Study Duration</span>
+                        <div style="display:flex; gap:5px;">
+                            <input type="number" id="studyHr" placeholder="Hr" value="2">
+                            <input type="number" id="studyMin" placeholder="Min" value="0">
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <span class="setting-label">Break Min</span>
+                        <input type="number" id="breakTime" placeholder="Min" value="15">
+                    </div>
+                </div>
+
+                <div id="timer-display">00:00:00</div>
                 <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
                 <div id="timer-controls" style="display:none; width:100%;">
                     <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
@@ -127,8 +141,8 @@
                 <div style="display:flex; gap:5px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="gtDate"></div><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="gtCorrect" oninput="calcGT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="gtUnat" oninput="calcGT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
                 <button class="btn" onclick="saveGT()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result</button>
-                <div id="neet-area"><h4 style="color:#f39c12; margin-top:15px; font-size:13px;">NEET Progress (Max 800)</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
-                <div id="inicet-area" style="display:none;"><h4 style="color:#2ecc71; margin-top:15px; font-size:13px;">INICET Progress (Max 200)</h4><div class="chart-container"><canvas id="gtInicetChart"></canvas></div><div id="gtInicetAnalysis" style="font-size:11px; text-align:left;"></div></div>
+                <div id="neet-area"><h4 style="color:#f39c12; margin-top:15px; font-size:13px;">NEET PG Progress</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
+                <div id="inicet-area" style="display:none;"><h4 style="color:#2ecc71; margin-top:15px; font-size:13px;">INICET Progress</h4><div class="chart-container"><canvas id="gtInicetChart"></canvas></div><div id="gtInicetAnalysis" style="font-size:11px; text-align:left;"></div></div>
             </div>
         </div>
     </div>
@@ -155,13 +169,47 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value; startStudyTimer(); };
-        function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
+        
+        function startStudyTimer() { 
+            mode = "study"; isPaused = false; 
+            const h = parseInt(document.getElementById('studyHr').value)||0;
+            const m = parseInt(document.getElementById('studyMin').value)||0;
+            timeLeft = (h * 3600) + (m * 60);
+            if(timeLeft <= 0) return tg.showAlert("Set valid time!");
+            document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); 
+        }
+
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
-        function runTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused) { timeLeft--; let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; document.getElementById('timer-display').innerText = `${h>0?h+':':''}${m<10?'0':''}${m}:${s<10?'0':''}${s}`; if (timeLeft<=0) handleTransition(); } }, 1000); }
+        
+        function runTimer() { 
+            clearInterval(timerInterval); 
+            timerInterval = setInterval(() => { 
+                if (!isPaused) { 
+                    timeLeft--; 
+                    let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; 
+                    document.getElementById('timer-display').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; 
+                    if (timeLeft<=0) handleTransition(); 
+                } 
+            }, 1000); 
+        }
+
         function handleTransition() { clearInterval(timerInterval); startAlarm(mode==="study"?880:440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; }
-        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value)); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
+        
+        function startBreak() { 
+            stopAlarm(); 
+            const mcqCount = parseInt(document.getElementById('cycleMcqs').value)||0; 
+            const h = parseInt(document.getElementById('studyHr').value)||0;
+            const m = parseInt(document.getElementById('studyMin').value)||0;
+            saveStudyLog(activeSub, mcqCount, (h*60)+m); 
+            document.getElementById('cycleMcqs').value=''; 
+            document.getElementById('popup-overlay').style.display='none'; 
+            mode="break"; isPaused=false; 
+            timeLeft=parseInt(document.getElementById('breakTime').value)*60; 
+            runTimer(); 
+        }
+
         function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
-        function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
+        function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
         function saveStudyLog(s, m, d) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
         function updateUI() { const ist = new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0]; renderData(); renderSWT(); renderGT(); updateConsistency(); }
@@ -220,12 +268,12 @@
             const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             if(gNeetChart) gNeetChart.destroy();
             if(nd.length > 0) {
-                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'Score', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
+                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
                 document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>Score:${x.score}</b> (Correct:${x.correct} Wrong:${x.wrong} Unattempted:${x.unat})`).reverse().join('<br>');
             }
             if(gIniChart) gIniChart.destroy();
             if(id.length > 0) {
-                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'Score', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
                 document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>Score:${x.score}</b> (Correct:${x.correct} Wrong:${x.wrong} Unattempted:${x.unat})`).reverse().join('<br>');
             }
         }
