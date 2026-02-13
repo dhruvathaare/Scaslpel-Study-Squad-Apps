@@ -54,6 +54,10 @@
         .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 20px; }
         .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; text-align: left; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 5px; }
+        
+        /* Ensure date input looks clickable and has a label feel */
+        input[type="date"] { position: relative; color-scheme: dark; }
+
         #timer-display { font-size: 48px; font-weight: bold; margin: 10px 0; color: #fff; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
         .chart-container { width: 100%; height: 160px; margin: 15px 0; position: relative; }
@@ -109,8 +113,10 @@
             <h3 style="margin:0; color:#5288c1;">Subject-Wise Tests</h3>
             <span class="setting-label">Test Subject</span>
             <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
-            <div style="display:flex; gap:5px;"><input type="date" id="swtDate"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"></div>
-            <div style="display:flex; gap:5px;"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnattempted" placeholder="Unattempted" oninput="calcSWT()"></div>
+            <span class="setting-label">Date of Attempt</span>
+            <input type="date" id="swtDate">
+            <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"></div>
+            <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnattempted" placeholder="Unattempted" oninput="calcSWT()"></div>
             <div class="calc-preview">
                 <span>Wrong: <b id="swtW">0</b></span>
                 <span>Accuracy: <b id="swtP">0%</b></span>
@@ -126,8 +132,10 @@
                 <div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG (800)</div>
                 <div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div>
             </div>
-            <input type="text" id="gtPlatform" placeholder="Platform Name (e.g. Marrow)">
-            <input type="date" id="gtDate" style="margin-top:5px;">
+            <span class="setting-label">Platform</span>
+            <input type="text" id="gtPlatform" placeholder="e.g. Marrow / Prepladder">
+            <span class="setting-label">Date of Attempt</span>
+            <input type="date" id="gtDate">
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnattempted" placeholder="Unattempted" oninput="calcGT()"></div>
             <div class="calc-preview">
                 <span>Wrong: <b id="gtW">0</b></span>
@@ -149,7 +157,7 @@
 
         function getISTToday() {
             const now = new Date();
-            const istOffset = 330 * 60 * 1000;
+            const istOffset = 330 * 60 * 1000; // IST is GMT+5:30
             return new Date(now.getTime() + istOffset).toISOString().split('T')[0];
         }
 
@@ -173,7 +181,7 @@
             const c = parseInt(document.getElementById('gtCorrect').value) || 0;
             const u = parseInt(document.getElementById('gtUnattempted').value) || 0;
             const w = Math.max(0, 200 - c - u);
-            const s = (currentGTMode === 'NEET') ? (c * 4 - w * 1) : (c * 1 - w * 0.33);
+            const s = (currentGTMode === 'NEET') ? (c * 4 - w * 1) : (c * 1 - (w * 0.333));
             document.getElementById('gtW').innerText = w;
             document.getElementById('gtS').innerText = s.toFixed(currentGTMode === 'NEET' ? 0 : 2);
         }
@@ -232,10 +240,10 @@
             const date = document.getElementById('gtDate').value, cor = parseInt(document.getElementById('gtCorrect').value), unat = parseInt(document.getElementById('gtUnattempted').value), platform = document.getElementById('gtPlatform').value;
             if(!date || (cor+unat) > 200) return;
             const w = 200 - cor - unat;
-            const s = (currentGTMode === 'NEET') ? (cor * 4 - w) : (cor - w * 0.33);
+            const s = (currentGTMode === 'NEET') ? (cor * 4 - w) : (cor - (w * 0.333));
             const key = currentGTMode === 'NEET' ? NEET_GT_KEY : INI_GT_KEY;
             const gts = JSON.parse(localStorage.getItem(key) || "[]");
-            gts.push({ date, score: parseFloat(s.toFixed(2)), correct: cor, unattempted: unat, wrong: w, platform: platform || "Unknown" });
+            gts.push({ date, score: parseFloat(s.toFixed(2)), correct: cor, unattempted: unat, wrong: w, platform: platform || "Manual" });
             gts.sort((a,b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem(key, JSON.stringify(gts)); updateUI();
         }
@@ -275,3 +283,4 @@
     </script>
 </body>
 </html>
+
