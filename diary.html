@@ -32,6 +32,8 @@
 
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
+        .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
+        
         input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; }
         input[type="date"] { color-scheme: dark; }
 
@@ -89,17 +91,18 @@
                 <span class="setting-label">Subject</span>
                 <select id="subject"><option value="" disabled selected>Select Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
                 
-                <div style="display:flex; gap:10px; margin-top:8px; text-align:left;">
+                <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
                     <div style="flex:2;">
-                        <span class="setting-label">Study Duration</span>
+                        <span class="setting-label" style="text-align:center;">Study Duration</span>
                         <div style="display:flex; gap:5px;">
-                            <input type="number" id="studyHr" placeholder="Hr" value="2">
-                            <input type="number" id="studyMin" placeholder="Min" value="0">
+                            <div style="flex:1;"><input type="number" id="studyHr" value="2"><div class="sub-label">Hours</div></div>
+                            <div style="flex:1;"><input type="number" id="studyMin" value="0"><div class="sub-label">Minutes</div></div>
                         </div>
                     </div>
                     <div style="flex:1;">
-                        <span class="setting-label">Break Min</span>
-                        <input type="number" id="breakTime" placeholder="Min" value="15">
+                        <span class="setting-label" style="text-align:center;">Break</span>
+                        <input type="number" id="breakTime" value="15">
+                        <div class="sub-label">Minutes</div>
                     </div>
                 </div>
 
@@ -107,7 +110,7 @@
                 <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
                 <div id="timer-controls" style="display:none; width:100%;">
                     <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
-                    <button class="btn" style="background:#ef5350; margin-top:8px; width:100%;" onclick="stopEntireSession()">End Session</button>
+                    <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
                 </div>
             </div>
             <div class="card">
@@ -169,45 +172,11 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value; startStudyTimer(); };
-        
-        function startStudyTimer() { 
-            mode = "study"; isPaused = false; 
-            const h = parseInt(document.getElementById('studyHr').value)||0;
-            const m = parseInt(document.getElementById('studyMin').value)||0;
-            timeLeft = (h * 3600) + (m * 60);
-            if(timeLeft <= 0) return tg.showAlert("Set valid time!");
-            document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); 
-        }
-
+        function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
-        
-        function runTimer() { 
-            clearInterval(timerInterval); 
-            timerInterval = setInterval(() => { 
-                if (!isPaused) { 
-                    timeLeft--; 
-                    let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; 
-                    document.getElementById('timer-display').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; 
-                    if (timeLeft<=0) handleTransition(); 
-                } 
-            }, 1000); 
-        }
-
+        function runTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused) { timeLeft--; let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; document.getElementById('timer-display').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; if (timeLeft<=0) handleTransition(); } }, 1000); }
         function handleTransition() { clearInterval(timerInterval); startAlarm(mode==="study"?880:440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; }
-        
-        function startBreak() { 
-            stopAlarm(); 
-            const mcqCount = parseInt(document.getElementById('cycleMcqs').value)||0; 
-            const h = parseInt(document.getElementById('studyHr').value)||0;
-            const m = parseInt(document.getElementById('studyMin').value)||0;
-            saveStudyLog(activeSub, mcqCount, (h*60)+m); 
-            document.getElementById('cycleMcqs').value=''; 
-            document.getElementById('popup-overlay').style.display='none'; 
-            mode="break"; isPaused=false; 
-            timeLeft=parseInt(document.getElementById('breakTime').value)*60; 
-            runTimer(); 
-        }
-
+        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value)); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
         function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
         function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
