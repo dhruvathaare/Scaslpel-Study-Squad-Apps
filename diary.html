@@ -32,7 +32,6 @@
         input[type="date"] { color-scheme: dark; }
         #timer-display { font-size: 54px; font-weight: bold; margin: 10px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
-        .btn-row { display: flex; gap: 8px; width: 100%; margin-top: 10px; }
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; }
         .log-table th { color: var(--accent); padding-bottom: 5px; border-bottom: 1px solid var(--border); }
@@ -59,7 +58,7 @@
 
     <div class="container">
         <div class="header-ui">
-            <div class="user-badge" id="uBadge">👤 <span id="uName">@Guest</span> (<span id="uID">0000</span>)</div>
+            <div class="user-badge">👤 <span id="uName">@Guest</span> (<span id="uID">0000</span>)</div>
         </div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
@@ -92,7 +91,7 @@
                 <div id="timer-display">00:00</div>
                 <button id="startBtn" class="btn">Start Session</button>
                 <div id="timer-controls" style="display:none;">
-                    <div class="btn-row"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button id="skipBtn" class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
+                    <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
                     <button class="btn" style="background:#ef5350;" onclick="stopEntireSession()">End Session</button>
                 </div>
             </div>
@@ -100,6 +99,7 @@
                 <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
                 <div class="chart-container"><canvas id="hoursChart"></canvas></div>
                 <div class="chart-container"><canvas id="mcqChart"></canvas></div>
+                <h4 style="text-align:left; color:var(--accent); font-size:12px; margin-top:15px;">Study Log</h4>
                 <table class="log-table"><thead><tr><th>Date</th><th>Hrs</th><th>Cyc</th><th>MCQs</th><th>Subjects</th></tr></thead><tbody id="dailyLogBody"></tbody></table>
             </div>
         </div>
@@ -107,13 +107,15 @@
         <div id="tab-swt" class="tab-content">
             <div class="card">
                 <h3>SWT Analysis</h3>
-                <span class="setting-label">Date Tag</span>
+                <span class="setting-label">Select Subject</span>
+                <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
+                <span class="setting-label">Select Date</span>
                 <input type="date" id="swtDate">
-                <div style="display:flex; gap:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"></div>
+                <div style="display:flex; gap:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnat" placeholder="Unat" oninput="calcSWT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save Result</button>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
-                <div id="swtAnalysis" style="font-size:11px; text-align:left;"></div>
+                <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.6;"></div>
             </div>
         </div>
 
@@ -121,24 +123,22 @@
             <div class="card">
                 <h3>GT Intelligence</h3>
                 <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" onclick="switchGT('NEET')">NEET PG</div><div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET</div></div>
-                <span class="setting-label">Date Tag</span>
+                <span class="setting-label">Select Date</span>
                 <input type="date" id="gtDate">
-                <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unat" oninput="calcGT()"></div>
+                <div style="display:flex; gap:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnat" placeholder="Unattempted" oninput="calcGT()"></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
                 <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Save Result</button>
                 <div class="chart-container"><canvas id="gtChart"></canvas></div>
-                <div id="gtAnalysis" style="font-size:11px; text-align:left;"></div>
+                <div id="gtAnalysis" style="font-size:11px; text-align:left; line-height:1.6;"></div>
             </div>
         </div>
 
-        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; width:auto; margin-bottom:50px;">Clear Data</button>
+        <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; width:auto; margin-bottom:50px;">Clear Data History</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp; tg.ready();
         const user = tg.initDataUnsafe?.user || { id: "offline", username: "Guest", first_name: "Guest" };
-        
-        // IDENTIFIER-BASED STORAGE KEYS
         const prefix = `SSS_${user.id}_`;
         const KEYS = { LOGS: prefix + 'logs', NEET: prefix + 'neet', INI: prefix + 'ini', SWT: prefix + 'swt' };
 
@@ -200,7 +200,7 @@
             runTimer();
         }
 
-        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; document.getElementById('startBtn').click(); }
+        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; runTimer(); mode = "study"; timeLeft = parseInt(document.getElementById('studyTime').value) * 60; }
         function stopEntireSession() {
             stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock = null; }
             document.getElementById('popup-overlay').style.display = 'none'; document.getElementById('timer-display').innerText = "00:00";
@@ -243,20 +243,21 @@
         }
 
         function saveSWT() {
-            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), sub = document.getElementById('swtSubject').value;
+            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), u = parseInt(document.getElementById('swtUnat').value), sub = document.getElementById('swtSubject').value;
             if(!d || isNaN(t)) return;
             const data = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
-            data.push({ date: d, total: t, correct: c, percent: ((c/t)*100).toFixed(1), subject: sub });
+            data.push({ date: d, total: t, correct: c, unat: u, wrong: Math.max(0, t-c-u), percent: ((c/t)*100).toFixed(1), subject: sub });
             data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI();
         }
 
         function saveGT() {
             const d = document.getElementById('gtDate').value, c = parseInt(document.getElementById('gtCorrect').value), u = parseInt(document.getElementById('gtUnat').value);
             if(!d) return;
-            const w = 200 - c - u; const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
-            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI) || "[]");
-            data.push({ date: d, score: score, correct: c, unat: u, wrong: w });
-            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI, JSON.stringify(data)); updateUI();
+            const w = Math.max(0, 200 - c - u); const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
+            const key = currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI;
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            data.push({ date: d, score, correct: c, unat: u, wrong: w });
+            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(key, JSON.stringify(data)); updateUI();
         }
 
         function switchGT(m) { currentGTMode = m; document.getElementById('tabNeet').className = m==='NEET'?'gt-tab-btn active':'gt-tab-btn'; document.getElementById('tabInicet').className = m==='INICET'?'gt-tab-btn active':'gt-tab-btn'; calcGT(); renderGT(); }
@@ -275,7 +276,7 @@
             const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
             if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type:'line', data:{labels, datasets:[{label:'Hours', data:hours, borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', callback:v=>v+'h'}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
             if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type:'line', data:{labels, datasets:[{label:'MCQs', data:mcqs, borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', stepSize:1}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
-            let html = ""; Object.keys(grouped).reverse().forEach(d => { html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cycles}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`; });
+            let html = ""; Object.keys(grouped).reverse().forEach(d => { html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cycles}</td><td>${grouped[d].m}</td><td style="max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${Array.from(grouped[d].subs).join(', ')}</td></tr>`; });
             document.getElementById('dailyLogBody').innerHTML = html;
         }
 
@@ -283,14 +284,15 @@
             const sub = document.getElementById('swtSubject').value; const swts = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]").filter(x => x.subject === sub);
             if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = ""; return; }
             sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:swts.map(x=>x.date), datasets:[{label:sub+'%', data:swts.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
-            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b>`).reverse().join('<br>');
+            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
         }
 
         function renderGT() {
-            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI) || "[]");
+            const key = currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI;
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
             if(gChart) gChart.destroy(); if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = ""; return; }
             gChart = new Chart(document.getElementById('gtChart'), { type:'line', data:{labels:data.map(x=>x.date), datasets:[{label:currentGTMode, data:data.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff'}}}}});
-            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>${x.score}</b>`).reverse().join('<br>');
+            document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date}: <b>${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unat})`).reverse().join('<br>');
         }
 
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
