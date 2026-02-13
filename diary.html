@@ -8,68 +8,70 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* CSS Variable System - Prevents UI logic from breaking */
-        :root {
-            --bg: #0e1621;
-            --card: #17212b;
-            --text: #ffffff;
-            --border: #2b5278;
-            --accent: #5288c1;
-            --input-bg: #0e1621;
-        }
-        .light-mode {
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #1c1e21;
-            --border: #ccd0d5;
-            --accent: #2481cc;
-            --input-bg: #f5f7f9;
+        /* Core Centering Logic */
+        html, body { height: 100%; margin: 0; padding: 0; background: #0e1621; overflow-x: hidden; }
+        
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); overflow-x: hidden; transition: background 0.3s ease; }
-        body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; box-sizing: border-box; }
-        .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; }
+        .container { 
+            width: 100%; 
+            max-width: 420px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+            margin: 0 auto;
+        }
 
-        @media (orientation: landscape) { body { padding-top: 40px; } .container { max-width: 500px; } }
+        @media (orientation: landscape) {
+            body { padding-top: 40px; }
+            .container { max-width: 500px; }
+        }
 
-        /* Header UI with Toggle Left */
-        .header-ui { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .theme-switch { font-size: 16px; cursor: pointer; background: var(--card); border: 1px solid var(--border); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: var(--accent); font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
-        .logo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
-        h1 { color: var(--accent); font-size: 24px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
+        .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid #5288c1; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #5288c1; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .logo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid #5288c1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(82,136,193,0.3); }
+        h1 { color: #5288c1; font-size: 24px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
+        .streak-section { margin-bottom: 20px; }
         .streak-text { font-size: 16px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 12px; text-transform: uppercase; margin-top: 5px; }
+        .sub-title { font-size: 10px; color: #888; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
         
-        .countdown-box { width: 100%; background: var(--card); padding: 12px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; box-sizing: border-box; }
-        .count-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .countdown-box { width: 100%; background: #17212b; padding: 12px; border-radius: 15px; border: 1px solid #2b5278; margin-bottom: 20px; box-sizing: border-box; }
+        .count-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #2b5278; font-size: 13px; }
         .count-item:last-child { border-bottom: none; }
         .days-left { font-weight: bold; color: #f39c12; }
         
-        .card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 20px; }
+        .card { background: #17212b; padding: 20px; border-radius: 20px; border: 1px solid #2b5278; width: 100%; box-sizing: border-box; margin-bottom: 20px; }
         .setting-label { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: bold; text-align: left; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 5px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #2b5278; background: #0e1621; color: white; text-align: center; font-size: 14px; box-sizing: border-box; margin-top: 5px; }
         
         input[type="date"] { color-scheme: dark; }
-        .light-mode input[type="date"] { color-scheme: light; }
 
-        #timer-display { font-size: 48px; font-weight: bold; margin: 10px 0; color: var(--text); }
+        #timer-display { font-size: 48px; font-weight: bold; margin: 10px 0; color: #fff; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; margin-top: 10px; }
         .chart-container { width: 100%; height: 160px; margin: 15px 0; position: relative; }
-        .subject-tag { display: inline-block; background: var(--border); padding: 4px 8px; border-radius: 5px; font-size: 10px; margin: 2px; color: white; }
-        .gt-tab-btn { flex: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); font-weight: bold; cursor: pointer; font-size: 12px; }
-        .gt-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; }
+        .subject-tag { display: inline-block; background: #2b5278; padding: 4px 8px; border-radius: 5px; font-size: 10px; margin: 2px; }
+        .gt-tab-btn { flex: 1; padding: 10px; background: #0e1621; border: 1px solid #2b5278; color: #888; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .gt-tab-btn.active { background: #2b5278; color: white; border-color: #5288c1; }
+        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px dashed #5288c1; display: flex; justify-content: space-around; }
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; }
     </style>
 </head>
 <body>
-    <div id="popup-overlay"><div style="background:var(--card); padding:25px; border-radius:20px; border:1px solid var(--accent); width:80%; max-width:300px; text-align:center;"><h3>Session Complete!</h3><p>Log MCQs?</p><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:12px; background:#2ecc71; color:white; border:none; border-radius:10px;" onclick="handleMcqResponse(true)">YES</button><button style="flex:1; padding:12px; background:#ef5350; color:white; border:none; border-radius:10px;" onclick="handleMcqResponse(false)">NO</button></div></div></div>
+    <div id="popup-overlay"><div style="background:#17212b; padding:25px; border-radius:20px; border:1px solid #5288c1; width:80%; max-width:300px; text-align:center;"><h3>Session Complete!</h3><p>Log MCQs?</p><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:12px; background:#2ecc71; color:white; border:none; border-radius:10px;" onclick="handleMcqResponse(true)">YES</button><button style="flex:1; padding:12px; background:#ef5350; color:white; border:none; border-radius:10px;" onclick="handleMcqResponse(false)">NO</button></div></div></div>
 
     <div class="container">
         <div class="header-ui">
-            <div class="theme-switch" id="themeBtn" onclick="toggleTheme()">🌙</div>
             <div class="user-badge" id="uName">👤 @User</div>
         </div>
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
@@ -94,23 +96,31 @@
             <div id="timer-display">00:00</div>
             <button id="startBtn" class="btn">Start Session</button>
             <button id="stopBtn" class="btn" style="background:#ef5350; display:none;">Stop & Record</button>
-            <div id="subjectTotals" style="margin-top:15px; text-align:left;"></div>
-            <div class="chart-container"><canvas id="hoursChart"></canvas></div>
-            <div class="chart-container"><canvas id="mcqChart"></canvas></div>
         </div>
 
         <div class="card">
-            <h3 style="margin:0; color:var(--accent);">Subject-Wise Tests</h3>
+            <h3 style="margin:0; color:#f39c12;">Daily Analytics</h3>
+            <div id="subjectTotals" style="margin-top:10px; text-align:left;"></div>
+            <div class="chart-container"><canvas id="hoursChart"></canvas></div>
+            <div class="chart-container"><canvas id="mcqChart"></canvas></div>
+            <div id="logContainer"></div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin:0; color:#5288c1;">Subject-Wise Tests</h3>
             <span class="setting-label">Test Subject</span>
             <select id="swtSubject" onchange="renderSWT()"><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
             <span class="setting-label">Date of Attempt</span>
             <input type="date" id="swtDate">
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtTotal" placeholder="Total Qs" oninput="calcSWT()"></div>
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="swtCorrect" placeholder="Correct" oninput="calcSWT()"><input type="number" id="swtUnattempted" placeholder="Unattempted" oninput="calcSWT()"></div>
-            <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
-            <button class="btn" onclick="saveSWT()" style="background:var(--accent);">Save Test Result</button>
+            <div class="calc-preview">
+                <span>Wrong: <b id="swtW">0</b></span>
+                <span>Accuracy: <b id="swtP">0%</b></span>
+            </div>
+            <button class="btn" onclick="saveSWT()" style="background:#5288c1;">Save Test Result</button>
             <div class="chart-container"><canvas id="swtChart"></canvas></div>
-            <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5;"></div>
+            <div id="swtAnalysis" style="font-size:11px; text-align:left; color:#5288c1; margin-top:10px; line-height:1.5;"></div>
         </div>
 
         <div class="card">
@@ -120,14 +130,17 @@
                 <div class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')">INICET (200)</div>
             </div>
             <span class="setting-label">Platform</span>
-            <input type="text" id="gtPlatform" placeholder="Marrow / Prepladder">
+            <input type="text" id="gtPlatform" placeholder="e.g. Marrow / Prepladder">
             <span class="setting-label">Date of Attempt</span>
             <input type="date" id="gtDate">
             <div style="display:flex; gap:5px; margin-top:5px;"><input type="number" id="gtCorrect" placeholder="Correct" oninput="calcGT()"><input type="number" id="gtUnattempted" placeholder="Unattempted" oninput="calcGT()"></div>
-            <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
+            <div class="calc-preview">
+                <span>Wrong: <b id="gtW">0</b></span>
+                <span>Score: <b id="gtS">0</b></span>
+            </div>
             <button class="btn" onclick="saveGT()" style="background:#2ecc71;">Record GT Data</button>
             <div class="chart-container"><canvas id="gtChart"></canvas></div>
-            <div id="gtAnalysis" style="font-size:11px; text-align:left; line-height:1.5;"></div>
+            <div id="gtAnalysis" style="font-size:11px; text-align:left; color:#f39c12; margin-top:10px; line-height:1.5;"></div>
         </div>
 
         <button class="btn" onclick="clearHistory()" style="background:transparent; border:1px solid #ef5350; color:#ef5350; font-size:10px; padding:5px; width:auto; margin-bottom:50px;">Clear Data History</button>
@@ -137,104 +150,131 @@
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
         const LOG_KEY = 'scalpel_logs_v11', NEET_GT_KEY = 'scalpel_gt_neet_v11', INI_GT_KEY = 'scalpel_gt_ini_v11', SWT_KEY = 'scalpel_swt_v11';
 
-        let currentGTMode = "NEET", timerInterval, mode = "study", timeLeft = 0, activeSub = "", wakeLock = null, alarmInterval = null;
+        let currentGTMode = "NEET", timerInterval, mode = "study", timeLeft = 0, activeSub = "", setMins = 0;
 
-        // --- Theme Switcher (Safe Implementation) ---
-        function toggleTheme() {
-            const isLight = document.body.classList.toggle('light-mode');
-            document.getElementById('themeBtn').innerText = isLight ? '☀️' : '🌙';
-            localStorage.setItem('scalpel_theme', isLight ? 'light' : 'dark');
-            updateUI(); 
+        function getISTToday() {
+            const now = new Date();
+            const istOffset = 330 * 60 * 1000;
+            return new Date(now.getTime() + istOffset).toISOString().split('T')[0];
         }
-        if(localStorage.getItem('scalpel_theme') === 'light') toggleTheme();
 
-        // --- Keep Awake Engine ---
-        const requestWakeLock = async () => { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} };
-        const releaseWakeLock = () => { if (wakeLock) { wakeLock.release(); wakeLock = null; } };
-
-        function updateUI() {
-            const istToday = new Date(new Date().getTime() + 330 * 60 * 1000).toISOString().split('T')[0];
-            document.getElementById('swtDate').max = istToday; document.getElementById('gtDate').max = istToday;
-            const exams = [new Date("May 16, 2026"), new Date("August 30, 2026")];
-            exams.forEach((d, i) => { const diff = Math.ceil((d - new Date()) / 86400000); let el = document.getElementById(`d${i===0?1:3}`); if(el) el.innerText = diff > 0 ? diff + "d" : "Exam!"; });
-            renderData(); renderGT(); renderSWT(); updateConsistency();
+        function restrictDates() {
+            const today = getISTToday();
+            document.getElementById('swtDate').max = today;
+            document.getElementById('gtDate').max = today;
         }
 
         function calcSWT() {
-            const t = parseInt(document.getElementById('swtTotal').value) || 0, c = parseInt(document.getElementById('swtCorrect').value) || 0, u = parseInt(document.getElementById('swtUnattempted').value) || 0;
-            document.getElementById('swtW').innerText = Math.max(0, t - c - u);
-            document.getElementById('swtP').innerText = t > 0 ? ((c / t) * 100).toFixed(1) + "%" : "0%";
+            const t = parseInt(document.getElementById('swtTotal').value) || 0;
+            const c = parseInt(document.getElementById('swtCorrect').value) || 0;
+            const u = parseInt(document.getElementById('swtUnattempted').value) || 0;
+            const w = Math.max(0, t - c - u);
+            const p = t > 0 ? ((c / t) * 100).toFixed(1) : 0;
+            document.getElementById('swtW').innerText = w;
+            document.getElementById('swtP').innerText = p + "%";
         }
 
         function calcGT() {
-            const c = parseInt(document.getElementById('gtCorrect').value) || 0, u = parseInt(document.getElementById('gtUnattempted').value) || 0;
+            const c = parseInt(document.getElementById('gtCorrect').value) || 0;
+            const u = parseInt(document.getElementById('gtUnattempted').value) || 0;
             const w = Math.max(0, 200 - c - u);
             const s = (currentGTMode === 'NEET') ? (c * 4 - w * 1) : (c * 1 - (w * 0.333));
-            document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode === 'NEET' ? 0 : 2);
+            document.getElementById('gtW').innerText = w;
+            document.getElementById('gtS').innerText = s.toFixed(currentGTMode === 'NEET' ? 0 : 2);
         }
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
+        let alarmInterval = null;
         function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
         function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
 
         if (tg.initDataUnsafe?.user) document.getElementById('uName').innerText = tg.initDataUnsafe.user.username ? `@${tg.initDataUnsafe.user.username}` : tg.initDataUnsafe.user.first_name;
 
-        function switchGT(m) { currentGTMode = m; document.getElementById('tabNeet').className = m === 'NEET' ? 'gt-tab-btn active' : 'gt-tab-btn'; document.getElementById('tabInicet').className = m === 'INICET' ? 'gt-tab-btn active' : 'gt-tab-btn'; calcGT(); renderGT(); }
+        function switchGT(m) { 
+            currentGTMode = m; 
+            document.getElementById('tabNeet').className = m === 'NEET' ? 'gt-tab-btn active' : 'gt-tab-btn'; 
+            document.getElementById('tabInicet').className = m === 'INICET' ? 'gt-tab-btn active' : 'gt-tab-btn'; 
+            calcGT(); renderGT(); 
+        }
+
+        function updateUI() {
+            restrictDates();
+            const exams = [new Date("May 16, 2026"), new Date("August 30, 2026")];
+            exams.forEach((d, i) => { const diff = Math.ceil((d - new Date()) / 86400000); let el = document.getElementById(`d${i===0?1:3}`); if(el) el.innerText = diff > 0 ? diff + "d" : "Exam!"; });
+            renderData(); renderGT(); renderSWT(); updateConsistency();
+        }
+
+        function updateConsistency() {
+            const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+            const unique = new Set(logs.map(l => l.date)).size;
+            document.getElementById('streakText').innerText = `Consistency: ${unique} Days Logged`;
+            let f = ""; for(let i=0; i<Math.floor(unique/50); i++) f += "🔥";
+            document.getElementById('streakIcons').innerText = f;
+        }
 
         const startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn'), display = document.getElementById('timer-display'), subIn = document.getElementById('subject');
-        startBtn.onclick = () => { if (!subIn.value) return tg.showAlert("Select Subject!"); audioCtx.resume(); stopAlarm(); requestWakeLock(); activeSub = subIn.value; let mins = parseInt(document.getElementById('studyTime').value); mode = "study"; let tL = mins * 60;
+        startBtn.onclick = () => { if (!subIn.value) return tg.showAlert("Select Subject!"); audioCtx.resume(); stopAlarm(); activeSub = subIn.value; setMins = parseInt(document.getElementById('studyTime').value); mode = "study"; timeLeft = setMins * 60; 
             clearInterval(timerInterval); startBtn.style.display = 'none'; stopBtn.style.display = 'block';
-            timerInterval = setInterval(() => { tL--; let m = Math.floor(tL / 60), s = tL % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if (tL <= 0) handleTransition(); }, 1000);
+            timerInterval = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if (timeLeft <= 0) handleTransition(); }, 1000);
         };
         function handleTransition() { clearInterval(timerInterval); startAlarm(880); document.getElementById('popup-overlay').style.display = 'flex'; }
         stopBtn.onclick = () => handleTransition();
-        function handleMcqResponse(y) { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; let m = y ? (parseInt(prompt("MCQs?")) || 0) : 0; saveLog(activeSub, m, parseInt(document.getElementById('studyTime').value)); display.innerText = "00:00"; startBtn.style.display = 'block'; stopBtn.style.display = 'none'; releaseWakeLock(); updateUI(); }
-        function saveLog(s, m, d) { const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d }); localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
+        function handleMcqResponse(y) { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; let m = y ? (parseInt(prompt("MCQs?")) || 0) : 0; saveLog(activeSub, m, setMins, document.getElementById('readingStage').value); mode = "break"; timeLeft = document.getElementById('breakTime').value * 60;
+            display.innerText = "00:00"; startBtn.style.display = 'block'; stopBtn.style.display = 'none'; updateUI(); }
 
+        function saveLog(s, m, d, st) { const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, stage: st }); localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
+        
         function saveSWT() {
-            const d = document.getElementById('swtDate').value, t = parseInt(document.getElementById('swtTotal').value), c = parseInt(document.getElementById('swtCorrect').value), u = parseInt(document.getElementById('swtUnattempted').value), sub = document.getElementById('swtSubject').value;
-            if(!d || isNaN(t) || (c+u) > t) return;
-            const data = JSON.parse(localStorage.getItem(SWT_KEY) || "[]"); data.push({ date: d, total: t, correct: c, unattempted: u, wrong: (t-c-u), subject: sub, percent: ((c/t)*100).toFixed(1) });
-            data.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(SWT_KEY, JSON.stringify(data)); updateUI();
+            const date = document.getElementById('swtDate').value, total = parseInt(document.getElementById('swtTotal').value), cor = parseInt(document.getElementById('swtCorrect').value), unat = parseInt(document.getElementById('swtUnattempted').value), sub = document.getElementById('swtSubject').value;
+            if(!date || isNaN(total) || (cor+unat) > total) return;
+            const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]");
+            swts.push({ date, total, correct: cor, unattempted: unat, wrong: (total-cor-unat), subject: sub, percent: ((cor/total)*100).toFixed(1) });
+            swts.sort((a,b) => new Date(a.date) - new Date(b.date));
+            localStorage.setItem(SWT_KEY, JSON.stringify(swts)); updateUI();
         }
         function saveGT() {
-            const d = document.getElementById('gtDate').value, c = parseInt(document.getElementById('gtCorrect').value), u = parseInt(document.getElementById('gtUnattempted').value), p = document.getElementById('gtPlatform').value;
-            if(!d || (c+u) > 200) return;
-            const w = 200-c-u; const score = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333));
+            const date = document.getElementById('gtDate').value, cor = parseInt(document.getElementById('gtCorrect').value), unat = parseInt(document.getElementById('gtUnattempted').value), platform = document.getElementById('gtPlatform').value;
+            if(!date || (cor+unat) > 200) return;
+            const w = 200 - cor - unat;
+            const s = (currentGTMode === 'NEET') ? (cor * 4 - w) : (cor - (w * 0.333));
             const key = currentGTMode === 'NEET' ? NEET_GT_KEY : INI_GT_KEY;
-            const gts = JSON.parse(localStorage.getItem(key) || "[]"); gts.push({ date: d, score: parseFloat(score.toFixed(2)), correct: c, unattempted: u, wrong: w, platform: p || "Manual" });
-            gts.sort((a,b) => new Date(a.date) - new Date(b.date)); localStorage.setItem(key, JSON.stringify(gts)); updateUI();
+            const gts = JSON.parse(localStorage.getItem(key) || "[]");
+            gts.push({ date, score: parseFloat(s.toFixed(2)), correct: cor, unattempted: unat, wrong: w, platform: platform || "Manual" });
+            gts.sort((a,b) => new Date(a.date) - new Date(b.date));
+            localStorage.setItem(key, JSON.stringify(gts)); updateUI();
         }
 
         let hChart, mChart, gChart, sChart;
-        function getChartColor() { return document.body.classList.contains('light-mode') ? '#1c1e21' : '#ffffff'; }
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
-            const grouped = {}, subTots = {}; logs.forEach(l => { if (!grouped[l.date]) grouped[l.date] = { h: 0, m: 0 }; grouped[l.date].h += l.duration/60; grouped[l.date].m += l.mcqs; subTots[l.subject] = (subTots[l.subject] || 0) + l.mcqs; });
-            const labels = Object.keys(grouped).reverse().slice(-7); const color = getChartColor();
+            const grouped = {}, subTots = {};
+            logs.forEach(l => { if (!grouped[l.date]) grouped[l.date] = { h: 0, m: 0 }; grouped[l.date].h += l.duration/60; grouped[l.date].m += l.mcqs; subTots[l.subject] = (subTots[l.subject] || 0) + l.mcqs; });
+            const labels = Object.keys(grouped).reverse().slice(-7);
             if(hChart) hChart.destroy(); if(mChart) mChart.destroy();
-            hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Hours', data: labels.map(l => grouped[l].h), borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color } }, y: { ticks: { color } } } }});
-            mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: labels.map(l => grouped[l].m), borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color } }, y: { ticks: { color } } } }});
+            hChart = new Chart(document.getElementById('hoursChart'), { type: 'line', data: { labels, datasets: [{ label: 'Hours', data: labels.map(l => grouped[l].h), borderColor: '#f39c12', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color: '#ffffff' } }, y: { ticks: { color: '#ffffff' } } } }});
+            mChart = new Chart(document.getElementById('mcqChart'), { type: 'line', data: { labels, datasets: [{ label: 'MCQs', data: labels.map(l => grouped[l].m), borderColor: '#5288c1', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color: '#ffffff' } }, y: { ticks: { color: '#ffffff' } } } }});
             document.getElementById('subjectTotals').innerHTML = Object.entries(subTots).map(([s, t]) => `<span class="subject-tag">${s}: ${t}</span>`).join('');
         }
+
         function renderSWT() {
             const sub = document.getElementById('swtSubject').value;
             const swts = JSON.parse(localStorage.getItem(SWT_KEY) || "[]").filter(x => x.subject === sub);
-            const color = getChartColor(); if(sChart) sChart.destroy();
-            if(swts.length === 0) return;
-            sChart = new Chart(document.getElementById('swtChart'), { type: 'line', data: { labels: swts.map(x => x.date), datasets: [{ label: sub + ' (%)', data: swts.map(x => x.percent), borderColor: '#5288c1', backgroundColor: 'rgba(82,136,193,0.1)', fill: true, tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { color } }, x: { ticks: { color } } } }});
+            if(sChart) sChart.destroy();
+            if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = "No tests for " + sub; return; }
+            sChart = new Chart(document.getElementById('swtChart'), { type: 'line', data: { labels: swts.map(x => x.date), datasets: [{ label: sub + ' (%)', data: swts.map(x => x.percent), borderColor: '#5288c1', backgroundColor: 'rgba(82,136,193,0.1)', fill: true, tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { color: '#ffffff' } }, x: { ticks: { color: '#ffffff' } } } }});
             document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
+
         function renderGT() {
             const key = currentGTMode === 'NEET' ? NEET_GT_KEY : INI_GT_KEY;
             const data = JSON.parse(localStorage.getItem(key) || "[]");
-            const color = getChartColor(); if(gChart) gChart.destroy();
-            if(data.length === 0) return;
-            gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: data.map(x => x.date), datasets: [{ label: currentGTMode + ' Score', data: data.map(x => x.score), borderColor: '#2ecc71', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color } }, y: { ticks: { color } } } }});
+            if(gChart) gChart.destroy();
+            if(data.length === 0) { document.getElementById('gtAnalysis').innerHTML = "No data for " + currentGTMode; return; }
+            gChart = new Chart(document.getElementById('gtChart'), { type: 'line', data: { labels: data.map(x => x.date), datasets: [{ label: currentGTMode + ' Score', data: data.map(x => x.score), borderColor: '#2ecc71', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales: { x: { ticks: { color: '#ffffff' } }, y: { ticks: { color: '#ffffff' } } } }});
             document.getElementById('gtAnalysis').innerHTML = data.map(x => `• ${x.date} [${x.platform}]: <b>Score:${x.score}</b> (C:${x.correct} I:${x.wrong} U:${x.unattempted})`).reverse().join('<br>');
         }
-        function updateConsistency() { const logs = JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); document.getElementById('streakText').innerText = `Consistency: ${new Set(logs.map(l => l.date)).size} Days Logged`; }
+
         function clearHistory() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); }}
         updateUI();
     </script>
