@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V11.0</title>
+    <title>Scalpel Master Pro V6.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,6 +33,7 @@
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
+        /* Dashboard & Exam Grid */
         .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); }
@@ -43,21 +44,15 @@
         .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
 
+        /* Navigation */
         .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
         .tab-btn { flex: 1; padding: 12px 5px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: white; opacity: 0.5; }
         .tab-btn.active { opacity: 1; background: var(--accent); }
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Accordion Logic */
-        .accordion-wrapper { width: 100%; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
-        .accordion-header { background: var(--accent); padding: 12px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
-        .accordion-header:after { content: '▼'; font-size: 10px; }
-        .accordion-wrapper.open .accordion-header:after { content: '▲'; }
-        .accordion-content { display: none; padding: 15px; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { display: block; } 
-
-        .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
+        /* Cards & Inputs */
+        .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
         .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
         
@@ -65,53 +60,56 @@
         input[type="date"] { color-scheme: dark; }
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); }
 
+        /* Timer & Buttons */
         #timer-display { font-size: 52px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
         .sm-btn { padding: 6px 12px; font-size: 10px; border-radius: 6px; }
 
+        /* Tables */
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         .log-table th, .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
-        
-        .chart-container { width: 100%; height: 160px; margin: 10px 0; }
-        
-        /* MATRIX TABLE FIX - FORCED VISIBILITY */
-        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 100%; display: table; }
-        .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 6px 4px; text-align: center; }
-        .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
-        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); width: 35%; }
-        .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
-        .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
+        /* Goal & Matrix Styles */
+        .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .goal-row:last-child { border-bottom: none; }
+        .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); transition: border-color 0.3s; }
         .phase-block.completed { border-color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.1); }
         .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .phase-title { font-size: 13px; font-weight: bold; color: var(--accent); }
         .phase-badge { font-size: 24px; filter: grayscale(100%); opacity: 0.3; transition: all 0.5s; }
         .phase-badge.unlocked { filter: grayscale(0%); opacity: 1; transform: scale(1.2); text-shadow: 0 0 15px rgba(255,215,0,0.6); }
-        
-        .sub-grid-container { display: none; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; padding: 8px; }
-        .sub-grid-container.open { display: block; }
-        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
-        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #aaa; }
+        .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; }
+        .days-calc { font-size: 10px; color: #f39c12; margin-top: 5px; text-align: right; font-weight: bold; }
+
+        /* New Subject Grid in Goal */
+        .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
+        .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
+        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
         .sub-check-item input:checked + span { color: #2ecc71; font-weight: bold; }
         
         .target-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); }
 
-        .days-dashboard { border: 1px solid #f39c12; background: rgba(243, 156, 18, 0.15); color: #f39c12; padding: 8px; border-radius: 8px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 12px; text-transform: uppercase; margin-top: 8px; letter-spacing: 1px; font-weight: bold; }
-
-        .pyq-dropbox { border: 1px solid rgba(82, 136, 193, 0.3); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-        .pyq-head { background: rgba(255,255,255,0.05); padding: 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .pyq-body { display: none; padding: 10px; background: rgba(0,0,0,0.3); }
-        .pyq-body.open { display: block; }
+        /* PYQ Specifics */
+        .pyq-header-bar { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; cursor:pointer; margin-bottom:5px; border:1px solid rgba(82, 136, 193, 0.2); transition: background 0.3s;}
+        .pyq-header-bar:hover { background:rgba(255,255,255,0.1); }
+        .pyq-content { display:none; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:15px; }
+        .pyq-content.open { display:block; animation: fadeIn 0.3s; }
         .pyq-col-container { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
         .pyq-col-header { font-size:10px; color:#5288c1; text-transform:uppercase; font-weight:bold; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:3px; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
 
-        .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top:10px; }
-        .radar-item { padding: 10px; border-radius: 8px; font-size: 12px; text-align: left; display: flex; justify-content: space-between; align-items: center; font-family: 'Oswald', sans-serif; font-weight: bold; color: #f39c12; border: 1px solid #f39c12; background: rgba(243, 156, 18, 0.1); }
-        .radar-crit { border-color: #e74c3c; color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
-        .radar-days { font-size: 14px; }
+        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
+        .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
+        .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
+        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); }
+        .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
+        /* Misc */
+        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
+        .chart-container { width: 100%; height: 160px; margin: 10px 0; }
+        
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
         
@@ -120,6 +118,7 @@
         .backup-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 8px; }
         .restore-btn { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; cursor: pointer; width: 100%; font-weight: bold; }
 
+        /* SWT Analytics Extras */
         .strong-weak-container { display: flex; justify-content: space-between; margin: 15px 0; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
         .stat-box strong { display: block; font-size: 14px; margin-bottom: 2px; }
         .stat-strong { color: #2ecc71; }
@@ -128,8 +127,6 @@
         .reminder-box { background: rgba(230, 126, 34, 0.15); border: 1px solid #e67e22; color: #e67e22; padding: 12px; border-radius: 10px; margin-top: 15px; display: none; text-align: left; }
         .reminder-title { font-weight: bold; font-size: 12px; display: block; margin-bottom: 5px; text-transform: uppercase; }
         .reminder-list { font-size: 10px; line-height: 1.4; opacity: 0.9; }
-        
-        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
     </style>
 </head>
 <body>
@@ -147,6 +144,7 @@
         </div>
         <div class="popup-card" id="restore-popup" style="display:none;">
             <h3>Restore Data</h3>
+            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Paste the code from your Saved Messages below:</p>
             <textarea id="restoreInput" style="width:100%; height:80px; background:#0e1621; color:white; border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
             <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
             <button class="btn" onclick="closeRestore()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
@@ -166,10 +164,22 @@
 
         <div class="exam-dashboard">
             <div class="exam-grid">
-                <div class="exam-item"><span id="daysIniJuly" class="exam-days">--</span><span class="exam-label">INICET JULY</span></div>
-                <div class="exam-item"><span id="daysUpsc" class="exam-days">--</span><span class="exam-label">UPSC CMS</span></div>
-                <div class="exam-item"><span id="daysNeet" class="exam-days">--</span><span class="exam-label">NEET PG 2026</span></div>
-                <div class="exam-item"><span id="daysIniJan" class="exam-days">--</span><span class="exam-label">INICET JAN '27</span></div>
+                <div class="exam-item">
+                    <span id="daysIniJuly" class="exam-days">--</span>
+                    <span class="exam-label">INICET JULY</span>
+                </div>
+                <div class="exam-item">
+                    <span id="daysUpsc" class="exam-days">--</span>
+                    <span class="exam-label">UPSC CMS</span>
+                </div>
+                <div class="exam-item">
+                    <span id="daysNeet" class="exam-days">--</span>
+                    <span class="exam-label">NEET PG 2026</span>
+                </div>
+                <div class="exam-item">
+                    <span id="daysIniJan" class="exam-days">--</span>
+                    <span class="exam-label">INICET JAN '27</span>
+                </div>
             </div>
         </div>
 
@@ -188,119 +198,109 @@
         </div>
 
         <div id="tab-goal" class="tab-content">
-            <div class="accordion-wrapper open" id="acc-target">
-                <div class="accordion-header" onclick="toggleAccordion('acc-target')">Target Exams</div>
-                <div class="accordion-content">
-                    <div class="goal-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
-                    <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
-                    <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
-                    <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
-                    <button class="btn" style="background:#2ecc71; margin-top:10px; height:35px; line-height:35px; padding:0; font-size:12px;" onclick="saveExamTargets()">Save Targets</button>
-                </div>
+            <div class="card">
+                <h3 style="margin-top:0; color:#5288c1;">Target Exams</h3>
+                <div class="goal-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
+                <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
+                <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
+                <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
+                <button class="btn" style="background:#2ecc71; margin-top:10px; height:35px; line-height:35px; padding:0; font-size:12px;" onclick="saveExamTargets()">Save Targets</button>
             </div>
 
-            <div class="accordion-wrapper" id="acc-pyq">
-                <div class="accordion-header" onclick="toggleAccordion('acc-pyq')">PYQ Papers Goal</div>
-                <div class="accordion-content">
-                    <div id="pyq-container"></div>
-                </div>
+            <div class="card">
+                <h3 style="margin-top:0; color:#2ecc71;">PYQ PAPERS GOAL</h3>
+                <div id="pyq-container"></div>
             </div>
 
-            <div class="accordion-wrapper" id="acc-phases">
-                <div class="accordion-header" onclick="toggleAccordion('acc-phases')">Reading Phases</div>
-                <div class="accordion-content">
-                    <div id="goal-phases-container"></div>
+            <div class="card" id="goal-phases-container">
+                <h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>
                 </div>
-            </div>
         </div>
 
         <div id="tab-daily" class="tab-content active">
-            <div class="accordion-wrapper open" id="acc-radar">
-                <div class="accordion-header" onclick="toggleAccordion('acc-radar')">Revision Radar</div>
-                <div class="accordion-content">
-                    <p style="font-size:10px; color:#aaa; margin:0;">Neglected Subjects (>10 or >20 days)</p>
-                    <div id="radar-container" class="radar-grid"></div>
-                    <div id="radar-empty" style="display:none; font-size:11px; color:#2ecc71; margin-top:10px; font-family:'Oswald';">ALL SUBJECTS ON TRACK ✅</div>
+            <div class="card">
+                <span class="setting-label">Reading Phase</span>
+                <select id="studyPhase">
+                    <option value="First Reading">First Reading</option>
+                    <option value="Second Reading">Second Reading</option>
+                    <option value="Third Reading">Third Reading</option>
+                    <option value="Extra Bonus">Extra Bonus Reading</option>
+                </select>
+
+                <span class="setting-label">Subject</span>
+                <select id="subject">
+                    <option value="" disabled selected>Select Subject</option>
+                    <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+                    <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
+                    <option>FMT</option><option>PSM</option>
+                    <option>Ophthalmology</option><option>ENT</option>
+                    <option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option>
+                    <option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
+                    <option>Mixed Bag</option><option>Integrated Systems</option>
+                </select>
+                
+                <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
+                    <div style="flex:2;">
+                        <span class="setting-label" style="text-align:center;">Study Duration</span>
+                        <div style="display:flex; gap:5px;">
+                            <div style="flex:1;"><input type="number" id="studyHr" value="2"><div class="sub-label">Hours</div></div>
+                            <div style="flex:1;"><input type="number" id="studyMin" value="0"><div class="sub-label">Minutes</div></div>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <span class="setting-label" style="text-align:center;">Break</span>
+                        <input type="number" id="breakTime" value="15">
+                        <div class="sub-label">Minutes</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="accordion-wrapper open" id="acc-timer">
-                <div class="accordion-header" onclick="toggleAccordion('acc-timer')">Study Timer</div>
-                <div class="accordion-content">
-                    <span class="setting-label">Reading Phase</span>
-                    <select id="studyPhase">
-                        <option value="First Reading">First Reading</option>
-                        <option value="Second Reading">Second Reading</option>
-                        <option value="Third Reading">Third Reading</option>
-                        <option value="Extra Bonus">Extra Bonus Reading</option>
-                    </select>
-
-                    <span class="setting-label">Subject</span>
-                    <select id="subject">
-                        <option value="" disabled selected>Select Subject</option>
-                        <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
-                        <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
-                        <option>FMT</option><option>PSM</option>
-                        <option>Ophthalmology</option><option>ENT</option>
-                        <option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option>
-                        <option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
-                        <option>Mixed Bag</option><option>Integrated Systems</option>
-                    </select>
-                    
-                    <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
-                        <div style="flex:2;">
-                            <span class="setting-label" style="text-align:center;">Study Duration</span>
-                            <div style="display:flex; gap:5px;">
-                                <div style="flex:1;"><input type="number" id="studyHr" value="2"><div class="sub-label">Hours</div></div>
-                                <div style="flex:1;"><input type="number" id="studyMin" value="0"><div class="sub-label">Minutes</div></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <span class="setting-label" style="text-align:center;">Break</span>
-                            <input type="number" id="breakTime" value="15">
-                            <div class="sub-label">Minutes</div>
-                        </div>
-                    </div>
-
-                    <div id="timer-display">00:00:00</div>
-                    <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
-                    <div id="timer-controls" style="display:none; width:100%;">
-                        <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
-                        <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
-                    </div>
+                <div id="timer-display">00:00:00</div>
+                <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
+                <div id="timer-controls" style="display:none; width:100%;">
+                    <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
+                    <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
                 </div>
             </div>
             
-            <div class="accordion-wrapper" id="acc-progress">
-                <div class="accordion-header" onclick="toggleAccordion('acc-progress')">Daily Progress</div>
-                <div class="accordion-content">
-                    <div class="chart-container"><canvas id="hoursChart"></canvas></div>
-                    <div class="chart-container"><canvas id="mcqChart"></canvas></div>
-                    <table class="log-table">
-                        <thead><tr><th class="col-date">Date</th><th class="col-hrs">Hrs</th><th class="col-cyc">Cyc</th><th class="col-mcq">MCQ</th><th class="col-sub">Subjects</th></tr></thead>
-                        <tbody id="dailyLogBody"></tbody>
+            <div class="card">
+                <h3 style="margin:0; color:#f39c12; font-size:16px;">Daily Progress</h3>
+                <div class="chart-container"><canvas id="hoursChart"></canvas></div>
+                <div class="chart-container"><canvas id="mcqChart"></canvas></div>
+                <table class="log-table">
+                    <thead><tr><th class="col-date">Date</th><th class="col-hrs">Hrs</th><th class="col-cyc">Cyc</th><th class="col-mcq">MCQ</th><th class="col-sub">Subjects</th></tr></thead>
+                    <tbody id="dailyLogBody"></tbody>
+                </table>
+
+                <h3 style="margin:15px 0 5px 0; color:#5288c1; font-size:14px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">Phase Matrix (Days Spent)</h3>
+                <div style="overflow-x:auto;">
+                    <table class="matrix-table" id="readingMatrix">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Subject</th>
+                                <th>1st</th>
+                                <th>2nd</th>
+                                <th>3rd</th>
+                                <th>Bonus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrixBody"></tbody>
                     </table>
                 </div>
-            </div>
 
-            <div class="accordion-wrapper" id="acc-matrix">
-                <div class="accordion-header" onclick="toggleAccordion('acc-matrix')">Phase Matrices</div>
-                <div class="accordion-content">
-                    <h3 style="margin:0 0 5px 0; color:#5288c1; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (Days Spent)</h3>
-                    <div style="overflow-x:auto;">
-                        <table class="matrix-table">
-                            <thead><tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead>
-                            <tbody id="matrixBody"></tbody>
-                        </table>
-                    </div>
-
-                    <h3 style="margin:20px 0 5px 0; color:#2ecc71; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (MCQs Solved)</h3>
-                    <div style="overflow-x:auto;">
-                        <table class="matrix-table">
-                            <thead><tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead>
-                            <tbody id="mcqMatrixBody"></tbody>
-                        </table>
-                    </div>
+                <h3 style="margin:15px 0 5px 0; color:#2ecc71; font-size:14px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">Phase Matrix (MCQs Solved)</h3>
+                <div style="overflow-x:auto;">
+                    <table class="matrix-table" id="mcqMatrix">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Subject</th>
+                                <th>1st</th>
+                                <th>2nd</th>
+                                <th>3rd</th>
+                                <th>Bonus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mcqMatrixBody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -313,13 +313,31 @@
                 <div style="display:flex; gap:5px; margin-top:5px;"><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="swtCorrect" oninput="calcSWT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="swtUnat" oninput="calcSWT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
+                
                 <h4 style="color:#5288c1; margin:15px 0 5px 0; font-size:13px; text-align:left;">Subject Performance</h4>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
                 <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5; max-height:100px; overflow-y:auto;"></div>
+
                 <h4 style="color:#f39c12; margin:20px 0 5px 0; font-size:13px; text-align:left; border-top:1px dashed rgba(255,255,255,0.1); padding-top:10px;">Cumulative Average Trend</h4>
                 <div class="chart-container"><canvas id="swtTrendChart"></canvas></div>
-                <div class="strong-weak-container"><div class="stat-box" style="text-align:left;"><span style="opacity:0.7;">Strongest</span><strong class="stat-strong" id="swtStrong">--</strong><span id="swtStrongVal">0%</span></div><div class="stat-box" style="text-align:right;"><span style="opacity:0.7;">Weakest</span><strong class="stat-weak" id="swtWeak">--</strong><span id="swtWeakVal">0%</span></div></div>
-                <div id="swtReminder" class="reminder-box"><span class="reminder-title">⚠️ Pending Subjects</span><div id="swtReminderList" class="reminder-list"></div></div>
+
+                <div class="strong-weak-container">
+                    <div class="stat-box" style="text-align:left;">
+                        <span style="opacity:0.7;">Strongest</span>
+                        <strong class="stat-strong" id="swtStrong">--</strong>
+                        <span id="swtStrongVal">0%</span>
+                    </div>
+                    <div class="stat-box" style="text-align:right;">
+                        <span style="opacity:0.7;">Weakest</span>
+                        <strong class="stat-weak" id="swtWeak">--</strong>
+                        <span id="swtWeakVal">0%</span>
+                    </div>
+                </div>
+
+                <div id="swtReminder" class="reminder-box">
+                    <span class="reminder-title">⚠️ Pending Subjects</span>
+                    <div id="swtReminderList" class="reminder-list"></div>
+                </div>
             </div>
         </div>
 
@@ -337,6 +355,11 @@
 
         <div class="danger-zone">
             <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
+            <p style="font-size:10px; color:#aaa; line-height:1.4; margin-bottom:10px;">
+                1. Tap <b>Backup</b> to copy your secret code.<br>
+                2. Paste it in your Telegram <b>Saved Messages</b>.<br>
+                3. Use <b>Restore</b> to load it back anytime.
+            </p>
             <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
             <button class="restore-btn" onclick="openRestore()">Restore Data</button>
             <button class="clear-btn" onclick="clearData()">Clear All Local Data</button>
@@ -346,13 +369,20 @@
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
         const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Local", last_name: "User" };
-        document.getElementById('uFullName').innerText = `${tgUser.first_name || ""} ${tgUser.last_name || ""}`.trim();
+        const fullName = `${tgUser.first_name || ""} ${tgUser.last_name || ""}`.trim();
+        document.getElementById('uFullName').innerText = fullName || "Guest User";
         document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
 
         const prefix = `SSS_PRO_V3_${tgUser.id}_`;
         const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ' };
         
-        const SUBJECTS_19 = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", "Orthopedics", "Psychiatry", "Radiology"];
+        const SUBJECTS_19 = [
+            "Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", 
+            "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", 
+            "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", 
+            "Orthopedics", "Psychiatry", "Radiology"
+        ];
+        // For SWT Analysis including extras
         const SUBJECTS_ALL_SWT = [...SUBJECTS_19, "Mixed Bag", "Integrated Systems"];
         
         const PHASES_CONFIG = [
@@ -362,6 +392,7 @@
             { id: 'r4', name: '4. Extra Bonus', badge: '🏆' }
         ];
 
+        // PYQ CONFIGURATION
         const PYQ_CATS = [
             { id: 'neet', name: 'NEET PG', type:'single', start:2025, end:2016 },
             { id: 'ini', name: 'INICET/AIIMS', type:'dual', start:2025, end:2014, c1:'May', c2:'Nov' },
@@ -369,22 +400,32 @@
             { id: 'upsc', name: 'UPSC CMS', type:'single', start:2025, end:2021 }
         ];
 
-        function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
-        function togglePYQBox(id) { document.getElementById(`pyq_body_${id}`).classList.toggle('open'); }
-
         function updateCountdowns() {
-            const now = new Date(), dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") };
+            const now = new Date();
+            const dates = {
+                iniJuly: new Date("2026-05-17"),
+                upsc: new Date("2026-08-02"),
+                neet: new Date("2026-08-30"),
+                iniJan: new Date("2026-11-01")
+            };
+            
             Object.keys(dates).forEach(key => {
-                const days = Math.ceil((dates[key] - now) / (1000 * 60 * 60 * 24));
-                const el = document.getElementById('days' + key.charAt(0).toUpperCase() + key.slice(1));
+                const diff = dates[key] - now;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                const elementId = 'days' + key.charAt(0).toUpperCase() + key.slice(1);
+                const el = document.getElementById(elementId);
                 if(el) el.innerText = days > 0 ? days : "LIVE";
             });
         }
         updateCountdowns();
 
-        function clearData() { if(confirm("Are you sure?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
+        function clearData() {
+            if(confirm("Are you sure? This will delete all your streaks, charts, test logs, and goals on this device.")) {
+                Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+                location.reload();
+            }
+        }
 
-        // --- TIMER LOGIC (ORIGINAL V3 RESTORED) ---
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
 
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
@@ -397,24 +438,14 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { 
-            if (!document.getElementById('subject').value) return alert("Select Subject!"); 
+            if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); 
             audioCtx.resume(); 
             requestWakeLock(); 
             activeSub = document.getElementById('subject').value; 
             activePhase = document.getElementById('studyPhase').value;
             startStudyTimer(); 
         };
-
-        function startStudyTimer() { 
-            mode = "study"; 
-            isPaused = false; 
-            timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); 
-            if(timeLeft <= 0) return alert("Enter Duration");
-            document.getElementById('startBtn').style.display='none'; 
-            document.getElementById('timer-controls').style.display='block'; 
-            runTimer(); 
-        }
-
+        function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         
         function runTimer() { 
@@ -429,162 +460,544 @@
             }, 1000); 
         }
 
-        function handleTransition() { 
-            clearInterval(timerInterval); 
-            startAlarm(mode==="study"?880:440); 
-            document.getElementById('popup-overlay').style.display='flex'; 
-            if(mode==="study"){
-                document.getElementById('mcq-popup').style.display='block'; 
-                document.getElementById('break-popup').style.display='none';
-            } else {
-                document.getElementById('mcq-popup').style.display='none';
-                document.getElementById('break-popup').style.display='block';
-            }
-        }
-
-        function startBreak() { 
-            stopAlarm(); 
-            const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
-            saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); 
-            document.getElementById('cycleMcqs').value=''; 
-            document.getElementById('popup-overlay').style.display='none'; 
-            mode="break"; 
-            isPaused=false; 
-            timeLeft=parseInt(document.getElementById('breakTime').value)*60; 
-            runTimer(); 
-        }
-
-        function continueNextCycle() { 
-            stopAlarm(); 
-            document.getElementById('popup-overlay').style.display = 'none'; 
-            startStudyTimer(); 
-        }
-
-        function stopEntireSession() { 
-            stopAlarm(); 
-            clearInterval(timerInterval); 
-            if (wakeLock) { wakeLock.release(); wakeLock=null; } 
-            document.getElementById('popup-overlay').style.display='none'; 
-            document.getElementById('timer-display').innerText="00:00:00"; 
-            document.getElementById('startBtn').style.display='block'; 
-            document.getElementById('timer-controls').style.display='none'; 
-            mode="idle"; 
-            updateUI(); 
-        }
+        function handleTransition() { clearInterval(timerInterval); startAlarm(mode==="study"?880:440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; }
+        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
+        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
+        function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
         function saveStudyLog(s, m, d, ph) { 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
-            updateUI();
         }
 
         // --- PYQ LOGIC ---
         function renderPYQ() {
-            const container = document.getElementById('pyq-container'); if(!container) return; container.innerHTML = ""; 
+            const container = document.getElementById('pyq-container');
+            if(container.innerHTML !== "") return; // Render once
+
             PYQ_CATS.forEach(cat => {
-                let html = `<div class="pyq-dropbox"><div class="pyq-head" onclick="togglePYQBox('${cat.id}')"><span>${cat.name}</span><span id="pyq_badge_${cat.id}" class="phase-badge">🏆</span></div><div id="pyq_body_${cat.id}" class="pyq-body">`;
-                if (cat.type === 'single') { html += `<div class="sub-grid">`; for(let y=cat.start; y>=cat.end; y--) html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}" onchange="savePYQ()"><span>${y}</span></label>`; html += `</div>`; }
-                else { html += `<div class="pyq-col-container"><div><div class="pyq-col-header">${cat.c1}</div><div style="display:flex; flex-direction:column; gap:5px;">`; for(let y=cat.start; y>=cat.end; y--) html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_1" onchange="savePYQ()"><span>${y}</span></label>`; html += `</div></div><div><div class="pyq-col-header">${cat.c2}</div><div style="display:flex; flex-direction:column; gap:5px;">`; for(let y=cat.start; y>=cat.end; y--) html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_2" onchange="savePYQ()"><span>${y}</span></label>`; html += `</div></div></div>`; }
-                html += `</div></div>`; container.innerHTML += html;
+                let html = `
+                    <div class="pyq-header-bar" onclick="togglePYQ('${cat.id}')">
+                        <span style="font-weight:bold; font-size:12px;">${cat.name}</span>
+                        <span id="pyq_badge_${cat.id}" class="phase-badge">🏆</span>
+                    </div>
+                    <div id="pyq_content_${cat.id}" class="pyq-content">
+                `;
+
+                if (cat.type === 'single') {
+                    html += `<div class="sub-grid">`;
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        html += `
+                            <label class="sub-check-item">
+                                <input type="checkbox" id="pyq_${cat.id}_${y}" onchange="savePYQ()">
+                                <span>${y}</span>
+                            </label>`;
+                    }
+                    html += `</div>`;
+                } else {
+                    html += `<div class="pyq-col-container">
+                        <div>
+                            <div class="pyq-col-header">${cat.c1} Session</div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">`;
+                            for(let y=cat.start; y>=cat.end; y--) {
+                                html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_1" onchange="savePYQ()"> <span>${y}</span></label>`;
+                            }
+                    html += `</div></div>
+                        <div>
+                            <div class="pyq-col-header">${cat.c2} Session</div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">`;
+                            for(let y=cat.start; y>=cat.end; y--) {
+                                html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_2" onchange="savePYQ()"> <span>${y}</span></label>`;
+                            }
+                    html += `</div></div></div>`;
+                }
+                html += `</div>`;
+                container.innerHTML += html;
             });
             loadPYQ();
         }
-        function savePYQ() { const data = {}; PYQ_CATS.forEach(cat => { data[cat.id] = {}; if(cat.type === 'single') for(let y=cat.start; y>=cat.end; y--) data[cat.id][y] = document.getElementById(`pyq_${cat.id}_${y}`).checked; else for(let y=cat.start; y>=cat.end; y--) { data[cat.id][`${y}_1`] = document.getElementById(`pyq_${cat.id}_${y}_1`).checked; data[cat.id][`${y}_2`] = document.getElementById(`pyq_${cat.id}_${y}_2`).checked; }}); localStorage.setItem(KEYS.PYQ, JSON.stringify(data)); checkPYQMedals(data); }
-        function loadPYQ() { const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}; PYQ_CATS.forEach(cat => { if(!data[cat.id]) return; if(cat.type === 'single') for(let y=cat.start; y>=cat.end; y--) { const el=document.getElementById(`pyq_${cat.id}_${y}`); if(el) el.checked=data[cat.id][y]; } else for(let y=cat.start; y>=cat.end; y--) { const e1=document.getElementById(`pyq_${cat.id}_${y}_1`), e2=document.getElementById(`pyq_${cat.id}_${y}_2`); if(e1) e1.checked=data[cat.id][`${y}_1`]; if(e2) e2.checked=data[cat.id][`${y}_2`]; }}); checkPYQMedals(data); }
-        function checkPYQMedals(data) { if(!data) return; PYQ_CATS.forEach(cat => { const d = data[cat.id] || {}; let all=true; if(cat.type==='single') for(let y=cat.start; y>=cat.end; y--) { if(!d[y]) all=false; } else for(let y=cat.start; y>=cat.end; y--) { if(!d[`${y}_1`] || !d[`${y}_2`]) all=false; } const b = document.getElementById(`pyq_badge_${cat.id}`); if(b) { if(all) b.classList.add('unlocked'); else b.classList.remove('unlocked'); }}); }
 
-        // --- BACKUP ---
-        function exportData() { navigator.clipboard.writeText(btoa(JSON.stringify(Object.keys(KEYS).reduce((a,k)=>{a[k]=localStorage.getItem(KEYS[k]);return a},{})))).then(()=>alert("Copied!")).catch(()=>alert("Fail")); }
-        function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; }
-        function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
-        function processRestore() { try { const d=JSON.parse(atob(document.getElementById('restoreInput').value)); if(confirm("Overwrite?")) { Object.keys(d).forEach(k=>{ if(Object.values(KEYS).includes(k)) localStorage.setItem(k, d[k]); }); alert("Done"); location.reload(); } } catch(e){ alert("Invalid"); }}
+        function togglePYQ(id) {
+            document.getElementById(`pyq_content_${id}`).classList.toggle('open');
+        }
 
-        // --- GOAL RENDER ---
+        function savePYQ() {
+            const data = {};
+            PYQ_CATS.forEach(cat => {
+                data[cat.id] = {};
+                if(cat.type === 'single') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        data[cat.id][y] = document.getElementById(`pyq_${cat.id}_${y}`).checked;
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        data[cat.id][`${y}_1`] = document.getElementById(`pyq_${cat.id}_${y}_1`).checked;
+                        data[cat.id][`${y}_2`] = document.getElementById(`pyq_${cat.id}_${y}_2`).checked;
+                    }
+                }
+            });
+            localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
+            checkPYQMedals(data);
+        }
+
+        function loadPYQ() {
+            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
+            PYQ_CATS.forEach(cat => {
+                if(!data[cat.id]) return;
+                if(cat.type === 'single') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el = document.getElementById(`pyq_${cat.id}_${y}`);
+                        if(el) el.checked = data[cat.id][y] || false;
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el1 = document.getElementById(`pyq_${cat.id}_${y}_1`);
+                        const el2 = document.getElementById(`pyq_${cat.id}_${y}_2`);
+                        if(el1) el1.checked = data[cat.id][`${y}_1`] || false;
+                        if(el2) el2.checked = data[cat.id][`${y}_2`] || false;
+                    }
+                }
+            });
+            checkPYQMedals(data);
+        }
+
+        function checkPYQMedals(data) {
+            if(!data) return;
+            PYQ_CATS.forEach(cat => {
+                const catData = data[cat.id] || {};
+                let allDone = true;
+                if(cat.type === 'single') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        if(!catData[y]) { allDone = false; break; }
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        if(!catData[`${y}_1`] || !catData[`${y}_2`]) { allDone = false; break; }
+                    }
+                }
+                const badge = document.getElementById(`pyq_badge_${cat.id}`);
+                if(allDone) badge.classList.add('unlocked');
+                else badge.classList.remove('unlocked');
+            });
+        }
+
+        // --- DATA BACKUP SYSTEM (MAGIC COPY) ---
+        function exportData() {
+            const backup = {};
+            Object.keys(KEYS).forEach(k => {
+                backup[k] = localStorage.getItem(KEYS[k]);
+            });
+            const code = btoa(JSON.stringify(backup));
+            
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Backup Code Copied! Paste it in Telegram Saved Messages.");
+            }).catch(err => {
+                alert("Failed to copy. Please allow clipboard permissions.");
+            });
+        }
+
+        function openRestore() {
+            document.getElementById('popup-overlay').style.display='flex';
+            document.getElementById('restore-popup').style.display='block';
+            document.getElementById('mcq-popup').style.display='none';
+            document.getElementById('break-popup').style.display='none';
+        }
+
+        function closeRestore() {
+            document.getElementById('popup-overlay').style.display='none';
+            document.getElementById('restore-popup').style.display='none';
+        }
+
+        function processRestore() {
+            const input = document.getElementById('restoreInput').value.trim();
+            if(!input) return alert("Please paste the code first.");
+            
+            try {
+                const decoded = atob(input);
+                const data = JSON.parse(decoded);
+                
+                if(!data || typeof data !== 'object') throw new Error("Invalid Format");
+
+                if(confirm("Warning: This will OVERWRITE all current data on this device. Are you sure?")) {
+                    Object.keys(data).forEach(k => {
+                        if(Object.values(KEYS).includes(k)) {
+                            localStorage.setItem(k, data[k]);
+                        }
+                    });
+                    alert("Data Restored Successfully!");
+                    location.reload();
+                }
+            } catch(e) {
+                alert("Invalid Code! Please copy the exact code from your backup.");
+            }
+        }
+
+
+        // --- GOAL MANAGEMENT ---
         function renderGoalHTML() {
-            const container = document.getElementById('goal-phases-container'); if(!container) return; container.innerHTML = "";
+            const container = document.getElementById('goal-phases-container');
+            container.innerHTML = `<h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>`;
+            
             PHASES_CONFIG.forEach((p, idx) => {
-                const div = document.createElement('div'); div.className = 'phase-block'; div.id = `phase_block_${idx}`;
-                div.innerHTML = `<div class="phase-header"><span class="phase-title">${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div class="date-grid"><div><span class="setting-label">From</span><input type="date" id="date_${idx}_from" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="date_${idx}_to" onchange="saveGoals()"></div></div><div id="days_${idx}" class="days-dashboard">0 DAYS</div><button class="btn sm-btn" style="margin-top:8px; background:rgba(255,255,255,0.1); width:100%;" onclick="toggleSubGrid(${idx})">Show/Hide Subjects</button><div id="sub_grid_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s,sIdx)=>`<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${sIdx}" onchange="saveGoals()"><span>${s.substring(0,4)}..</span></label>`).join('')}</div></div><div class="target-row"><div style="flex:1;"><span class="setting-label">Target SWTs</span><div style="display:flex; gap:5px;"><input type="number" id="swt_target_${idx}" placeholder="0" oninput="saveGoals()"><input type="checkbox" id="swt_done_${idx}" onchange="saveGoals()"></div></div><div style="flex:1;"><span class="setting-label">Target GTs</span><div style="display:flex; gap:5px;"><input type="number" id="gt_target_${idx}" placeholder="0" oninput="saveGoals()"><input type="checkbox" id="gt_done_${idx}" onchange="saveGoals()"></div></div></div>`;
+                const div = document.createElement('div');
+                div.className = 'phase-block';
+                div.id = `phase_block_${idx}`;
+                div.innerHTML = `
+                    <div class="phase-header">
+                        <span class="phase-title">${p.name}</span>
+                        <span id="badge_${idx}" class="phase-badge">${p.badge}</span>
+                    </div>
+                    <div class="date-grid">
+                        <div><span class="setting-label">From</span><input type="date" id="date_${idx}_from" onchange="saveGoals()"></div>
+                        <div><span class="setting-label">To</span><input type="date" id="date_${idx}_to" onchange="saveGoals()"></div>
+                    </div>
+                    <div id="days_${idx}" class="days-calc">0 Days</div>
+                    
+                    <button class="btn sm-btn" style="margin-top:8px; background:rgba(255,255,255,0.1); width:100%;" onclick="toggleSubGrid(${idx})">Show/Hide Subjects</button>
+                    
+                    <div id="sub_grid_${idx}" class="sub-grid-container">
+                        <div class="sub-grid">
+                            ${SUBJECTS_19.map((s, sIdx) => `
+                                <label class="sub-check-item">
+                                    <input type="checkbox" id="chk_${idx}_${sIdx}" onchange="saveGoals()">
+                                    <span>${s.substring(0,4)}..</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="target-row">
+                        <div style="flex:1;">
+                            <span class="setting-label">Target SWTs</span>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <input type="number" id="swt_target_${idx}" placeholder="0" oninput="saveGoals()">
+                                <input type="checkbox" id="swt_done_${idx}" onchange="saveGoals()">
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <span class="setting-label">Target GTs</span>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <input type="number" id="gt_target_${idx}" placeholder="0" oninput="saveGoals()">
+                                <input type="checkbox" id="gt_done_${idx}" onchange="saveGoals()">
+                            </div>
+                        </div>
+                    </div>
+                `;
                 container.appendChild(div);
             });
             loadGoalsToUI();
         }
-        function toggleSubGrid(idx) { document.getElementById(`sub_grid_${idx}`).classList.toggle('open'); }
-        function saveExamTargets() { saveGoals(); alert("Target Exams Locked & Saved!"); }
-        function saveGoals() { const goals = { exams: { ini_jul: document.getElementById('goal_ini_jul').checked, upsc: document.getElementById('goal_upsc').checked, neet: document.getElementById('goal_neet').checked, ini_jan: document.getElementById('goal_ini_jan').checked }, phases: [] }; PHASES_CONFIG.forEach((_, idx) => { const subs={}; SUBJECTS_19.forEach((_,sIdx)=>subs[sIdx]=document.getElementById(`chk_${idx}_${sIdx}`).checked); goals.phases.push({ from: document.getElementById(`date_${idx}_from`).value, to: document.getElementById(`date_${idx}_to`).value, subjects: subs, swtTarget: document.getElementById(`swt_target_${idx}`).value, swtDone: document.getElementById(`swt_done_${idx}`).checked, gtTarget: document.getElementById(`gt_target_${idx}`).value, gtDone: document.getElementById(`gt_done_${idx}`).checked }); }); localStorage.setItem(KEYS.GOALS, JSON.stringify(goals)); checkMedals(goals); }
-        function loadGoalsToUI() { const goals = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; document.getElementById('goal_ini_jul').checked = goals.exams.ini_jul||false; document.getElementById('goal_upsc').checked = goals.exams.upsc||false; document.getElementById('goal_neet').checked = goals.exams.neet||false; document.getElementById('goal_ini_jan').checked = goals.exams.ini_jan||false; PHASES_CONFIG.forEach((_, idx) => { const d = goals.phases[idx] || {}; document.getElementById(`date_${idx}_from`).value = d.from||""; document.getElementById(`date_${idx}_to`).value = d.to||""; SUBJECTS_19.forEach((_, sIdx) => document.getElementById(`chk_${idx}_${sIdx}`).checked = (d.subjects||{})[sIdx]||false); document.getElementById(`swt_target_${idx}`).value = d.swtTarget||""; document.getElementById(`swt_done_${idx}`).checked = d.swtDone||false; document.getElementById(`gt_target_${idx}`).value = d.gtTarget||""; document.getElementById(`gt_done_${idx}`).checked = d.gtDone||false; if(d.from && d.to) { const diff = Math.ceil((new Date(d.to)-new Date(d.from))/(1000*60*60*24)); document.getElementById(`days_${idx}`).innerText = diff>=0?`${diff} DAYS`:"INVALID"; } }); checkMedals(goals); }
-        function checkMedals(goals) { if(!goals || !goals.phases) return; PHASES_CONFIG.forEach((_, idx) => { const d = goals.phases[idx]; if(!d) return; let all=true; for(let i=0; i<SUBJECTS_19.length; i++) if(!(d.subjects||{})[i]) all=false; const done = all && d.swtDone && d.gtDone; const b=document.getElementById(`badge_${idx}`), bl=document.getElementById(`phase_block_${idx}`); if(done) { b.classList.add('unlocked'); bl.classList.add('completed'); } else { b.classList.remove('unlocked'); bl.classList.remove('completed'); } }); }
 
-        // --- RADAR ---
-        function renderRevisionRadar() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const last = {}; SUBJECTS_19.forEach(s=>last[s]=null); logs.forEach(l => { if(SUBJECTS_19.includes(l.subject)) { const parts=l.date.split('/'); const d=new Date(parts[2], parts[1]-1, parts[0]); if(!last[l.subject] || d>last[l.subject]) last[l.subject]=d; }}); const neg = []; const today=new Date(); today.setHours(0,0,0,0); SUBJECTS_19.forEach(s => { let d=999; if(last[s]) d=Math.ceil((today-last[s])/(1000*60*60*24)); if(d>10) neg.push({s,d}); }); neg.sort((a,b)=>b.d-a.d); const c=document.getElementById('radar-container'), e=document.getElementById('radar-empty'); if(neg.length===0) { c.innerHTML=""; e.style.display='block'; } else { e.style.display='none'; c.innerHTML=neg.map(n=>`<div class="radar-item ${n.d>20?'radar-crit':'radar-warn'}"><span>${n.s}</span><span class="radar-days">${n.d===999?'NEVER':n.d+'d'}</span></div>`).join(''); } }
+        function toggleSubGrid(idx) {
+            document.getElementById(`sub_grid_${idx}`).classList.toggle('open');
+        }
 
-        function updateUI() { 
-            // LOCK DATES
-            const today = new Date().toISOString().split("T")[0];
-            document.getElementById('swtDate').setAttribute('max', today);
-            document.getElementById('gtDate').setAttribute('max', today);
+        function saveExamTargets() {
+            saveGoals();
+            alert("Target Exams Locked & Saved!");
+        }
 
-            renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderMCQMatrix(); renderRevisionRadar(); 
+        function saveGoals() {
+            const goals = {
+                exams: {
+                    ini_jul: document.getElementById('goal_ini_jul').checked,
+                    upsc: document.getElementById('goal_upsc').checked,
+                    neet: document.getElementById('goal_neet').checked,
+                    ini_jan: document.getElementById('goal_ini_jan').checked,
+                },
+                phases: PHASES_CONFIG.map((_, idx) => {
+                    const subjects = {};
+                    SUBJECTS_19.forEach((s, sIdx) => {
+                        subjects[sIdx] = document.getElementById(`chk_${idx}_${sIdx}`).checked;
+                    });
+                    
+                    return {
+                        from: document.getElementById(`date_${idx}_from`).value,
+                        to: document.getElementById(`date_${idx}_to`).value,
+                        subjects: subjects,
+                        swtTarget: document.getElementById(`swt_target_${idx}`).value,
+                        swtDone: document.getElementById(`swt_done_${idx}`).checked,
+                        gtTarget: document.getElementById(`gt_target_${idx}`).value,
+                        gtDone: document.getElementById(`gt_done_${idx}`).checked
+                    };
+                })
+            };
+            localStorage.setItem(KEYS.GOALS, JSON.stringify(goals));
+            checkMedals(goals);
         }
-        function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0,t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
-        function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w=Math.max(0,200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(currentGTMode==='NEET'?0:2); }
-        
-        function saveSWT() { 
-            const d=document.getElementById('swtDate').value; 
-            if(!d) return alert("Enter date.");
-            if(new Date(d) > new Date()) return alert("Future dates restricted!");
-            const t=parseInt(document.getElementById('swtTotal').value); if(isNaN(t)) return; 
-            const data=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); 
-            data.push({ date:d, total:t, correct:parseInt(document.getElementById('swtCorrect').value), unat:parseInt(document.getElementById('swtUnat').value), wrong:parseInt(document.getElementById('swtW').innerText), percent:document.getElementById('swtP').innerText.replace('%',''), subject:document.getElementById('swtSubject').value }); 
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); 
+
+        function loadGoalsToUI() {
+            const goals = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] };
+            document.getElementById('goal_ini_jul').checked = goals.exams.ini_jul || false;
+            document.getElementById('goal_upsc').checked = goals.exams.upsc || false;
+            document.getElementById('goal_neet').checked = goals.exams.neet || false;
+            document.getElementById('goal_ini_jan').checked = goals.exams.ini_jan || false;
+
+            PHASES_CONFIG.forEach((_, idx) => {
+                const data = goals.phases[idx] || {};
+                document.getElementById(`date_${idx}_from`).value = data.from || "";
+                document.getElementById(`date_${idx}_to`).value = data.to || "";
+                
+                const subData = data.subjects || {};
+                SUBJECTS_19.forEach((s, sIdx) => {
+                    document.getElementById(`chk_${idx}_${sIdx}`).checked = subData[sIdx] || false;
+                });
+
+                document.getElementById(`swt_target_${idx}`).value = data.swtTarget || "";
+                document.getElementById(`swt_done_${idx}`).checked = data.swtDone || false;
+                document.getElementById(`gt_target_${idx}`).value = data.gtTarget || "";
+                document.getElementById(`gt_done_${idx}`).checked = data.gtDone || false;
+
+                if(data.from && data.to) {
+                    const start = new Date(data.from);
+                    const end = new Date(data.to);
+                    const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                    document.getElementById(`days_${idx}`).innerText = diff >= 0 ? `${diff} Days` : "Invalid Date";
+                }
+            });
+            checkMedals(goals);
         }
-        
-        function saveGT() { 
-            const d=document.getElementById('gtDate').value; 
-            if(!d) return alert("Enter date.");
-            if(new Date(d) > new Date()) return alert("Future dates restricted!");
-            const data=JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); 
-            data.push({ date:d, score:parseFloat(document.getElementById('gtS').innerText), correct:parseInt(document.getElementById('gtCorrect').value), unat:parseInt(document.getElementById('gtUnat').value), wrong:parseInt(document.getElementById('gtW').innerText) }); 
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); updateUI(); 
+
+        function checkMedals(goals) {
+            if(!goals || !goals.phases) return;
+            PHASES_CONFIG.forEach((_, idx) => {
+                const data = goals.phases[idx];
+                if (!data) return;
+                const subData = data.subjects || {};
+                let allSubjectsDone = true;
+                for(let i=0; i<SUBJECTS_19.length; i++) {
+                    if(!subData[i]) { allSubjectsDone = false; break; }
+                }
+                const isComplete = allSubjectsDone && data.swtDone && data.gtDone;
+                const badge = document.getElementById(`badge_${idx}`);
+                const block = document.getElementById(`phase_block_${idx}`);
+                if(isComplete) {
+                    badge.classList.add('unlocked');
+                    block.classList.add('completed');
+                } else {
+                    badge.classList.remove('unlocked');
+                    block.classList.remove('completed');
+                }
+            });
         }
+
+        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderMCQMatrix(); renderPYQ(); }
         
-        function switchGT(m) { currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background='var(--border)'; document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; calcGT(); renderGT(); }
+        function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const unique = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${unique} Days`; const medals = Math.floor(unique / 75), fires = Math.floor((unique % 75) / 25); document.getElementById('streakIcons').innerText = "🥇".repeat(medals) + "🔥".repeat(fires); }
+        function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
+        function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w = Math.max(0, 200 - c - u); const s = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333)); document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode==='NEET'?0:2); }
+
+        function saveSWT() {
+            const dStr=document.getElementById('swtDate').value;
+            if(!dStr) return;
+
+            // Security Check: No Future Dates
+            const selectedDate = new Date(dStr);
+            const today = new Date();
+            selectedDate.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+
+            if(selectedDate > today) {
+                alert("Future dates are not allowed!");
+                return;
+            }
+
+            const t=parseInt(document.getElementById('swtTotal').value), c=parseInt(document.getElementById('swtCorrect').value), u=parseInt(document.getElementById('swtUnat').value), sub=document.getElementById('swtSubject').value;
+            if(isNaN(t)) return;
+            const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
+            data.push({ date: dStr, total: t, correct: c, unat: u, wrong: Math.max(0, t-c-u), percent: ((c/t)*100).toFixed(1), subject: sub });
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI();
+        }
+
+        function saveGT() {
+            const dStr=document.getElementById('gtDate').value;
+            if(!dStr) return;
+
+            // Security Check: No Future Dates
+            const selectedDate = new Date(dStr);
+            const today = new Date();
+            selectedDate.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+
+            if(selectedDate > today) {
+                alert("Future dates are not allowed!");
+                return;
+            }
+
+            const c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value);
+            const w = Math.max(0, 200 - c - u); const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
+            const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI)||"[]");
+            data.push({ date: dStr, score, correct: c, unat: u, wrong: w });
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI, JSON.stringify(data)); updateUI();
+        }
+
+        function switchGT(m) { 
+            currentGTMode = m; document.querySelectorAll('.gt-tab-btn').forEach(b => b.style.background = 'rgba(0,0,0,0.2)');
+            document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background = 'var(--border)';
+            document.getElementById('neet-area').style.display = m==='NEET'?'block':'none';
+            document.getElementById('inicet-area').style.display = m==='INICET'?'block':'none';
+            calcGT(); renderGT(); 
+        }
+
         let hChart, mChart, gNeetChart, gIniChart, sChart, sTrendChart;
-        function renderData() { const logs=JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"), grouped={}; logs.forEach(l=>{ if(!grouped[l.date]) grouped[l.date]={h:0,m:0,subs:new Set(),cyc:0}; grouped[l.date].h+=l.duration/60; grouped[l.date].m+=l.mcqs; grouped[l.date].subs.add(l.subject); grouped[l.date].cyc++; }); const labels=Object.keys(grouped).reverse().slice(-7), hours=labels.map(l=>grouped[l].h), mcqs=labels.map(l=>grouped[l].m); if(hChart) hChart.destroy(); hChart=new Chart(document.getElementById('hoursChart'),{type:'line',data:{labels,datasets:[{label:'Hours',data:hours,borderColor:'#f39c12',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); if(mChart) mChart.destroy(); mChart=new Chart(document.getElementById('mcqChart'),{type:'line',data:{labels,datasets:[{label:'MCQs',data:mcqs,borderColor:'#5288c1',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); document.getElementById('dailyLogBody').innerHTML = Object.keys(grouped).reverse().map(d=>`<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cyc}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`).join(''); }
-        function renderSWT() { const all=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"), sub=document.getElementById('swtSubject').value, filt=all.filter(x=>x.subject===sub); if(sChart) sChart.destroy(); sChart=new Chart(document.getElementById('swtChart'),{type:'line',data:{labels:filt.map(x=>x.date),datasets:[{label:sub,data:filt.map(x=>x.percent),borderColor:'#5288c1',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{color:'#fff'}}}}}); document.getElementById('swtAnalysis').innerHTML=filt.length?filt.map(x=>`• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong})`).reverse().join('<br>'):"No Data"; if(sTrendChart) sTrendChart.destroy(); let sum=0; const trend=all.map((x,i)=>(sum+=parseFloat(x.percent))/(i+1)); sTrendChart=new Chart(document.getElementById('swtTrendChart'),{type:'line',data:{labels:all.map(x=>x.date),datasets:[{label:'Avg %',data:trend,borderColor:'#f39c12',fill:true,backgroundColor:'rgba(243,156,18,0.1)',tension:0.4}]},options:{maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{color:'#fff'}}},plugins:{legend:{display:false}}}}); const perf={}; all.forEach(l=>{ if(!perf[l.subject]) perf[l.subject]={s:0,c:0}; perf[l.subject].s+=parseFloat(l.percent); perf[l.subject].c++; }); let max=-1, min=101, sSub="--", wSub="--"; Object.keys(perf).forEach(k=>{ const a=perf[k].s/perf[k].c; if(a>max){max=a;sSub=k;} if(a<min){min=a;wSub=k;} }); document.getElementById('swtStrong').innerText=sSub; document.getElementById('swtStrongVal').innerText=max>=0?max.toFixed(1)+'%':'0%'; document.getElementById('swtWeak').innerText=wSub; document.getElementById('swtWeakVal').innerText=min<=100?min.toFixed(1)+'%':'0%'; const done=new Set(all.map(x=>x.subject)), miss=SUBJECTS_ALL_SWT.filter(x=>!done.has(x)); document.getElementById('swtReminder').style.display=miss.length?'block':'none'; document.getElementById('swtReminderList').innerText=miss.join(', '); }
-        function renderGT() { const n=JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), i=JSON.parse(localStorage.getItem(KEYS.INI)||"[]"); if(gNeetChart) gNeetChart.destroy(); gNeetChart=new Chart(document.getElementById('gtNeetChart'),{type:'line',data:{labels:n.map(x=>x.date),datasets:[{label:'NEET',data:n.map(x=>x.score),borderColor:'#f39c12',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); document.getElementById('gtNeetAnalysis').innerHTML=n.map(x=>`• ${x.date}: <b>${x.score}</b>`).reverse().join('<br>'); if(gIniChart) gIniChart.destroy(); gIniChart=new Chart(document.getElementById('gtInicetChart'),{type:'line',data:{labels:i.map(x=>x.date),datasets:[{label:'INICET',data:i.map(x=>x.score),borderColor:'#2ecc71',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); document.getElementById('gtInicetAnalysis').innerHTML=i.map(x=>`• ${x.date}: <b>${x.score}</b>`).reverse().join('<br>'); }
-        
-        function renderMatrix() { 
-            try { 
-                const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
-                const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 }; 
-                const m = {}; SUBJECTS_19.forEach(s=>m[s]=[new Set(),new Set(),new Set(),new Set()]); 
-                logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0].add(l.date); }); 
-                let h="", tot=[0,0,0,0]; 
-                SUBJECTS_19.forEach(s=>{ 
-                    const d=m[s].map(x=>x.size); d.forEach((v,i)=>tot[i]+=v); 
-                    h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
-                }); 
-                document.getElementById('matrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`; 
-            } catch(e){console.error(e)} 
-        }
-        function renderMCQMatrix() { 
-            try { 
-                const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
-                const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 }; 
-                const m = {}; SUBJECTS_19.forEach(s=>m[s]=[0,0,0,0]); 
-                logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0]+=parseInt(l.mcqs)||0; }); 
-                let h="", tot=[0,0,0,0]; 
-                SUBJECTS_19.forEach(s=>{ 
-                    const d=m[s]; d.forEach((v,i)=>tot[i]+=v); 
-                    h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
-                }); 
-                document.getElementById('mcqMatrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`; 
-            } catch(e){console.error(e)} 
+        function renderData() {
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+            const grouped = {};
+            logs.forEach(l => { if (!grouped[l.date]) grouped[l.date] = {h:0, m:0, subs:new Set(), cyc:0}; grouped[l.date].h += l.duration/60; grouped[l.date].m += l.mcqs; grouped[l.date].subs.add(l.subject); grouped[l.date].cyc++; });
+            const labels = Object.keys(grouped).reverse().slice(-7);
+            const hours = labels.map(l => grouped[l].h), mcqs = labels.map(l => grouped[l].m);
+            const avgH = hours.length ? (hours.reduce((a,b)=>a+b,0)/hours.length).toFixed(1) : 0;
+            const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
+            if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type:'line', data:{labels, datasets:[{label:'Hours', data:hours, borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', callback:v=>v+'h'}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgH, yMax:avgH, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
+            if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type:'line', data:{labels, datasets:[{label:'MCQs', data:mcqs, borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{ticks:{color:'#fff', stepSize:1}}}, plugins:{annotation:{annotations:{l1:{type:'line', yMin:avgM, yMax:avgM, borderColor:'rgba(255,255,255,0.3)', borderDash:[5,5]}}}}}});
+            let html = ""; Object.keys(grouped).reverse().forEach(d => { html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cyc}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`; });
+            document.getElementById('dailyLogBody').innerHTML = html;
         }
 
-        renderGoalHTML(); renderPYQ(); updateUI();
+        function renderSWT() {
+            const allSwts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
+            const sub = document.getElementById('swtSubject').value; 
+            const filtered = allSwts.filter(x => x.subject === sub);
+            
+            // 1. Individual Subject Chart
+            if(sChart) sChart.destroy(); 
+            if(filtered.length > 0) {
+                sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:filtered.map(x=>x.date), datasets:[{label:sub+'%', data:filtered.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
+                document.getElementById('swtAnalysis').innerHTML = filtered.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            } else {
+                document.getElementById('swtAnalysis').innerHTML = "No tests recorded for this subject.";
+            }
+
+            // 2. Cumulative Trend Chart (All Subjects)
+            if(sTrendChart) sTrendChart.destroy();
+            if(allSwts.length > 0) {
+                // Sort by date for proper trend
+                const sortedAll = [...allSwts].sort((a,b) => new Date(a.date) - new Date(b.date));
+                const trendLabels = sortedAll.map(x => x.date);
+                
+                // Calculate Cumulative Average at each point
+                let sum = 0;
+                const trendData = sortedAll.map((x, i) => {
+                    sum += parseFloat(x.percent);
+                    return (sum / (i + 1)).toFixed(1);
+                });
+
+                sTrendChart = new Chart(document.getElementById('swtTrendChart'), { 
+                    type:'line', 
+                    data:{
+                        labels: trendLabels, 
+                        datasets:[{
+                            label:'Cumulative Avg %', 
+                            data: trendData, 
+                            borderColor:'#f39c12', 
+                            backgroundColor:'rgba(243, 156, 18, 0.1)',
+                            fill: true,
+                            tension:0.4,
+                            pointRadius: 2
+                        }]
+                    }, 
+                    options:{
+                        maintainAspectRatio:false, 
+                        scales:{y:{min:0, max:100, ticks:{color:'#fff'}}},
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // 3. Strong vs Weak Analysis
+            if(allSwts.length > 0) {
+                const subPerf = {};
+                allSwts.forEach(log => {
+                    if(!subPerf[log.subject]) subPerf[log.subject] = { sum:0, count:0 };
+                    subPerf[log.subject].sum += parseFloat(log.percent);
+                    subPerf[log.subject].count++;
+                });
+                
+                let maxAvg = -1, minAvg = 101, strongSub = "--", weakSub = "--";
+                Object.keys(subPerf).forEach(s => {
+                    const avg = subPerf[s].sum / subPerf[s].count;
+                    if(avg > maxAvg) { maxAvg = avg; strongSub = s; }
+                    if(avg < minAvg) { minAvg = avg; weakSub = s; }
+                });
+
+                document.getElementById('swtStrong').innerText = strongSub;
+                document.getElementById('swtStrongVal').innerText = maxAvg.toFixed(1) + "%";
+                document.getElementById('swtWeak').innerText = weakSub;
+                document.getElementById('swtWeakVal').innerText = minAvg.toFixed(1) + "%";
+            }
+
+            // 4. Missing Subjects Reminder
+            const attemptedSubs = new Set(allSwts.map(x => x.subject));
+            const missing = SUBJECTS_ALL_SWT.filter(s => !attemptedSubs.has(s));
+            const remBox = document.getElementById('swtReminder');
+            if(missing.length > 0) {
+                remBox.style.display = 'block';
+                document.getElementById('swtReminderList').innerText = missing.join(", ");
+            } else {
+                remBox.style.display = 'none';
+            }
+        }
+
+        function renderMatrix() {
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+            const subjects = Array.from(document.getElementById('subject').options)
+                                 .map(o=>o.value)
+                                 .filter(v => v && v !== "Mixed Bag" && v !== "Integrated Systems");
+            const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
+            const matrix = {};
+            subjects.forEach(s => matrix[s] = [new Set(), new Set(), new Set(), new Set()]);
+
+            logs.forEach(l => {
+                const s = l.subject; const p = l.phase || "First Reading"; const idx = mapKey[p];
+                if (matrix[s] && idx !== undefined) matrix[s][idx].add(l.date);
+            });
+
+            const tbody = document.getElementById('matrixBody'); tbody.innerHTML = "";
+            const colTotals = [0, 0, 0, 0];
+            subjects.forEach(s => {
+                const days = matrix[s].map(set => set.size);
+                days.forEach((d, i) => colTotals[i] += d);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="matrix-row-head">${s}</td>` + days.map(d => `<td>${d > 0 ? d : '-'}</td>`).join('');
+                tbody.appendChild(tr);
+            });
+            const trTotal = document.createElement('tr');
+            trTotal.innerHTML = `<td class="matrix-total">TOTAL DAYS</td>` + colTotals.map(d => `<td class="matrix-total">${d}</td>`).join('');
+            tbody.appendChild(trTotal);
+        }
+
+        function renderMCQMatrix() {
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+            const subjects = Array.from(document.getElementById('subject').options)
+                                 .map(o=>o.value)
+                                 .filter(v => v && v !== "Mixed Bag" && v !== "Integrated Systems");
+            const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
+            const matrix = {}; // Store MCQs count
+            subjects.forEach(s => matrix[s] = [0, 0, 0, 0]);
+
+            logs.forEach(l => {
+                const s = l.subject; const p = l.phase || "First Reading"; const idx = mapKey[p];
+                const m = parseInt(l.mcqs) || 0;
+                if (matrix[s] && idx !== undefined) matrix[s][idx] += m;
+            });
+
+            const tbody = document.getElementById('mcqMatrixBody'); tbody.innerHTML = "";
+            const colTotals = [0, 0, 0, 0];
+            subjects.forEach(s => {
+                const counts = matrix[s];
+                counts.forEach((c, i) => colTotals[i] += c);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="matrix-row-head">${s}</td>` + counts.map(c => `<td>${c > 0 ? c : '-'}</td>`).join('');
+                tbody.appendChild(tr);
+            });
+            const trTotal = document.createElement('tr');
+            trTotal.innerHTML = `<td class="matrix-total">TOTAL MCQs</td>` + colTotals.map(c => `<td class="matrix-total">${c}</td>`).join('');
+            tbody.appendChild(trTotal);
+        }
+
+        renderGoalHTML();
+        updateUI();
     </script>
 </body>
 </html>
