@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.10</title>
+    <title>Scalpel Master Pro V6.11</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -255,6 +255,7 @@
                     <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
                 </div>
             </div>
+            
             <div class="card">
                 <h3 style="margin:0; color:#f39c12; font-size:16px;">Daily Progress</h3>
                 <div class="chart-container"><canvas id="hoursChart"></canvas></div>
@@ -407,7 +408,27 @@
         function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
         function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
 
-        document.getElementById('startBtn').onclick = () => { if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); audioCtx.resume(); requestWakeLock(); activeSub = document.getElementById('subject').value; activePhase = document.getElementById('studyPhase').value; startStudyTimer(); };
+        document.getElementById('startBtn').onclick = () => { 
+            // 1. Check if Subject is Selected
+            const selectedSubject = document.getElementById('subject').value;
+            if (!selectedSubject) return tg.showAlert("Select Subject!"); 
+
+            // 2. Get Phase
+            const selectedPhase = document.getElementById('studyPhase').value;
+
+            // 3. Confirm Correct Session
+            const confirmMsg = `You have selected:\nSubject: ${selectedSubject}\nPhase: ${selectedPhase}\n\nIs this the correct study session?`;
+            
+            if (confirm(confirmMsg)) {
+                // Only proceed if user confirms
+                audioCtx.resume(); 
+                requestWakeLock(); 
+                activeSub = selectedSubject; 
+                activePhase = selectedPhase; 
+                startStudyTimer(); 
+            }
+        };
+
         function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         
@@ -893,11 +914,13 @@
             const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
             const id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             
-            // Basic Line Charts with FIXED Short dates DD/MM
+            // Basic Line Charts
             if(gNeetChart) gNeetChart.destroy(); 
+            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM for Neet Chart
             if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
             
             if(gIniChart) gIniChart.destroy(); 
+            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM for INI Chart
             if(id.length>0) gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
 
             // Helper to process phase data
