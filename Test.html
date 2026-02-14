@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.4</title>
+    <title>Scalpel Master Pro V6.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -80,7 +80,6 @@
         
         .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
-        /* CHANGED: grid-template-columns to 1fr 1fr for 2 columns */
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #aaa; }
 
@@ -270,6 +269,15 @@
         <div id="tab-swt" class="tab-content">
             <div class="card">
                 <h3>SWT Analysis</h3>
+                <span class="setting-label">Reading Phase</span>
+                <select id="swtPhase">
+                    <option value="First Reading">First Reading</option>
+                    <option value="Second Reading">Second Reading</option>
+                    <option value="Third Reading">Third Reading</option>
+                    <option value="Extra Bonus">Extra Bonus Reading</option>
+                </select>
+
+                <span class="setting-label">Subject</span>
                 <select id="swtSubject" onchange="renderSWT()">
                     <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option>
                 </select>
@@ -278,9 +286,15 @@
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
                 
-                <h4 style="margin: 15px 0 5px 0; font-size: 11px; opacity: 0.7;">Subject Trend</h4>
+                <h4 style="margin: 20px 0 5px 0; font-size: 14px; font-weight: bold; opacity: 1;">Subject Trend</h4>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
                 
+                <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">SWTs Taken per Phase</h4>
+                <div class="chart-container"><canvas id="swtPhaseCountChart"></canvas></div>
+
+                <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average % per Phase</h4>
+                <div class="chart-container"><canvas id="swtPhaseAvgChart"></canvas></div>
+
                 <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #f39c12; text-transform: uppercase;">Cumulative Performance (All Subjects)</h4>
                 <div class="chart-container"><canvas id="swtCumulativeChart"></canvas></div>
 
@@ -380,7 +394,7 @@
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
 
-        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart;
+        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart;
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const grouped = {};
@@ -568,7 +582,6 @@
         function renderGoalHTML() {
             const container = document.getElementById('goal-phases-container'); container.innerHTML = "<h3>Reading Phases</h3>";
             PHASES_CONFIG.forEach((p, idx) => {
-                // MODIFIED: Changed ${s.substring(0,4)}.. to ${s} to show full name
                 container.innerHTML += `<div class="phase-block" id="pb_${idx}"><div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" onchange="saveGoals()"></div></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects</button><div id="sg_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s, si) => `<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${si}" onchange="saveGoals()"> <span>${s}</span></label>`).join('')}</div></div></div>`;
             }); loadGoalsToUI();
         }
@@ -657,7 +670,7 @@
         function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0, w=Math.max(0, 200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(2); }
-        function saveSWT() { const d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value), sub=document.getElementById('swtSubject').value; if(!d || isNaN(t)) return; const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); data.push({ date: d, total: t, correct: parseInt(document.getElementById('swtCorrect').value), unat: parseInt(document.getElementById('swtUnat').value), wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), subject: sub }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); }
+        function saveSWT() { const d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value), sub=document.getElementById('swtSubject').value, ph=document.getElementById('swtPhase').value; if(!d || isNaN(t)) return; const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); data.push({ date: d, total: t, correct: parseInt(document.getElementById('swtCorrect').value), unat: parseInt(document.getElementById('swtUnat').value), wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), subject: sub, phase: ph }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); }
         function saveGT() { const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value); if(!d) return; const w=Math.max(0,200-c-u), score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333)); const data = JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); data.push({ date: d, score, correct: c, unat: u, wrong: w }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); updateUI(); }
         function switchGT(m) { currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background='var(--border)'; document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; calcGT(); renderGT(); }
 
@@ -741,7 +754,69 @@
                 }
             });
 
-            // 4. Performance Indicators
+            // 4. NEW: Phase Analysis Charts
+            if(swtPhaseCountChart) swtPhaseCountChart.destroy();
+            if(swtPhaseAvgChart) swtPhaseAvgChart.destroy();
+
+            const phasesList = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"];
+            const phaseData = { "First Reading": {n:0, s:0}, "Second Reading": {n:0, s:0}, "Third Reading": {n:0, s:0}, "Extra Bonus Reading": {n:0, s:0} };
+            
+            // Map legacy "Extra Bonus" to "Extra Bonus Reading" if needed, or handle variations
+            all.forEach(x => {
+                let p = x.phase || "First Reading";
+                if(p === "Extra Bonus") p = "Extra Bonus Reading"; // normalize
+                if(phaseData[p]) {
+                    phaseData[p].n++;
+                    phaseData[p].s += parseFloat(x.percent);
+                }
+            });
+
+            const pCounts = phasesList.map(p => phaseData[p].n);
+            const pAvgs = phasesList.map(p => phaseData[p].n > 0 ? (phaseData[p].s / phaseData[p].n).toFixed(1) : 0);
+
+            swtPhaseCountChart = new Chart(document.getElementById('swtPhaseCountChart'), {
+                type: 'bar',
+                data: {
+                    labels: phasesList,
+                    datasets: [{
+                        label: 'Tests Taken',
+                        data: pCounts,
+                        backgroundColor: '#3498db',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#fff', stepSize: 1 } },
+                        x: { ticks: { color: '#fff', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            swtPhaseAvgChart = new Chart(document.getElementById('swtPhaseAvgChart'), {
+                type: 'bar',
+                data: {
+                    labels: phasesList,
+                    datasets: [{
+                        label: 'Average %',
+                        data: pAvgs,
+                        backgroundColor: '#9b59b6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { color: '#fff' } },
+                        x: { ticks: { color: '#fff', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 5. Performance Indicators
             let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--";
             if(all.length>0) {
                 Object.keys(perfData).forEach(k => {
@@ -755,20 +830,17 @@
                 document.getElementById('swtWeak').innerText = wSub;
             }
 
-            // 5. Usage Analysis
+            // 6. Usage Analysis
             const missing = ALL_SWT_SUBS.filter(s => perfData[s].count === 0);
             const usageBox = document.getElementById('swtUsageAnalysis');
             let usageHtml = "";
 
-            // Part A: Missing Subjects Warning (Disappears only if all attempted)
             if (missing.length > 0) {
                 usageHtml += `<div class="usage-box caution-box"><span class="usage-title">⚠️ Missing Subjects</span>${missing.join(', ')}</div>`;
             }
 
-            // Part B: Frequency Stats (Always Visible if at least one test taken)
             if (all.length > 0) {
                 let maxC = -1, minC = 99999;
-                
                 const attemptedSubs = ALL_SWT_SUBS.filter(s => perfData[s].count > 0);
                 
                 if (attemptedSubs.length > 0) {
@@ -777,7 +849,6 @@
                         if(c > maxC) maxC = c;
                         if(c < minC) minC = c;
                     });
-
                     const mostFreq = attemptedSubs.filter(s => perfData[s].count === maxC).map(s => `${s} (${maxC})`);
                     const leastFreq = attemptedSubs.filter(s => perfData[s].count === minC).map(s => `${s} (${minC})`);
 
