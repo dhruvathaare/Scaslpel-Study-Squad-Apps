@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V8.0</title>
+    <title>Scalpel Master Pro V9.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,7 +25,6 @@
         
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
-        /* Header */
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
@@ -34,7 +33,6 @@
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
-        /* Dashboard */
         .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); }
@@ -45,25 +43,20 @@
         .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
 
-        /* Navigation */
         .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
         .tab-btn { flex: 1; padding: 12px 5px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: white; opacity: 0.5; }
         .tab-btn.active { opacity: 1; background: var(--accent); }
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Accordion System */
+        /* Accordion Logic - Simplified for stability */
         .accordion-wrapper { width: 100%; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
         .accordion-header { background: var(--accent); padding: 12px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
-        .accordion-header:after { content: '▼'; font-size: 10px; transition: transform 0.3s; }
-        .accordion-wrapper.open .accordion-header:after { transform: rotate(180deg); }
-        .accordion-content { display: none; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { display: block; animation: slideDown 0.3s ease-out; }
-        .accordion-inner { padding: 15px; }
+        .accordion-header:after { content: '▼'; font-size: 10px; }
+        .accordion-wrapper.open .accordion-header:after { content: '▲'; }
+        .accordion-content { display: none; padding: 15px; background: var(--card); }
+        .accordion-wrapper.open .accordion-content { display: block; } /* No animation, pure function */
 
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Standard Components */
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
         .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
@@ -76,21 +69,19 @@
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
         .sm-btn { padding: 6px 12px; font-size: 10px; border-radius: 6px; }
 
-        /* Tables & Charts */
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         .log-table th, .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
         
         .chart-container { width: 100%; height: 160px; margin: 10px 0; }
         
-        /* Matrix Table */
+        /* FULL VISIBILITY MATRIX TABLES */
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 100%; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 6px 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
-        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); width: 30%; }
+        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); width: 35%; }
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
-        /* Goal & PYQ Specifics */
         .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         .phase-block.completed { border-color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.1); }
@@ -107,10 +98,8 @@
         
         .target-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); }
 
-        /* Yellow Days Dashboard Box */
         .days-dashboard { border: 1px solid #f39c12; background: rgba(243, 156, 18, 0.15); color: #f39c12; padding: 8px; border-radius: 8px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 12px; text-transform: uppercase; margin-top: 8px; letter-spacing: 1px; font-weight: bold; }
 
-        /* PYQ Dropboxes */
         .pyq-dropbox { border: 1px solid rgba(82, 136, 193, 0.3); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
         .pyq-head { background: rgba(255,255,255,0.05); padding: 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .pyq-body { display: none; padding: 10px; background: rgba(0,0,0,0.3); }
@@ -118,13 +107,11 @@
         .pyq-col-container { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
         .pyq-col-header { font-size:10px; color:#5288c1; text-transform:uppercase; font-weight:bold; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:3px; }
 
-        /* Revision Radar (Oswald, Bold, Orange) */
         .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top:10px; }
         .radar-item { padding: 10px; border-radius: 8px; font-size: 12px; text-align: left; display: flex; justify-content: space-between; align-items: center; font-family: 'Oswald', sans-serif; font-weight: bold; color: #f39c12; border: 1px solid #f39c12; background: rgba(243, 156, 18, 0.1); }
         .radar-crit { border-color: #e74c3c; color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
         .radar-days { font-size: 14px; }
 
-        /* Overlays & Popups */
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
         
@@ -160,7 +147,6 @@
         </div>
         <div class="popup-card" id="restore-popup" style="display:none;">
             <h3>Restore Data</h3>
-            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Paste the code from your Saved Messages below:</p>
             <textarea id="restoreInput" style="width:100%; height:80px; background:#0e1621; color:white; border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
             <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
             <button class="btn" onclick="closeRestore()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
@@ -411,7 +397,7 @@
 
         function clearData() { if(confirm("Are you sure?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
 
-        // --- TIMER LOGIC (CRITICAL FIXES) ---
+        // --- TIMER LOGIC (ROBUST RESTORATION) ---
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
 
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
@@ -424,7 +410,7 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { 
-            if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); 
+            if (!document.getElementById('subject').value) return alert("Select Subject!"); 
             audioCtx.resume(); requestWakeLock(); 
             activeSub = document.getElementById('subject').value; 
             activePhase = document.getElementById('studyPhase').value;
@@ -433,8 +419,10 @@
 
         function startStudyTimer() { 
             mode = "study"; isPaused = false; 
+            // Fix NaN issue: Default to 0
             const h = parseInt(document.getElementById('studyHr').value) || 0;
             const m = parseInt(document.getElementById('studyMin').value) || 0;
+            
             timeLeft = (h * 3600) + (m * 60); 
             
             if(timeLeft <= 0) return alert("Please enter duration!"); 
@@ -462,14 +450,20 @@
             clearInterval(timerInterval); 
             startAlarm(mode==="study"?880:440); 
             document.getElementById('popup-overlay').style.display='flex'; 
-            document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; 
-            document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; 
+            
+            // Fix Popup Switching
+            if(mode === "study") {
+                document.getElementById('mcq-popup').style.display='block'; 
+                document.getElementById('break-popup').style.display='none'; 
+            } else {
+                document.getElementById('mcq-popup').style.display='none'; 
+                document.getElementById('break-popup').style.display='block'; 
+            }
         }
 
         function startBreak() { 
             stopAlarm(); 
             const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
-            // Fix: Add to Log
             const h = parseInt(document.getElementById('studyHr').value) || 0;
             const mn = parseInt(document.getElementById('studyMin').value) || 0;
             saveStudyLog(activeSub, m, (h*60)+mn, activePhase); 
@@ -509,7 +503,7 @@
 
         // --- BACKUP ---
         function exportData() { navigator.clipboard.writeText(btoa(JSON.stringify(Object.keys(KEYS).reduce((a,k)=>{a[k]=localStorage.getItem(KEYS[k]);return a},{})))).then(()=>alert("Copied!")).catch(()=>alert("Fail")); }
-        function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; }
+        function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; document.getElementById('mcq-popup').style.display='none'; document.getElementById('break-popup').style.display='none'; }
         function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
         function processRestore() { try { const d=JSON.parse(atob(document.getElementById('restoreInput').value)); if(confirm("Overwrite?")) { Object.keys(d).forEach(k=>{ if(Object.values(KEYS).includes(k)) localStorage.setItem(k, d[k]); }); alert("Done"); location.reload(); } } catch(e){ alert("Invalid"); }}
 
@@ -533,7 +527,7 @@
         function renderRevisionRadar() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const last = {}; SUBJECTS_19.forEach(s=>last[s]=null); logs.forEach(l => { if(SUBJECTS_19.includes(l.subject)) { const parts=l.date.split('/'); const d=new Date(parts[2], parts[1]-1, parts[0]); if(!last[l.subject] || d>last[l.subject]) last[l.subject]=d; }}); const neg = []; const today=new Date(); today.setHours(0,0,0,0); SUBJECTS_19.forEach(s => { let d=999; if(last[s]) d=Math.ceil((today-last[s])/(1000*60*60*24)); if(d>10) neg.push({s,d}); }); neg.sort((a,b)=>b.d-a.d); const c=document.getElementById('radar-container'), e=document.getElementById('radar-empty'); if(neg.length===0) { c.innerHTML=""; e.style.display='block'; } else { e.style.display='none'; c.innerHTML=neg.map(n=>`<div class="radar-item ${n.d>20?'radar-crit':'radar-warn'}"><span>${n.s}</span><span class="radar-days">${n.d===999?'NEVER':n.d+'d'}</span></div>`).join(''); } }
 
         function updateUI() { 
-            // Enforce Date Limits on Init
+            // LOCK DATES
             const today = new Date().toISOString().split("T")[0];
             document.getElementById('swtDate').setAttribute('max', today);
             document.getElementById('gtDate').setAttribute('max', today);
@@ -543,13 +537,11 @@
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0,t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w=Math.max(0,200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(currentGTMode==='NEET'?0:2); }
         
-        // FUTURE DATE PROTECTION
         function saveSWT() { 
             const d=document.getElementById('swtDate').value; 
-            if(!d) return alert("Enter date.");
-            const sel = new Date(d); const now = new Date(); sel.setHours(0,0,0,0); now.setHours(0,0,0,0);
-            if(sel > now) return alert("Future dates restricted!");
-
+            if(!d) return alert("Date required.");
+            if(new Date(d) > new Date()) return alert("Future dates restricted!");
+            
             const t=parseInt(document.getElementById('swtTotal').value); if(isNaN(t)) return; 
             const data=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); 
             data.push({ date:d, total:t, correct:parseInt(document.getElementById('swtCorrect').value), unat:parseInt(document.getElementById('swtUnat').value), wrong:parseInt(document.getElementById('swtW').innerText), percent:document.getElementById('swtP').innerText.replace('%',''), subject:document.getElementById('swtSubject').value }); 
@@ -558,9 +550,8 @@
         
         function saveGT() { 
             const d=document.getElementById('gtDate').value; 
-            if(!d) return alert("Enter date.");
-            const sel = new Date(d); const now = new Date(); sel.setHours(0,0,0,0); now.setHours(0,0,0,0);
-            if(sel > now) return alert("Future dates restricted!");
+            if(!d) return alert("Date required.");
+            if(new Date(d) > new Date()) return alert("Future dates restricted!");
 
             const data=JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); 
             data.push({ date:d, score:parseFloat(document.getElementById('gtS').innerText), correct:parseInt(document.getElementById('gtCorrect').value), unat:parseInt(document.getElementById('gtUnat').value), wrong:parseInt(document.getElementById('gtW').innerText) }); 
