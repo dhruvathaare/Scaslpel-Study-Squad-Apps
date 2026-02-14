@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.3</title>
+    <title>Scalpel Master Pro V6.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -204,7 +204,6 @@
                 <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
                 <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
                 <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
-                <button class="btn" style="background:#2ecc71; margin-top:10px; height:35px; line-height:35px; padding:0; font-size:12px;" onclick="saveExamTargets()">Save Targets</button>
             </div>
 
             <div class="card">
@@ -693,11 +692,6 @@
             document.getElementById(`sub_grid_${idx}`).classList.toggle('open');
         }
 
-        function saveExamTargets() {
-            saveGoals();
-            alert("Target Exams Locked & Saved!");
-        }
-
         function saveGoals() {
             const goals = {
                 exams: {
@@ -936,6 +930,20 @@
                 document.getElementById('swtReminderList').innerText = missing.join(", ");
             } else {
                 remBox.style.display = 'none';
+            }
+        }
+
+        function renderGT() {
+            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            if(gNeetChart) gNeetChart.destroy();
+            if(nd.length > 0) {
+                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
+                document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            }
+            if(gIniChart) gIniChart.destroy();
+            if(id.length > 0) {
+                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+                document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
             }
         }
 
