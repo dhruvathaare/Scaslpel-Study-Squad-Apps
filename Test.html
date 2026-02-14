@@ -78,9 +78,19 @@
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
 
-        .pyq-header-bar { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; cursor:pointer; margin-bottom:5px; border:1px solid rgba(82, 136, 193, 0.2); }
-        .pyq-content { display:none; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:15px; }
-        .pyq-content.open { display:block; }
+        /* PYQ Specific Styles for Tabs */
+        .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; }
+        .pyq-tab.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: bold; }
+        .pyq-tab-cup { display: none; position: absolute; top: -5px; right: -5px; font-size: 14px; text-shadow: 0 0 5px gold;}
+        .pyq-tab-cup.show { display: block; }
+        .pyq-panel { display: none; animation: fadeIn 0.3s; }
+        .pyq-panel.active { display: block; }
+        .pyq-list-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); margin-bottom: 5px; padding: 8px; border-radius: 6px; }
+        .pyq-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .pyq-col-header { font-size: 10px; color: #5288c1; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 4px; }
+        
+        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
@@ -99,7 +109,8 @@
         .backup-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; width: 100%; font-weight: bold; margin-bottom: 8px; cursor: pointer;}
         .restore-btn { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; width: 100%; font-weight: bold; cursor: pointer;}
 
-        .strong-weak-container { display: flex; justify-content: space-between; margin: 15px 0; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
+        .strong-weak-container { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; text-align: left; }
+        .performance-label { font-family: 'Oswald', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;}
         .stat-strong { color: #2ecc71; } .stat-weak { color: #ef5350; }
         .reminder-box { background: rgba(230, 126, 34, 0.15); border: 1px solid #e67e22; color: #e67e22; padding: 12px; border-radius: 10px; margin-top: 15px; display: none; text-align: left; }
     </style>
@@ -168,10 +179,21 @@
                 <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
                 <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
             </div>
+            
             <div class="card">
                 <h3 style="margin-top:0; color:#2ecc71;">PYQ PAPERS GOAL</h3>
-                <div id="pyq-container"></div>
+                
+                <div class="pyq-nav-container">
+                    <div class="pyq-tab active" onclick="switchPyq('neet', this)">NEET PG<span id="cup_neet" class="pyq-tab-cup">🏆</span></div>
+                    <div class="pyq-tab" onclick="switchPyq('ini', this)">INICET<span id="cup_ini" class="pyq-tab-cup">🏆</span></div>
+                    <div class="pyq-tab" onclick="switchPyq('fmge', this)">FMGE<span id="cup_fmge" class="pyq-tab-cup">🏆</span></div>
+                    <div class="pyq-tab" onclick="switchPyq('upsc', this)">UPSC<span id="cup_upsc" class="pyq-tab-cup">🏆</span></div>
+                </div>
+
+                <div id="pyq-panels-root"></div>
+
             </div>
+
             <div class="card" id="goal-phases-container">
                 <h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>
             </div>
@@ -242,11 +264,24 @@
                 <div style="display:flex; gap:5px; margin-top:5px;"><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="swtCorrect" oninput="calcSWT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="swtUnat" oninput="calcSWT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
+                
+                <h4 style="margin: 15px 0 5px 0; font-size: 11px; opacity: 0.7;">Subject Trend</h4>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
+                
+                <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #f39c12; text-transform: uppercase;">Cumulative Performance (All Subjects)</h4>
+                <div class="chart-container"><canvas id="swtCumulativeChart"></canvas></div>
+
                 <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5; max-height:100px; overflow-y:auto;"></div>
+                
                 <div class="strong-weak-container">
-                    <div class="stat-box"><span style="opacity:0.7;">Strongest</span><br><strong class="stat-strong" id="swtStrong">--</strong> <span id="swtStrongVal">0%</span></div>
-                    <div class="stat-box" style="text-align:right;"><span style="opacity:0.7;">Weakest</span><br><strong class="stat-weak" id="swtWeak">--</strong> <span id="swtWeakVal">0%</span></div>
+                    <div class="performance-label stat-strong">
+                        <span>Strong Subject:</span>
+                        <strong id="swtStrong">--</strong>
+                    </div>
+                    <div class="performance-label stat-weak">
+                        <span>Weak Subject:</span>
+                        <strong id="swtWeak">--</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -282,10 +317,19 @@
         const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ' };
         
         const SUBJECTS_19 = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", "Orthopedics", "Psychiatry", "Radiology"];
-        const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🥉' },{ id: 'r2', name: '2. Second Reading', badge: '🥈' },{ id: 'r3', name: '3. Third Reading', badge: '🥇' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
-        const PYQ_CATS = [{ id: 'neet', name: 'NEET PG', type:'single', start:2025, end:2016 },{ id: 'ini', name: 'INICET/AIIMS', type:'dual', start:2025, end:2014, c1:'May', c2:'Nov' },{ id: 'fmge', name: 'FMGE', type:'dual', start:2025, end:2021, c1:'July', c2:'Dec' },{ id: 'upsc', name: 'UPSC CMS', type:'single', start:2025, end:2021 }];
+        const SUBJECTS_EXTRA = ["Mixed Bag", "Integrated Systems"];
+        const ALL_SWT_SUBS = [...SUBJECTS_19, ...SUBJECTS_EXTRA];
 
-        // --- TIMER & CORE LOGIC (RESTORED FROM OLD) ---
+        const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🥉' },{ id: 'r2', name: '2. Second Reading', badge: '🥈' },{ id: 'r3', name: '3. Third Reading', badge: '🥇' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
+        
+        // NEW PYQ CONFIGURATION (Strictly as requested)
+        const PYQ_CATS = [
+            { id: 'neet', label: 'NEET PG', type: 'list', start: 2025, end: 2020 },
+            { id: 'ini', label: 'INICET', type: 'cols', col1: 'May', col2: 'Nov', start: 2025, end: 2014 },
+            { id: 'fmge', label: 'FMGE', type: 'cols', col1: 'July', col2: 'Dec', start: 2025, end: 2020 },
+            { id: 'upsc', label: 'UPSC CMS', type: 'list', start: 2025, end: 2020 }
+        ];
+
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -321,8 +365,7 @@
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
 
-        // --- ANALYTICS & CHARTS (RESTORED FROM OLD) ---
-        let hChart, mChart, gNeetChart, gIniChart, sChart;
+        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart;
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const grouped = {};
@@ -355,7 +398,6 @@
             document.getElementById('dailyLogBody').innerHTML = html;
         }
 
-        // --- PHASE MATRICES ---
         function renderMatrix() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
@@ -381,19 +423,141 @@
             document.getElementById('mcqMatrixBody').innerHTML = mHtml;
         }
 
-        // --- NEW PRO FEATURES (PYQ, GOALS, SWT, GT) ---
+        // --- UPDATED PYQ RENDERER FOR TABS & CHAMPION CUP ---
         function renderPYQ() {
-            const container = document.getElementById('pyq-container'); if(container.innerHTML !== "") return;
-            PYQ_CATS.forEach(cat => {
-                let h = `<div class="pyq-header-bar" onclick="document.getElementById('pyq_c_${cat.id}').classList.toggle('open')"><b>${cat.name}</b> <span id="pyq_b_${cat.id}" class="phase-badge">🏆</span></div><div id="pyq_c_${cat.id}" class="pyq-content">`;
-                if(cat.type==='single') { h += `<div class="sub-grid">`; for(let y=cat.start; y>=cat.end; y--) h += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}" onchange="savePYQ()"> <span>${y}</span></label>`; h += `</div>`; }
-                else { h += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><div class="sub-label">${cat.c1}</div>`; for(let y=cat.start; y>=cat.end; y--) h += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_1" onchange="savePYQ()"> <span>${y}</span></label>`; h += `</div><div><div class="sub-label">${cat.c2}</div>`; for(let y=cat.start; y>=cat.end; y--) h += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_2" onchange="savePYQ()"> <span>${y}</span></label>`; h += `</div></div>`; }
-                container.innerHTML += h + `</div>`;
-            }); loadPYQ();
+            const container = document.getElementById('pyq-panels-root');
+            if(container.innerHTML !== "") return; // Render only once
+
+            let html = "";
+            PYQ_CATS.forEach((cat, index) => {
+                // Set first panel active by default
+                const activeClass = index === 0 ? "active" : "";
+                
+                html += `<div id="pyq_panel_${cat.id}" class="pyq-panel ${activeClass}">`;
+                
+                if (cat.type === 'list') {
+                    // Single Column List
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        html += `
+                        <label class="pyq-list-row">
+                            <span>${cat.label} ${y}</span>
+                            <input type="checkbox" id="pyq_${cat.id}_${y}">
+                        </label>`;
+                    }
+                } else {
+                    // Two Columns
+                    html += `<div class="pyq-col-grid">
+                        <div>
+                            <div class="pyq-col-header">${cat.col1}</div>`;
+                            for(let y=cat.start; y>=cat.end; y--) {
+                                html += `<label class="pyq-list-row" style="font-size:10px;">
+                                    <span>${y}</span><input type="checkbox" id="pyq_${cat.id}_${y}_1">
+                                </label>`;
+                            }
+                    html += `</div>
+                        <div>
+                            <div class="pyq-col-header">${cat.col2}</div>`;
+                            for(let y=cat.start; y>=cat.end; y--) {
+                                html += `<label class="pyq-list-row" style="font-size:10px;">
+                                    <span>${y}</span><input type="checkbox" id="pyq_${cat.id}_${y}_2">
+                                </label>`;
+                            }
+                    html += `</div></div>`;
+                }
+
+                // Add Save & Lock Button
+                html += `<button class="btn sm-btn" style="margin-top:15px; width:100%; background:var(--accent);" onclick="saveLockPYQ('${cat.id}')">Save & Lock Progress</button>`;
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+            loadPYQ();
         }
-        function savePYQ() { const data = {}; PYQ_CATS.forEach(cat => { data[cat.id] = {}; if(cat.type==='single') for(let y=cat.start; y>=cat.end; y--) data[cat.id][y] = document.getElementById(`pyq_${cat.id}_${y}`).checked; else for(let y=cat.start; y>=cat.end; y--) { data[cat.id][y+'_1'] = document.getElementById(`pyq_${cat.id}_${y}_1`).checked; data[cat.id][y+'_2'] = document.getElementById(`pyq_${cat.id}_${y}_2`).checked; } }); localStorage.setItem(KEYS.PYQ, JSON.stringify(data)); checkPYQMedals(data); }
-        function loadPYQ() { const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}; PYQ_CATS.forEach(cat => { if(!data[cat.id]) return; if(cat.type==='single') for(let y=cat.start; y>=cat.end; y--) { const el = document.getElementById(`pyq_${cat.id}_${y}`); if(el) el.checked = data[cat.id][y] || false; } else for(let y=cat.start; y>=cat.end; y--) { const e1 = document.getElementById(`pyq_${cat.id}_${y}_1`), e2 = document.getElementById(`pyq_${cat.id}_${y}_2`); if(e1) e1.checked = data[cat.id][y+'_1']; if(e2) e2.checked = data[cat.id][y+'_2']; } }); checkPYQMedals(data); }
-        function checkPYQMedals(data) { PYQ_CATS.forEach(cat => { const d = data[cat.id]||{}; let done = true; if(cat.type==='single') { for(let y=cat.start; y>=cat.end; y--) if(!d[y]) done=false; } else { for(let y=cat.start; y>=cat.end; y--) if(!d[y+'_1'] || !d[y+'_2']) done=false; } const b = document.getElementById(`pyq_b_${cat.id}`); if(done) b.classList.add('unlocked'); else b.classList.remove('unlocked'); }); }
+
+        function switchPyq(id, btn) {
+            // UI Switch Tabs
+            document.querySelectorAll('.pyq-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Show Panel
+            document.querySelectorAll('.pyq-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`pyq_panel_${id}`).classList.add('active');
+        }
+
+        function saveLockPYQ(catId) {
+            // Save current state
+            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
+            const catConfig = PYQ_CATS.find(c => c.id === catId);
+            
+            data[catId] = {}; // Reset for this category to ensure clean save
+            
+            let allChecked = true;
+
+            if(catConfig.type === 'list') {
+                for(let y=catConfig.start; y>=catConfig.end; y--) {
+                    const isChecked = document.getElementById(`pyq_${catId}_${y}`).checked;
+                    data[catId][y] = isChecked;
+                    if(!isChecked) allChecked = false;
+                }
+            } else {
+                for(let y=catConfig.start; y>=catConfig.end; y--) {
+                    const c1 = document.getElementById(`pyq_${catId}_${y}_1`).checked;
+                    const c2 = document.getElementById(`pyq_${catId}_${y}_2`).checked;
+                    data[catId][`${y}_1`] = c1;
+                    data[catId][`${y}_2`] = c2;
+                    if(!c1 || !c2) allChecked = false;
+                }
+            }
+
+            localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
+            
+            // Check for Cup
+            const cup = document.getElementById(`cup_${catId}`);
+            if(allChecked) {
+                cup.classList.add('show');
+                alert(`🏆 Congratulations! You have completed all ${catConfig.label} PYQs!`);
+            } else {
+                cup.classList.remove('show');
+                alert("Progress Saved.");
+            }
+        }
+
+        function loadPYQ() {
+            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
+            
+            PYQ_CATS.forEach(cat => {
+                if(!data[cat.id]) return;
+                
+                let allChecked = true;
+
+                if(cat.type === 'list') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el = document.getElementById(`pyq_${cat.id}_${y}`);
+                        if(el) {
+                            el.checked = data[cat.id][y] || false;
+                            if(!el.checked) allChecked = false;
+                        }
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el1 = document.getElementById(`pyq_${cat.id}_${y}_1`);
+                        const el2 = document.getElementById(`pyq_${cat.id}_${y}_2`);
+                        if(el1) {
+                            el1.checked = data[cat.id][`${y}_1`] || false;
+                            if(!el1.checked) allChecked = false;
+                        }
+                        if(el2) {
+                            el2.checked = data[cat.id][`${y}_2`] || false;
+                            if(!el2.checked) allChecked = false;
+                        }
+                    }
+                }
+
+                if(allChecked) {
+                    document.getElementById(`cup_${cat.id}`).classList.add('show');
+                }
+            });
+        }
 
         function renderGoalHTML() {
             const container = document.getElementById('goal-phases-container'); container.innerHTML = "<h3>Reading Phases</h3>";
@@ -402,18 +566,32 @@
             }); loadGoalsToUI();
         }
         function saveGoals() { const g = { exams: { i_j: document.getElementById('goal_ini_jul').checked, u: document.getElementById('goal_upsc').checked, n: document.getElementById('goal_neet').checked, i_jan: document.getElementById('goal_ini_jan').checked }, phases: PHASES_CONFIG.map((_, idx) => { const s = {}; SUBJECTS_19.forEach((_, si) => s[si] = document.getElementById(`chk_${idx}_${si}`).checked); return { f: document.getElementById(`d_${idx}_f`).value, t: document.getElementById(`d_${idx}_t`).value, s }; }) }; localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); checkMedals(g); }
-        function loadGoalsToUI() { const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; document.getElementById('goal_ini_jul').checked = g.exams.i_j; document.getElementById('goal_upsc').checked = g.exams.u; document.getElementById('goal_neet').checked = g.exams.n; document.getElementById('goal_ini_jan').checked = g.exams.i_jan; PHASES_CONFIG.forEach((_, idx) => { const d = g.phases[idx] || {}; document.getElementById(`d_${idx}_f`).value = d.f || ""; document.getElementById(`d_${idx}_t`).value = d.t || ""; const sd = d.s || {}; SUBJECTS_19.forEach((_, si) => { const el = document.getElementById(`chk_${idx}_si`); if(el) el.checked = sd[si] || false; }); }); checkMedals(g); }
+        function loadGoalsToUI() { const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; document.getElementById('goal_ini_jul').checked = g.exams.i_j; document.getElementById('goal_upsc').checked = g.exams.u; document.getElementById('goal_neet').checked = g.exams.n; document.getElementById('goal_ini_jan').checked = g.exams.i_jan; PHASES_CONFIG.forEach((_, idx) => { const d = g.phases[idx] || {}; document.getElementById(`d_${idx}_f`).value = d.f || ""; document.getElementById(`d_${idx}_t`).value = d.t || ""; const sd = d.s || {}; SUBJECTS_19.forEach((_, si) => { const el = document.getElementById(`chk_${idx}_${si}`); if(el) el.checked = sd[si] || false; }); }); checkMedals(g); }
         function checkMedals(g) { if(!g.phases) return; PHASES_CONFIG.forEach((_, idx) => { const d = g.phases[idx]; if(!d) return; let done = true; for(let i=0; i<SUBJECTS_19.length; i++) if(!d.s[i]) done=false; const b = document.getElementById(`badge_${idx}`), block = document.getElementById(`pb_${idx}`); if(done) { b.classList.add('unlocked'); block.classList.add('completed'); } else { b.classList.remove('unlocked'); block.classList.remove('completed'); } }); }
 
-        // --- BACKUP / RESTORE ---
         function exportData() { const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const code = btoa(JSON.stringify(b)); navigator.clipboard.writeText(code).then(() => alert("Code Copied!")); }
         function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; }
         function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
         function processRestore() { try { const d = JSON.parse(atob(document.getElementById('restoreInput').value)); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
 
-        // --- UTILS ---
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
-        function updateCountdowns() { const n = new Date(), dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") }; Object.keys(dates).forEach(k => { const d = Math.ceil((dates[k] - n) / 86400000); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = d > 0 ? d : "LIVE"; }); }
+        
+        function updateCountdowns() { 
+            const n = new Date();
+            const istStr = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
+            const swtInp = document.getElementById('swtDate');
+            const gtInp = document.getElementById('gtDate');
+            if(swtInp) swtInp.max = istStr;
+            if(gtInp) gtInp.max = istStr;
+
+            const dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") }; 
+            Object.keys(dates).forEach(k => { 
+                const d = Math.ceil((dates[k] - n) / 86400000); 
+                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); 
+                if(el) el.innerText = d > 0 ? d : "LIVE"; 
+            }); 
+        }
+
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const u = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${u} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(u/75)) + "🔥".repeat(Math.floor((u%75)/25)); }
         function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
@@ -424,10 +602,69 @@
 
         function renderSWT() {
             const all = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"), sub = document.getElementById('swtSubject').value, f = all.filter(x => x.subject === sub);
-            if(sChart) sChart.destroy(); if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
+            
+            // 1. Subject Specific Trend
+            if(sChart) sChart.destroy(); 
+            if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
             document.getElementById('swtAnalysis').innerHTML = f.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong})`).reverse().join('<br>');
-            if(all.length>0) { const p={}; all.forEach(l=>{ if(!p[l.subject]) p[l.subject]={s:0,c:0}; p[l.subject].s+=parseFloat(l.percent); p[l.subject].c++; }); let max=-1, min=101, sSub="--", wSub="--"; Object.keys(p).forEach(k=>{ const a=p[k].s/p[k].c; if(a>max){max=a;sSub=k;} if(a<min){min=a;wSub=k;} }); document.getElementById('swtStrong').innerText=sSub; document.getElementById('swtStrongVal').innerText=max.toFixed(1)+'%'; document.getElementById('swtWeak').innerText=wSub; document.getElementById('swtWeakVal').innerText=min.toFixed(1)+'%'; }
+
+            // 2. Cumulative Line Graph (Average per Subject)
+            if(scuChart) scuChart.destroy();
+            const perfData = {};
+            ALL_SWT_SUBS.forEach(s => perfData[s] = {sum:0, count:0});
+            
+            all.forEach(l => {
+                if(perfData[l.subject]) {
+                    perfData[l.subject].sum += parseFloat(l.percent);
+                    perfData[l.subject].count++;
+                }
+            });
+
+            const xLabels = ALL_SWT_SUBS.map(s => s.substring(0,4)); // Shortened for chart
+            const yData = ALL_SWT_SUBS.map(s => {
+                return perfData[s].count > 0 ? (perfData[s].sum / perfData[s].count).toFixed(1) : null;
+            });
+
+            scuChart = new Chart(document.getElementById('swtCumulativeChart'), {
+                type: 'line',
+                data: {
+                    labels: xLabels,
+                    datasets: [{
+                        label: 'Avg Accuracy %',
+                        data: yData,
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        spanGaps: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 0, max: 100, ticks: { color: '#fff', font: { size: 9 } } },
+                        x: { ticks: { color: '#aaa', font: { size: 8 } } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 3. Performance Indicators (Strongest/Weakest)
+            if(all.length>0) {
+                let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--";
+                Object.keys(perfData).forEach(k => {
+                    if(perfData[k].count > 0) {
+                        const avg = perfData[k].sum / perfData[k].count;
+                        if(avg > maxAvg) { maxAvg = avg; sSub = k; }
+                        if(avg < minAvg) { minAvg = avg; wSub = k; }
+                    }
+                });
+                document.getElementById('swtStrong').innerText = sSub;
+                document.getElementById('swtWeak').innerText = wSub;
+            }
         }
+
         function renderGT() {
             const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             if(gNeetChart) gNeetChart.destroy(); if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
