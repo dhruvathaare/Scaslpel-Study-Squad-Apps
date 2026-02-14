@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.15</title>
+    <title>Scalpel Master Pro V6.16</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -168,7 +168,7 @@
             <h3>GT Subject Breakdown</h3>
             <p style="font-size: 10px; color: #888;">Enter Correct/Incorrect/Unattempted per subject</p>
             <div class="subject-breakdown-row subject-breakdown-header">
-                <span>Subject</span><span>C</span><span>W</span><span>U</span>
+                <span>Subject</span><span>C</span><span>I</span><span>U</span>
             </div>
             <div id="gt-subject-inputs" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
                 </div>
@@ -422,6 +422,11 @@
 
         <div class="danger-zone">
             <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
+            <ul style="text-align: left; font-size: 10px; color: #aaa; padding-left: 15px; margin-bottom: 10px;">
+                <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
+                <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
+                <li><strong>Step 3:</strong> To restore later, copy that code, click "Restore Data", and paste it.</li>
+            </ul>
             <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
             <button class="restore-btn" onclick="openRestore()">Restore Data</button>
             <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
@@ -778,7 +783,7 @@
             if(!confirm(`⚠️ CONFIRMATION\n\nPhase: ${ph}\nMode: ${currentGTMode}\n\nProceed to enter subject-wise marks?`)) return;
             const container = document.getElementById('gt-subject-inputs'); container.innerHTML = "";
             SUBJECTS_19.forEach(s => {
-                container.innerHTML += `<div class="subject-breakdown-row"><span>${s}</span><input type="number" class="sb-input" id="sb_c_${s}" placeholder="C"><input type="number" class="sb-input" id="sb_w_${s}" placeholder="W"><input type="number" class="sb-input" id="sb_u_${s}" placeholder="U"></div>`;
+                container.innerHTML += `<div class="subject-breakdown-row"><span>${s}</span><input type="number" class="sb-input" id="sb_c_${s}" placeholder="C"><input type="number" class="sb-input" id="sb_w_${s}" placeholder="I"><input type="number" class="sb-input" id="sb_u_${s}" placeholder="U"></div>`;
             });
             document.getElementById('popup-overlay').style.display='flex'; document.getElementById('gt-breakdown-popup').style.display='block';
         }
