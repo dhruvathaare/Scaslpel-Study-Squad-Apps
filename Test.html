@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.8</title>
+    <title>Scalpel Master Pro V6.9</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -733,7 +733,8 @@
             
             // 1. Subject Specific Trend
             if(sChart) sChart.destroy(); 
-            if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
+            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM
+            if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
             
             // 2. Cumulative Line Graph (Average per Subject)
             if(scuChart) scuChart.destroy();
@@ -929,8 +930,13 @@
             const id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             
             // Basic Line Charts
-            if(gNeetChart) gNeetChart.destroy(); if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
-            if(gIniChart) gIniChart.destroy(); if(id.length>0) gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+            if(gNeetChart) gNeetChart.destroy(); 
+            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM for Neet Chart
+            if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
+            
+            if(gIniChart) gIniChart.destroy(); 
+            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM for INI Chart
+            if(id.length>0) gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
 
             // Helper to process phase data
             const processPhaseData = (dataList) => {
