@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V7.1 (Stable)</title>
+    <title>Scalpel Master Pro V7.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,6 +25,7 @@
         
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
+        /* Header */
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
@@ -33,7 +34,7 @@
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
-        /* Dashboard */
+        /* Exam Dashboard */
         .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); }
@@ -57,7 +58,7 @@
         .accordion-header:after { content: '▼'; font-size: 10px; transition: transform 0.3s; }
         .accordion-wrapper.open .accordion-header:after { transform: rotate(180deg); }
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { max-height: 3000px; } /* Large height for nested content */
+        .accordion-wrapper.open .accordion-content { max-height: 4000px; } /* Increased for large tables */
         .accordion-inner { padding: 15px; }
 
         /* Standard Components */
@@ -82,7 +83,7 @@
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
-        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); }
+        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); min-width: 80px; }
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
         /* Goal & PYQ Specifics */
@@ -99,6 +100,8 @@
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
         .sub-check-item input:checked + span { color: #2ecc71; font-weight: bold; }
+        
+        .target-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); }
 
         /* PYQ Dropboxes */
         .pyq-dropbox { border: 1px solid rgba(82, 136, 193, 0.3); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
@@ -172,22 +175,10 @@
 
         <div class="exam-dashboard">
             <div class="exam-grid">
-                <div class="exam-item">
-                    <span id="daysIniJuly" class="exam-days">--</span>
-                    <span class="exam-label">INICET JULY</span>
-                </div>
-                <div class="exam-item">
-                    <span id="daysUpsc" class="exam-days">--</span>
-                    <span class="exam-label">UPSC CMS</span>
-                </div>
-                <div class="exam-item">
-                    <span id="daysNeet" class="exam-days">--</span>
-                    <span class="exam-label">NEET PG 2026</span>
-                </div>
-                <div class="exam-item">
-                    <span id="daysIniJan" class="exam-days">--</span>
-                    <span class="exam-label">INICET JAN '27</span>
-                </div>
+                <div class="exam-item"><span id="daysIniJuly" class="exam-days">--</span><span class="exam-label">INICET JULY</span></div>
+                <div class="exam-item"><span id="daysUpsc" class="exam-days">--</span><span class="exam-label">UPSC CMS</span></div>
+                <div class="exam-item"><span id="daysNeet" class="exam-days">--</span><span class="exam-label">NEET PG 2026</span></div>
+                <div class="exam-item"><span id="daysIniJan" class="exam-days">--</span><span class="exam-label">INICET JAN '27</span></div>
             </div>
         </div>
 
@@ -222,16 +213,14 @@
             <div class="accordion-wrapper" id="acc-pyq">
                 <div class="accordion-header" onclick="toggleAccordion('acc-pyq')">PYQ Papers Goal</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner" id="pyq-container">
-                        </div>
+                    <div class="accordion-inner" id="pyq-container"></div>
                 </div>
             </div>
 
             <div class="accordion-wrapper" id="acc-phases">
                 <div class="accordion-header" onclick="toggleAccordion('acc-phases')">Reading Phases</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner" id="goal-phases-container">
-                        </div>
+                    <div class="accordion-inner" id="goal-phases-container"></div>
                 </div>
             </div>
         </div>
@@ -311,21 +300,15 @@
                 </div>
             </div>
 
-            <div class="accordion-wrapper" id="acc-matrix">
+            <div class="accordion-wrapper open" id="acc-matrix">
                 <div class="accordion-header" onclick="toggleAccordion('acc-matrix')">Phase Matrices</div>
                 <div class="accordion-content">
                     <div class="accordion-inner">
                         <h3 style="margin:0 0 5px 0; color:#5288c1; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (Days Spent)</h3>
                         <div style="overflow-x:auto;">
-                            <table class="matrix-table" id="readingMatrix">
+                            <table class="matrix-table">
                                 <thead>
-                                    <tr>
-                                        <th style="text-align:left;">Subject</th>
-                                        <th>1st</th>
-                                        <th>2nd</th>
-                                        <th>3rd</th>
-                                        <th>Bonus</th>
-                                    </tr>
+                                    <tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
                                 </thead>
                                 <tbody id="matrixBody"></tbody>
                             </table>
@@ -333,15 +316,9 @@
 
                         <h3 style="margin:20px 0 5px 0; color:#2ecc71; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (MCQs Solved)</h3>
                         <div style="overflow-x:auto;">
-                            <table class="matrix-table" id="mcqMatrix">
+                            <table class="matrix-table">
                                 <thead>
-                                    <tr>
-                                        <th style="text-align:left;">Subject</th>
-                                        <th>1st</th>
-                                        <th>2nd</th>
-                                        <th>3rd</th>
-                                        <th>Bonus</th>
-                                    </tr>
+                                    <tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
                                 </thead>
                                 <tbody id="mcqMatrixBody"></tbody>
                             </table>
@@ -444,22 +421,12 @@
             { id: 'upsc', name: 'UPSC CMS', type:'single', start:2025, end:2021 }
         ];
 
-        function toggleAccordion(id) {
-            document.getElementById(id).classList.toggle('open');
-        }
-
-        function togglePYQBox(id) {
-            document.getElementById(`pyq_body_${id}`).classList.toggle('open');
-        }
+        function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
+        function togglePYQBox(id) { document.getElementById(`pyq_body_${id}`).classList.toggle('open'); }
 
         function updateCountdowns() {
             const now = new Date();
-            const dates = {
-                iniJuly: new Date("2026-05-17"),
-                upsc: new Date("2026-08-02"),
-                neet: new Date("2026-08-30"),
-                iniJan: new Date("2026-11-01")
-            };
+            const dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") };
             Object.keys(dates).forEach(key => {
                 const diff = dates[key] - now;
                 const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -501,11 +468,12 @@
         function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
         function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
-        function saveStudyLog(s, m, d, ph) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
+        function saveStudyLog(s, m, d, ph) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); updateUI(); }
 
-        // --- PYQ LOGIC ---
+        // --- PYQ LOGIC (FIXED) ---
         function renderPYQ() {
             const container = document.getElementById('pyq-container');
+            if (!container) return;
             container.innerHTML = ""; 
 
             PYQ_CATS.forEach(cat => {
@@ -543,8 +511,12 @@
             const data = {};
             PYQ_CATS.forEach(cat => {
                 data[cat.id] = {};
-                if(cat.type === 'single') for(let y=cat.start; y>=cat.end; y--) data[cat.id][y] = document.getElementById(`pyq_${cat.id}_${y}`).checked;
-                else for(let y=cat.start; y>=cat.end; y--) { data[cat.id][`${y}_1`] = document.getElementById(`pyq_${cat.id}_${y}_1`).checked; data[cat.id][`${y}_2`] = document.getElementById(`pyq_${cat.id}_${y}_2`).checked; }
+                if(cat.type === 'single') for(let y=cat.start; y>=cat.end; y--) { const el=document.getElementById(`pyq_${cat.id}_${y}`); if(el) data[cat.id][y] = el.checked; }
+                else for(let y=cat.start; y>=cat.end; y--) { 
+                    const e1=document.getElementById(`pyq_${cat.id}_${y}_1`), e2=document.getElementById(`pyq_${cat.id}_${y}_2`);
+                    if(e1) data[cat.id][`${y}_1`] = e1.checked;
+                    if(e2) data[cat.id][`${y}_2`] = e2.checked;
+                }
             });
             localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
             checkPYQMedals(data);
@@ -570,7 +542,7 @@
                 if(cat.type==='single') for(let y=cat.start; y>=cat.end; y--) { if(!d[y]) all=false; }
                 else for(let y=cat.start; y>=cat.end; y--) { if(!d[`${y}_1`] || !d[`${y}_2`]) all=false; }
                 const b = document.getElementById(`pyq_badge_${cat.id}`);
-                if(all) b.classList.add('unlocked'); else b.classList.remove('unlocked');
+                if(b) { if(all) b.classList.add('unlocked'); else b.classList.remove('unlocked'); }
             });
         }
 
@@ -668,7 +640,10 @@
         }
 
         // --- CORE UI UPDATE ---
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderMCQMatrix(); renderPYQ(); renderRevisionRadar(); }
+        function updateUI() { 
+            renderData(); renderSWT(); renderGT(); updateConsistency(); 
+            renderMatrix(); renderMCQMatrix(); renderRevisionRadar(); 
+        }
         
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0,t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w=Math.max(0,200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(currentGTMode==='NEET'?0:2); }
@@ -727,30 +702,39 @@
         }
 
         function renderMatrix() {
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 };
-            const m = {}; SUBJECTS_19.forEach(s=>m[s]=[new Set(),new Set(),new Set(),new Set()]);
-            logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0].add(l.date); });
-            let h="", tot=[0,0,0,0]; SUBJECTS_19.forEach(s=>{ 
-                const d=m[s].map(x=>x.size); d.forEach((v,i)=>tot[i]+=v);
-                h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
-            });
-            document.getElementById('matrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`;
+            try {
+                const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+                const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 };
+                const m = {}; SUBJECTS_19.forEach(s=>m[s]=[new Set(),new Set(),new Set(),new Set()]);
+                logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0].add(l.date); });
+                let h="", tot=[0,0,0,0]; 
+                SUBJECTS_19.forEach(s=>{ 
+                    const d=m[s].map(x=>x.size); d.forEach((v,i)=>tot[i]+=v);
+                    h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
+                });
+                document.getElementById('matrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`;
+            } catch(e) { console.error(e); }
         }
 
         function renderMCQMatrix() {
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 };
-            const m = {}; SUBJECTS_19.forEach(s=>m[s]=[0,0,0,0]);
-            logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0]+=parseInt(l.mcqs)||0; });
-            let h="", tot=[0,0,0,0]; SUBJECTS_19.forEach(s=>{ 
-                const d=m[s]; d.forEach((v,i)=>tot[i]+=v);
-                h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
-            });
-            document.getElementById('mcqMatrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`;
+            try {
+                const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+                const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 };
+                const m = {}; SUBJECTS_19.forEach(s=>m[s]=[0,0,0,0]);
+                logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0]+=parseInt(l.mcqs)||0; });
+                let h="", tot=[0,0,0,0]; 
+                SUBJECTS_19.forEach(s=>{ 
+                    const d=m[s]; d.forEach((v,i)=>tot[i]+=v);
+                    h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
+                });
+                document.getElementById('mcqMatrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`;
+            } catch(e) { console.error(e); }
         }
 
-        renderGoalHTML(); updateUI();
+        // Initialize Order is Crucial
+        renderGoalHTML(); 
+        renderPYQ(); 
+        updateUI();
     </script>
 </body>
 </html>
