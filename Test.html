@@ -118,8 +118,7 @@
         .performance-label { font-family: 'Oswald', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;}
         .stat-strong { color: #2ecc71; } .stat-weak { color: #ef5350; }
         
-        /* New Styles for Usage Analysis */
-        .usage-box { margin-top: 15px; padding: 12px; border-radius: 10px; text-align: left; font-size: 11px; line-height: 1.4; border: 1px solid; }
+        .usage-box { margin-top: 15px; padding: 12px; border-radius: 10px; text-align: left; font-size: 11px; line-height: 1.4; border: 1px solid; margin-bottom: 10px; }
         .caution-box { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; color: #f39c12; }
         .freq-box { background: rgba(255, 255, 255, 0.05); border-color: var(--border); color: #fff; }
         .usage-title { font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; opacity: 0.9; font-size: 10px; }
@@ -284,6 +283,9 @@
                 <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #f39c12; text-transform: uppercase;">Cumulative Performance (All Subjects)</h4>
                 <div class="chart-container"><canvas id="swtCumulativeChart"></canvas></div>
 
+                <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #2ecc71; text-transform: uppercase;">Total Questions Solved (All Subjects)</h4>
+                <div class="chart-container"><canvas id="swtQuestionsChart"></canvas></div>
+
                 <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5; max-height:100px; overflow-y:auto;"></div>
                 
                 <div class="strong-weak-container">
@@ -379,7 +381,7 @@
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
 
-        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart;
+        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart;
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const grouped = {};
@@ -588,42 +590,24 @@
             checkMedals(g); 
         }
 
-        // NEW FUNCTION FOR LOCK BUTTON
         function lockExamGoals() {
-            saveGoals(); // Ensure state is saved first
+            saveGoals();
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS));
-            
-            // Map IDs to DOM Elements in dashboard
-            const map = {
-                'i_j': 'dash_ini_jul',
-                'u': 'dash_upsc',
-                'n': 'dash_neet',
-                'i_jan': 'dash_ini_jan'
-            };
-
-            // Apply Classes based on checkbox state
+            const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
             Object.keys(map).forEach(key => {
                 const el = document.getElementById(map[key]);
-                if (g.exams[key]) {
-                    el.classList.add('target-locked');
-                } else {
-                    el.classList.remove('target-locked');
-                }
+                if (g.exams[key]) el.classList.add('target-locked');
+                else el.classList.remove('target-locked');
             });
-
             alert("Targets Locked! Let's Go! 🚀");
         }
 
         function loadGoalsToUI() { 
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; 
-            
-            // Set Checkboxes
             document.getElementById('goal_ini_jul').checked = g.exams.i_j; 
             document.getElementById('goal_upsc').checked = g.exams.u; 
             document.getElementById('goal_neet').checked = g.exams.n; 
             document.getElementById('goal_ini_jan').checked = g.exams.i_jan; 
-            
-            // Restore visual lock state on load
             if(g.exams) {
                 const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
                 Object.keys(map).forEach(key => {
@@ -632,7 +616,6 @@
                     else el.classList.remove('target-locked');
                 });
             }
-
             PHASES_CONFIG.forEach((_, idx) => { 
                 const d = g.phases[idx] || {}; 
                 document.getElementById(`d_${idx}_f`).value = d.f || ""; 
@@ -689,18 +672,19 @@
             // 2. Cumulative Line Graph (Average per Subject)
             if(scuChart) scuChart.destroy();
             const perfData = {};
-            ALL_SWT_SUBS.forEach(s => perfData[s] = {sum:0, count:0});
+            ALL_SWT_SUBS.forEach(s => perfData[s] = {sum:0, count:0, totalQs:0});
             
             all.forEach(l => {
                 if(perfData[l.subject]) {
                     perfData[l.subject].sum += parseFloat(l.percent);
                     perfData[l.subject].count++;
+                    perfData[l.subject].totalQs += parseInt(l.total);
                 }
             });
 
-            const xLabels = ALL_SWT_SUBS; // Full Names as requested
+            const xLabels = ALL_SWT_SUBS; // Full Names
 
-            const yData = ALL_SWT_SUBS.map(s => {
+            const yDataAvg = ALL_SWT_SUBS.map(s => {
                 return perfData[s].count > 0 ? (perfData[s].sum / perfData[s].count).toFixed(1) : null;
             });
 
@@ -710,7 +694,7 @@
                     labels: xLabels,
                     datasets: [{
                         label: 'Avg Accuracy %',
-                        data: yData,
+                        data: yDataAvg,
                         borderColor: '#f39c12',
                         backgroundColor: 'rgba(243, 156, 18, 0.1)',
                         fill: true,
@@ -723,23 +707,43 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: { min: 0, max: 100, ticks: { color: '#fff', font: { size: 9 } } },
-                        x: { 
-                            ticks: { 
-                                color: '#aaa', 
-                                font: { size: 8 },
-                                autoSkip: false,
-                                maxRotation: 90,
-                                minRotation: 90
-                            } 
-                        }
+                        x: { ticks: { color: '#aaa', font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 } }
                     },
                     plugins: { legend: { display: false } }
                 }
             });
 
-            // 3. Performance Indicators (Strongest/Weakest)
+            // 3. New Graph: Total Questions Solved
+            if(sqChart) sqChart.destroy();
+            const yDataQs = ALL_SWT_SUBS.map(s => perfData[s].totalQs);
+
+            sqChart = new Chart(document.getElementById('swtQuestionsChart'), {
+                type: 'line',
+                data: {
+                    labels: xLabels,
+                    datasets: [{
+                        label: 'Questions Solved',
+                        data: yDataQs,
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        spanGaps: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { ticks: { color: '#fff', font: { size: 9 } }, beginAtZero: true },
+                        x: { ticks: { color: '#aaa', font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 4. Performance Indicators
             let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--";
-            
             if(all.length>0) {
                 Object.keys(perfData).forEach(k => {
                     if(perfData[k].count > 0) {
@@ -752,44 +756,54 @@
                 document.getElementById('swtWeak').innerText = wSub;
             }
 
-            // 4. USAGE INTELLIGENCE (NEW FEATURE)
+            // 5. Usage Analysis
             const missing = ALL_SWT_SUBS.filter(s => perfData[s].count === 0);
             const usageBox = document.getElementById('swtUsageAnalysis');
-            
+            let usageHtml = "";
+
+            // Part A: Missing Subjects Warning (Disappears only if all attempted)
             if (missing.length > 0) {
-                // Show Caution
-                usageBox.className = 'usage-box caution-box';
-                usageBox.innerHTML = `<span class="usage-title">⚠️ Missing Subjects</span>${missing.join(', ')}`;
-                usageBox.style.display = 'block';
-            } else {
-                // Show Frequency Analysis (Only if at least one subject recorded)
-                if (all.length > 0) {
-                    let maxC = -1, minC = 99999;
-                    ALL_SWT_SUBS.forEach(s => {
+                usageHtml += `<div class="usage-box caution-box"><span class="usage-title">⚠️ Missing Subjects</span>${missing.join(', ')}</div>`;
+            }
+
+            // Part B: Frequency Stats (Always Visible if at least one test taken)
+            if (all.length > 0) {
+                let maxC = -1, minC = 99999;
+                // Determine min/max among ATTEMPTED subjects for relevant stats
+                // Or among ALL subjects? "Rarely attempted" could imply 0. 
+                // Context: "Rarely attempted" usually means > 0 but low.
+                // Let's filter for subjects with count > 0 to find "Rare" attempts, 
+                // because "Missing" box already covers the 0s.
+                
+                const attemptedSubs = ALL_SWT_SUBS.filter(s => perfData[s].count > 0);
+                
+                if (attemptedSubs.length > 0) {
+                    attemptedSubs.forEach(s => {
                         const c = perfData[s].count;
                         if(c > maxC) maxC = c;
                         if(c < minC) minC = c;
                     });
 
-                    const mostFreq = ALL_SWT_SUBS.filter(s => perfData[s].count === maxC).map(s => `${s} (${maxC})`);
-                    const leastFreq = ALL_SWT_SUBS.filter(s => perfData[s].count === minC).map(s => `${s} (${minC})`);
+                    const mostFreq = attemptedSubs.filter(s => perfData[s].count === maxC).map(s => `${s} (${maxC})`);
+                    const leastFreq = attemptedSubs.filter(s => perfData[s].count === minC).map(s => `${s} (${minC})`);
 
-                    usageBox.className = 'usage-box freq-box';
-                    usageBox.innerHTML = `
-                        <div style="margin-bottom:8px;">
-                            <span class="usage-title" style="color:#2ecc71;">Most Attempted</span>
-                            ${mostFreq.join(', ')}
-                        </div>
-                        <div>
-                            <span class="usage-title" style="color:#ef5350;">Least Attempted</span>
-                            ${leastFreq.join(', ')}
+                    usageHtml += `
+                        <div class="usage-box freq-box">
+                            <div style="margin-bottom:8px;">
+                                <span class="usage-title" style="color:#2ecc71;">Most Attempted</span>
+                                ${mostFreq.join(', ')}
+                            </div>
+                            <div>
+                                <span class="usage-title" style="color:#ef5350;">Rarely Attempted</span>
+                                ${leastFreq.join(', ')}
+                            </div>
                         </div>
                     `;
-                    usageBox.style.display = 'block';
-                } else {
-                    usageBox.style.display = 'none';
                 }
             }
+
+            usageBox.innerHTML = usageHtml;
+            usageBox.style.display = usageHtml ? 'block' : 'none';
         }
 
         function renderGT() {
