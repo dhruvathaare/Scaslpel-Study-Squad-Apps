@@ -35,8 +35,14 @@
         
         .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); }
+        .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); transition: all 0.3s ease; }
+        
+        /* New Style for Locked Target Exams */
+        .exam-item.target-locked { border: 1px solid #2ecc71; background: rgba(46, 204, 113, 0.2); box-shadow: 0 0 10px rgba(46, 204, 113, 0.3); transform: scale(1.02); }
+
         .exam-days { font-size: 16px; font-weight: bold; color: var(--accent); display: block; }
+        .exam-item.target-locked .exam-days { color: #2ecc71; } /* Green text for locked */
+        
         .exam-label { font-size: 8px; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px; margin-top: 2px; display: block; }
 
         .streak-section { margin-bottom: 10px; }
@@ -78,9 +84,8 @@
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
 
-        /* PYQ Specific Styles - FIXED FOR CUP VISIBILITY */
-        .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-top: 15px; /* Added padding top for cup space */ }
-        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; /* Ensure cup isn't clipped */ }
+        .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; }
         .pyq-tab.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: bold; }
         .pyq-tab-cup { display: none; position: absolute; top: -12px; right: -5px; font-size: 18px; text-shadow: 0 0 10px gold; z-index: 100; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .pyq-tab-cup.show { display: block; }
@@ -151,10 +156,10 @@
 
         <div class="exam-dashboard">
             <div class="exam-grid">
-                <div class="exam-item"><span id="daysIniJuly" class="exam-days">--</span><span class="exam-label">INICET JULY</span></div>
-                <div class="exam-item"><span id="daysUpsc" class="exam-days">--</span><span class="exam-label">UPSC CMS</span></div>
-                <div class="exam-item"><span id="daysNeet" class="exam-days">--</span><span class="exam-label">NEET PG 2026</span></div>
-                <div class="exam-item"><span id="daysIniJan" class="exam-days">--</span><span class="exam-label">INICET JAN '27</span></div>
+                <div class="exam-item" id="dash_ini_jul"><span id="daysIniJuly" class="exam-days">--</span><span class="exam-label">INICET JULY</span></div>
+                <div class="exam-item" id="dash_upsc"><span id="daysUpsc" class="exam-days">--</span><span class="exam-label">UPSC CMS</span></div>
+                <div class="exam-item" id="dash_neet"><span id="daysNeet" class="exam-days">--</span><span class="exam-label">NEET PG 2026</span></div>
+                <div class="exam-item" id="dash_ini_jan"><span id="daysIniJan" class="exam-days">--</span><span class="exam-label">INICET JAN '27</span></div>
             </div>
         </div>
 
@@ -179,6 +184,8 @@
                 <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
                 <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
                 <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
+                
+                <button class="btn sm-btn" style="width:100%; margin-top:10px; background:var(--accent); font-weight:bold; font-size:12px; padding:12px;" onclick="lockExamGoals()">Lock & Let's Go!</button>
             </div>
             
             <div class="card">
@@ -556,8 +563,81 @@
                 container.innerHTML += `<div class="phase-block" id="pb_${idx}"><div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" onchange="saveGoals()"></div></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects</button><div id="sg_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s, si) => `<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${si}" onchange="saveGoals()"> <span>${s.substring(0,4)}..</span></label>`).join('')}</div></div></div>`;
             }); loadGoalsToUI();
         }
-        function saveGoals() { const g = { exams: { i_j: document.getElementById('goal_ini_jul').checked, u: document.getElementById('goal_upsc').checked, n: document.getElementById('goal_neet').checked, i_jan: document.getElementById('goal_ini_jan').checked }, phases: PHASES_CONFIG.map((_, idx) => { const s = {}; SUBJECTS_19.forEach((_, si) => s[si] = document.getElementById(`chk_${idx}_${si}`).checked); return { f: document.getElementById(`d_${idx}_f`).value, t: document.getElementById(`d_${idx}_t`).value, s }; }) }; localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); checkMedals(g); }
-        function loadGoalsToUI() { const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; document.getElementById('goal_ini_jul').checked = g.exams.i_j; document.getElementById('goal_upsc').checked = g.exams.u; document.getElementById('goal_neet').checked = g.exams.n; document.getElementById('goal_ini_jan').checked = g.exams.i_jan; PHASES_CONFIG.forEach((_, idx) => { const d = g.phases[idx] || {}; document.getElementById(`d_${idx}_f`).value = d.f || ""; document.getElementById(`d_${idx}_t`).value = d.t || ""; const sd = d.s || {}; SUBJECTS_19.forEach((_, si) => { const el = document.getElementById(`chk_${idx}_${si}`); if(el) el.checked = sd[si] || false; }); }); checkMedals(g); }
+        function saveGoals() { 
+            const g = { 
+                exams: { 
+                    i_j: document.getElementById('goal_ini_jul').checked, 
+                    u: document.getElementById('goal_upsc').checked, 
+                    n: document.getElementById('goal_neet').checked, 
+                    i_jan: document.getElementById('goal_ini_jan').checked 
+                }, 
+                phases: PHASES_CONFIG.map((_, idx) => { 
+                    const s = {}; 
+                    SUBJECTS_19.forEach((_, si) => s[si] = document.getElementById(`chk_${idx}_${si}`).checked); 
+                    return { f: document.getElementById(`d_${idx}_f`).value, t: document.getElementById(`d_${idx}_t`).value, s }; 
+                }) 
+            }; 
+            localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); 
+            checkMedals(g); 
+        }
+
+        // NEW FUNCTION FOR LOCK BUTTON
+        function lockExamGoals() {
+            saveGoals(); // Ensure state is saved first
+            const g = JSON.parse(localStorage.getItem(KEYS.GOALS));
+            
+            // Map IDs to DOM Elements in dashboard
+            const map = {
+                'i_j': 'dash_ini_jul',
+                'u': 'dash_upsc',
+                'n': 'dash_neet',
+                'i_jan': 'dash_ini_jan'
+            };
+
+            // Apply Classes based on checkbox state
+            Object.keys(map).forEach(key => {
+                const el = document.getElementById(map[key]);
+                if (g.exams[key]) {
+                    el.classList.add('target-locked');
+                } else {
+                    el.classList.remove('target-locked');
+                }
+            });
+
+            alert("Targets Locked! Let's Go! 🚀");
+        }
+
+        function loadGoalsToUI() { 
+            const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; 
+            
+            // Set Checkboxes
+            document.getElementById('goal_ini_jul').checked = g.exams.i_j; 
+            document.getElementById('goal_upsc').checked = g.exams.u; 
+            document.getElementById('goal_neet').checked = g.exams.n; 
+            document.getElementById('goal_ini_jan').checked = g.exams.i_jan; 
+            
+            // Restore visual lock state on load
+            if(g.exams) {
+                const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
+                Object.keys(map).forEach(key => {
+                    const el = document.getElementById(map[key]);
+                    if (g.exams[key]) el.classList.add('target-locked');
+                    else el.classList.remove('target-locked');
+                });
+            }
+
+            PHASES_CONFIG.forEach((_, idx) => { 
+                const d = g.phases[idx] || {}; 
+                document.getElementById(`d_${idx}_f`).value = d.f || ""; 
+                document.getElementById(`d_${idx}_t`).value = d.t || ""; 
+                const sd = d.s || {}; 
+                SUBJECTS_19.forEach((_, si) => { 
+                    const el = document.getElementById(`chk_${idx}_${si}`); 
+                    if(el) el.checked = sd[si] || false; 
+                }); 
+            }); 
+            checkMedals(g); 
+        }
         function checkMedals(g) { if(!g.phases) return; PHASES_CONFIG.forEach((_, idx) => { const d = g.phases[idx]; if(!d) return; let done = true; for(let i=0; i<SUBJECTS_19.length; i++) if(!d.s[i]) done=false; const b = document.getElementById(`badge_${idx}`), block = document.getElementById(`pb_${idx}`); if(done) { b.classList.add('unlocked'); block.classList.add('completed'); } else { b.classList.remove('unlocked'); block.classList.remove('completed'); } }); }
 
         function exportData() { const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const code = btoa(JSON.stringify(b)); navigator.clipboard.writeText(code).then(() => alert("Code Copied!")); }
