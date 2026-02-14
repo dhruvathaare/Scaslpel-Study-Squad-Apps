@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.14</title>
+    <title>Scalpel Master Pro V6.15</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -107,7 +107,7 @@
         .chart-container { width: 100%; height: 160px; margin: 10px 0; }
         
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
-        .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
+        .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; overflow-y: auto; max-height: 80vh; }
         
         .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; opacity: 0.9; }
         .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; width: 100%; }
@@ -138,6 +138,10 @@
         .mini-lock-btn { background: none; border: 1px solid var(--border); color: #888; border-radius: 4px; cursor: pointer; padding: 2px 5px; font-size: 10px; position: absolute; right: 4px; top: 18px; }
         .mini-lock-btn.locked { border-color: #2ecc71; color: #2ecc71; pointer-events: none; }
         .save-sub-btn { background: #27ae60; color: white; border: none; padding: 10px; width: 100%; margin-top: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+
+        .subject-breakdown-row { display: grid; grid-template-columns: 1fr 50px 50px 50px; gap: 5px; align-items: center; margin-bottom: 5px; font-size: 9px; }
+        .subject-breakdown-header { font-weight: bold; color: var(--accent); margin-bottom: 8px; }
+        .sb-input { padding: 4px !important; font-size: 10px !important; }
     </style>
 </head>
 <body>
@@ -159,6 +163,17 @@
             <textarea id="restoreInput" style="width:100%; height:80px; background:#0e1621; color:white; border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
             <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
             <button class="btn" onclick="closeRestore()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
+        </div>
+        <div class="popup-card" id="gt-breakdown-popup" style="display:none; width: 95%; max-width: 400px;">
+            <h3>GT Subject Breakdown</h3>
+            <p style="font-size: 10px; color: #888;">Enter Correct/Incorrect/Unattempted per subject</p>
+            <div class="subject-breakdown-row subject-breakdown-header">
+                <span>Subject</span><span>C</span><span>W</span><span>U</span>
+            </div>
+            <div id="gt-subject-inputs" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                </div>
+            <button class="btn" onclick="finalizeGTSave()" style="background:#2ecc71; width:100%;">Finalize & Save</button>
+            <button class="btn" onclick="closeGTBreakdown()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
         </div>
     </div>
 
@@ -355,12 +370,30 @@
                     <option value="Extra Bonus">Extra Bonus Reading</option>
                 </select>
 
+                <div style="margin-bottom: 8px;">
+                    <span class="setting-label">Platform (Marrow, Prepladder, etc.)</span>
+                    <input type="text" id="gtPlatform" placeholder="Enter Platform Name">
+                </div>
+
                 <div style="display:flex; gap:5px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="gtDate"></div><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="gtCorrect" oninput="calcGT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="gtUnat" oninput="calcGT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
-                <button class="btn" onclick="saveGT()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result</button>
+                <button class="btn" onclick="openGTBreakdown()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result & Enter Breakdown</button>
                 
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+                <div id="gt-review-section">
+                    <span class="setting-label">Review Past GT Breakdown</span>
+                    <select id="gtHistorySelect" onchange="renderGTBreakdownGraph()">
+                        <option value="">Select a GT to View Details</option>
+                    </select>
+                    <div class="chart-container" id="gtBreakdownChartContainer" style="display:none; height: 220px;">
+                        <canvas id="gtBreakdownChart"></canvas>
+                    </div>
+                    <div id="gtSubjectStats" style="display:none; margin-top:10px;"></div>
+                </div>
+
                 <div id="neet-area">
-                    <h4 style="color:#f39c12; margin-top:15px; font-size:13px;">NEET PG Progress</h4>
+                    <h4 style="color:#f39c12; margin-top:25px; font-size:13px;">NEET PG General Progress</h4>
                     <div class="chart-container"><canvas id="gtNeetChart"></canvas></div>
                     
                     <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
@@ -373,7 +406,7 @@
                 </div>
 
                 <div id="inicet-area" style="display:none;">
-                    <h4 style="color:#2ecc71; margin-top:15px; font-size:13px;">INICET Progress</h4>
+                    <h4 style="color:#2ecc71; margin-top:25px; font-size:13px;">INICET General Progress</h4>
                     <div class="chart-container"><canvas id="gtInicetChart"></canvas></div>
                     
                     <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
@@ -409,7 +442,6 @@
         const SUBJECTS_EXTRA = ["Mixed Bag", "Integrated Systems"];
         const ALL_SWT_SUBS = [...SUBJECTS_19, ...SUBJECTS_EXTRA];
 
-        // MODIFIED: UPDATED MEDAL CONFIGURATION
         const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🥉' },{ id: 'r2', name: '2. Second Reading', badge: '🥈' },{ id: 'r3', name: '3. Third Reading', badge: '🥇' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
         
         const PYQ_CATS = [
@@ -463,7 +495,7 @@
         }
         /* ================= END BASE TIMER LOGIC ================= */
 
-        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart;
+        let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
         let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg;
 
         function renderData() {
@@ -499,32 +531,25 @@
             document.getElementById('dailyLogBody').innerHTML = html;
         }
 
-        // NEW: MONTHLY AGGREGATION
         function renderMonthlyTable() {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const data = Array(12).fill().map(() => ({mcq:0, swt:0, gt:0}));
-
-            // 1. Logs (MCQs) - DD/MM/YYYY
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             logs.forEach(l => {
-                const parts = l.date.split('/'); // DD, MM, YYYY
+                const parts = l.date.split('/'); 
                 if(parts.length === 3) {
                     const m = parseInt(parts[1]) - 1;
                     if(m >= 0 && m < 12) data[m].mcq += (parseInt(l.mcqs)||0);
                 }
             });
-
-            // 2. SWTs - YYYY-MM-DD
             const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
             swts.forEach(s => {
-                const parts = s.date.split('-'); // YYYY, MM, DD
+                const parts = s.date.split('-'); 
                 if(parts.length === 3) {
                     const m = parseInt(parts[1]) - 1;
                     if(m >= 0 && m < 12) data[m].swt++;
                 }
             });
-
-            // 3. GTs (NEET + INI) - YYYY-MM-DD
             const neet = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
             const ini = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             [...neet, ...ini].forEach(g => {
@@ -534,7 +559,6 @@
                     if(m >= 0 && m < 12) data[m].gt++;
                 }
             });
-
             let html = "";
             months.forEach((mName, idx) => {
                 const d = data[idx];
@@ -550,12 +574,10 @@
             const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
             const dMatrix = {}, mMatrix = {};
             SUBJECTS_19.forEach(s => { dMatrix[s] = [new Set(), new Set(), new Set(), new Set()]; mMatrix[s] = [0, 0, 0, 0]; });
-            
             logs.forEach(l => {
                 const s = l.subject, ph = l.phase || "First Reading", idx = mapKey[ph];
                 if (dMatrix[s] && idx !== undefined) { dMatrix[s][idx].add(l.date); mMatrix[s][idx] += (parseInt(l.mcqs)||0); }
             });
-
             let dHtml = "", mHtml = "";
             const dTotals = [0,0,0,0], mTotals = [0,0,0,0];
             SUBJECTS_19.forEach(s => {
@@ -573,45 +595,21 @@
         function renderPYQ() {
             const container = document.getElementById('pyq-panels-root');
             if(container.innerHTML !== "") return;
-
             let html = "";
             PYQ_CATS.forEach((cat, index) => {
                 const activeClass = index === 0 ? "active" : "";
-                
                 html += `<div id="pyq_panel_${cat.id}" class="pyq-panel ${activeClass}">`;
-                
                 if (cat.type === 'list') {
-                    for(let y=cat.start; y>=cat.end; y--) {
-                        html += `
-                        <label class="pyq-list-row">
-                            <span>${cat.label} ${y}</span>
-                            <input type="checkbox" id="pyq_${cat.id}_${y}">
-                        </label>`;
-                    }
+                    for(let y=cat.start; y>=cat.end; y--) { html += `<label class="pyq-list-row"><span>${cat.label} ${y}</span><input type="checkbox" id="pyq_${cat.id}_${y}"></label>`; }
                 } else {
-                    html += `<div class="pyq-col-grid">
-                        <div>
-                            <div class="pyq-col-header">${cat.col1}</div>`;
-                            for(let y=cat.start; y>=cat.end; y--) {
-                                html += `<label class="pyq-list-row" style="font-size:10px;">
-                                    <span>${y}</span><input type="checkbox" id="pyq_${cat.id}_y_${cat.col1}_1">
-                                </label>`;
-                            }
-                    html += `</div>
-                        <div>
-                            <div class="pyq-col-header">${cat.col2}</div>`;
-                            for(let y=cat.start; y>=cat.end; y--) {
-                                html += `<label class="pyq-list-row" style="font-size:10px;">
-                                    <span>${y}</span><input type="checkbox" id="pyq_${cat.id}_y_${cat.col2}_2">
-                                </label>`;
-                            }
+                    html += `<div class="pyq-col-grid"><div><div class="pyq-col-header">${cat.col1}</div>`;
+                    for(let y=cat.start; y>=cat.end; y--) { html += `<label class="pyq-list-row" style="font-size:10px;"><span>${y}</span><input type="checkbox" id="pyq_${cat.id}_y_${cat.col1}_1"></label>`; }
+                    html += `</div><div><div class="pyq-col-header">${cat.col2}</div>`;
+                    for(let y=cat.start; y>=cat.end; y--) { html += `<label class="pyq-list-row" style="font-size:10px;"><span>${y}</span><input type="checkbox" id="pyq_${cat.id}_y_${cat.col2}_2"></label>`; }
                     html += `</div></div>`;
                 }
-
-                html += `<button class="btn sm-btn" style="margin-top:15px; width:100%; background:var(--accent);" onclick="saveLockPYQ('${cat.id}')">Save & Lock Progress</button>`;
-                html += `</div>`;
+                html += `<button class="btn sm-btn" style="margin-top:15px; width:100%; background:var(--accent);" onclick="saveLockPYQ('${cat.id}')">Save & Lock Progress</button></div>`;
             });
-
             container.innerHTML = html;
             loadPYQ();
         }
@@ -619,7 +617,6 @@
         function switchPyq(id, btn) {
             document.querySelectorAll('.pyq-tab').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
-            
             document.querySelectorAll('.pyq-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(`pyq_panel_${id}`).classList.add('active');
         }
@@ -627,11 +624,8 @@
         function saveLockPYQ(catId) {
             const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
             const catConfig = PYQ_CATS.find(c => c.id === catId);
-            
             data[catId] = {}; 
-            
             let allChecked = true;
-
             if(catConfig.type === 'list') {
                 for(let y=catConfig.start; y>=catConfig.end; y--) {
                     const isChecked = document.getElementById(`pyq_${catId}_${y}`).checked;
@@ -647,70 +641,39 @@
                     if(!c1 || !c2) allChecked = false;
                 }
             }
-
             localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
-            
             const cup = document.getElementById(`cup_${catId}`);
-            if(allChecked) {
-                cup.classList.add('show');
-                alert(`🏆 Congratulations! You have completed all ${catConfig.label} PYQs!`);
-            } else {
-                cup.classList.remove('show');
-                alert("Progress Saved.");
-            }
+            if(allChecked) { cup.classList.add('show'); alert(`🏆 Congratulations! You have completed all ${catConfig.label} PYQs!`); }
+            else { cup.classList.remove('show'); alert("Progress Saved."); }
         }
 
         function loadPYQ() {
             const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
-            
             PYQ_CATS.forEach(cat => {
                 if(!data[cat.id]) return;
-                
                 let allChecked = true;
-
                 if(cat.type === 'list') {
                     for(let y=cat.start; y>=cat.end; y--) {
                         const el = document.getElementById(`pyq_${cat.id}_${y}`);
-                        if(el) {
-                            el.checked = data[cat.id][y] || false;
-                            if(!el.checked) allChecked = false;
-                        }
+                        if(el) { el.checked = data[cat.id][y] || false; if(!el.checked) allChecked = false; }
                     }
                 } else {
                     for(let y=cat.start; y>=cat.end; y--) {
-                        const el1 = document.getElementById(`pyq_${cat.id}_y_${cat.col1}_1`);
-                        const el2 = document.getElementById(`pyq_${cat.id}_y_${cat.col2}_2`);
-                        if(el1) {
-                            el1.checked = data[cat.id][`${y}_1`] || false;
-                            if(!el1.checked) allChecked = false;
-                        }
-                        if(el2) {
-                            el2.checked = data[cat.id][`${y}_2`] || false;
-                            if(!el2.checked) allChecked = false;
-                        }
+                        const el1 = document.getElementById(`pyq_${cat.id}_y_${cat.col1}_1`), el2 = document.getElementById(`pyq_${cat.id}_y_${cat.col2}_2`);
+                        if(el1) { el1.checked = data[cat.id][`${y}_1`] || false; if(!el1.checked) allChecked = false; }
+                        if(el2) { el2.checked = data[cat.id][`${y}_2`] || false; if(!el2.checked) allChecked = false; }
                     }
                 }
-
-                if(allChecked) {
-                    document.getElementById(`cup_${cat.id}`).classList.add('show');
-                }
+                if(allChecked) { document.getElementById(`cup_${cat.id}`).classList.add('show'); }
             });
         }
 
         function lockTarget(phaseIdx, type) {
             if(!confirm("Are you sure? Once locked, this goal cannot be modified.")) return;
-            
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] };
             if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {};
-            
-            if(type === 'swt') {
-                g.phases[phaseIdx].tgt_swt = document.getElementById(`tgt_swt_${phaseIdx}`).value;
-                g.phases[phaseIdx].locked_swt = true;
-            } else {
-                g.phases[phaseIdx].tgt_gt = document.getElementById(`tgt_gt_${phaseIdx}`).value;
-                g.phases[phaseIdx].locked_gt = true;
-            }
-            
+            if(type === 'swt') { g.phases[phaseIdx].tgt_swt = document.getElementById(`tgt_swt_${phaseIdx}`).value; g.phases[phaseIdx].locked_swt = true; }
+            else { g.phases[phaseIdx].tgt_gt = document.getElementById(`tgt_gt_${phaseIdx}`).value; g.phases[phaseIdx].locked_gt = true; }
             localStorage.setItem(KEYS.GOALS, JSON.stringify(g));
             renderGoalHTML();
         }
@@ -718,195 +681,70 @@
         function saveSubjectProgress(phaseIdx) {
             const pName = PHASES_CONFIG[phaseIdx].name;
             if(!confirm(`Have you strictly completed ${pName} reading of the selected subjects? This cannot be undone.`)) return;
-
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] };
             if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {s:{}, s_locked:{}};
             if(!g.phases[phaseIdx].s_locked) g.phases[phaseIdx].s_locked = {};
-
             SUBJECTS_19.forEach((s, si) => {
                 const el = document.getElementById(`chk_${phaseIdx}_${si}`);
-                if(el && el.checked) {
-                    g.phases[phaseIdx].s[si] = true;
-                    if(!g.phases[phaseIdx].s_locked[si]) {
-                        g.phases[phaseIdx].s_locked[si] = true; // Lock it
-                    }
-                }
+                if(el && el.checked) { g.phases[phaseIdx].s[si] = true; if(!g.phases[phaseIdx].s_locked[si]) { g.phases[phaseIdx].s_locked[si] = true; } }
             });
-
             localStorage.setItem(KEYS.GOALS, JSON.stringify(g));
             renderGoalHTML();
         }
 
         function renderGoalHTML() {
             const container = document.getElementById('goal-phases-container'); container.innerHTML = "<h3>Reading Phases</h3>";
-            
             const swtData = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
             const neetGT = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]");
             const iniGT = JSON.parse(localStorage.getItem(KEYS.INI) || "[]");
             const allGT = [...neetGT, ...iniGT];
-
             PHASES_CONFIG.forEach((p, idx) => {
                 const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] };
                 const pData = g.phases[idx] || {};
                 const pNameMap = { 0: "First Reading", 1: "Second Reading", 2: "Third Reading", 3: "Extra Bonus Reading" };
                 const phaseNameStr = pNameMap[idx];
-
                 let actSWT = 0;
-                swtData.forEach(x => { 
-                    let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading";
-                    if (ph === phaseNameStr) actSWT++; 
-                });
-
+                swtData.forEach(x => { let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading"; if (ph === phaseNameStr) actSWT++; });
                 let actGT = 0, maxGT = 0;
-                allGT.forEach(x => {
-                    let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading";
-                    if (ph === phaseNameStr) { actGT++; if(x.score > maxGT) maxGT = x.score; }
-                });
-
-                const tgtSWT = parseInt(pData.tgt_swt) || 0;
-                const tgtGT = parseInt(pData.tgt_gt) || 0;
-                
-                let swtDisplay = `${actSWT}`;
-                if (tgtSWT > 0 && actSWT >= tgtSWT) swtDisplay += " ✅";
-                if (tgtSWT > 0 && actSWT > tgtSWT) swtDisplay += " 🔥";
-
-                let gtDisplay = `${actGT}`;
-                if (tgtGT > 0 && actGT >= tgtGT) gtDisplay += " ✅";
-                if (tgtGT > 0 && actGT > tgtGT) gtDisplay += " 🔥";
-
-                // Champion Logic
-                let isChampion = false;
-                let subjectsDone = true;
-                if (pData.s_locked) {
-                    for(let i=0; i<SUBJECTS_19.length; i++) if(!pData.s_locked[i]) subjectsDone = false;
-                } else subjectsDone = false;
-
+                allGT.forEach(x => { let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading"; if (ph === phaseNameStr) { actGT++; if(x.score > maxGT) maxGT = x.score; } });
+                const tgtSWT = parseInt(pData.tgt_swt) || 0, tgtGT = parseInt(pData.tgt_gt) || 0;
+                let swtDisplay = `${actSWT}`; if (tgtSWT > 0 && actSWT >= tgtSWT) swtDisplay += " ✅"; if (tgtSWT > 0 && actSWT > tgtSWT) swtDisplay += " 🔥";
+                let gtDisplay = `${actGT}`; if (tgtGT > 0 && actGT >= tgtGT) gtDisplay += " ✅"; if (tgtGT > 0 && actGT > tgtGT) gtDisplay += " 🔥";
+                let isChampion = false, subjectsDone = true; if (pData.s_locked) { for(let i=0; i<SUBJECTS_19.length; i++) if(!pData.s_locked[i]) subjectsDone = false; } else subjectsDone = false;
                 if (subjectsDone && actSWT >= tgtSWT && actGT >= tgtGT && tgtSWT > 0 && tgtGT > 0) isChampion = true;
-
-                const championClass = isChampion ? 'completed' : '';
-                const championBadge = isChampion ? '🏆' : p.badge;
-
-                // Inputs Locking
-                const lockSwtBtn = pData.locked_swt ? 'locked' : '';
-                const lockGtBtn = pData.locked_gt ? 'locked' : '';
-                const swtDisabled = pData.locked_swt ? 'disabled' : '';
-                const gtDisabled = pData.locked_gt ? 'disabled' : '';
-
-                // Subject Grid
+                const championClass = isChampion ? 'completed' : '', championBadge = isChampion ? '🏆' : p.badge;
+                const lockSwtBtn = pData.locked_swt ? 'locked' : '', lockGtBtn = pData.locked_gt ? 'locked' : '', swtDisabled = pData.locked_swt ? 'disabled' : '', gtDisabled = pData.locked_gt ? 'disabled' : '';
                 let subjectsHtml = `<div class="sub-grid">`;
                 SUBJECTS_19.forEach((s, si) => {
-                    const isChecked = pData.s ? pData.s[si] : false;
-                    const isLocked = pData.s_locked ? pData.s_locked[si] : false;
-                    const disabledAttr = isLocked ? 'disabled' : '';
-                    const labelStyle = isLocked ? 'color:#2ecc71; font-weight:bold;' : ''; 
-                    
-                    subjectsHtml += `<label class="sub-check-item" style="${labelStyle}">
-                        <input type="checkbox" id="chk_${idx}_${si}" ${isChecked ? 'checked' : ''} ${disabledAttr} onchange="saveGoals()"> 
-                        <span>${s}</span>
-                    </label>`;
+                    const isChecked = pData.s ? pData.s[si] : false, isLocked = pData.s_locked ? pData.s_locked[si] : false, disabledAttr = isLocked ? 'disabled' : '', labelStyle = isLocked ? 'color:#2ecc71; font-weight:bold;' : ''; 
+                    subjectsHtml += `<label class="sub-check-item" style="${labelStyle}"><input type="checkbox" id="chk_${idx}_${si}" ${isChecked ? 'checked' : ''} ${disabledAttr} onchange="saveGoals()"><span>${s}</span></label>`;
                 });
                 subjectsHtml += `</div>`;
-
-                container.innerHTML += `
-                <div class="phase-block ${championClass}" id="pb_${idx}">
-                    <div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${championBadge}</span></div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
-                        <div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" value="${pData.f||''}" onchange="saveGoals()"></div>
-                        <div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" value="${pData.t||''}" onchange="saveGoals()"></div>
-                    </div>
-                    
-                    <div class="goal-stats-grid">
-                        <div class="goal-input-box">
-                            <span class="setting-label">SWT Goal</span>
-                            <input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" placeholder="0" ${swtDisabled}>
-                            <button class="mini-lock-btn ${lockSwtBtn}" onclick="lockTarget(${idx}, 'swt')">🔒</button>
-                        </div>
-                        <div class="goal-display-box">
-                            <span class="setting-label">Actual SWT</span>
-                            <span class="goal-val">${swtDisplay}</span>
-                        </div>
-                        <div class="goal-input-box">
-                            <span class="setting-label">GT Goal</span>
-                            <input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" placeholder="0" ${gtDisabled}>
-                            <button class="mini-lock-btn ${lockGtBtn}" onclick="lockTarget(${idx}, 'gt')">🔒</button>
-                        </div>
-                        <div class="goal-display-box">
-                            <span class="setting-label">Actual GT</span>
-                            <span class="goal-val">${gtDisplay}</span>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align:center; background:rgba(255,255,255,0.05); padding:5px; border-radius:6px; margin-bottom:8px;">
-                        <span class="setting-label" style="display:inline;">Highest GT Score: </span>
-                        <strong style="color:#f39c12;">${maxGT.toFixed(2)}</strong>
-                    </div>
-
-                    <button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects ▼</button>
-                    <div id="sg_${idx}" class="sub-grid-container">
-                        ${subjectsHtml}
-                        <button class="save-sub-btn" onclick="saveSubjectProgress(${idx})">Save & Lock Progress</button>
-                    </div>
-                </div>`;
+                container.innerHTML += `<div class="phase-block ${championClass}" id="pb_${idx}"><div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${championBadge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" value="${pData.f||''}" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" value="${pData.t||''}" onchange="saveGoals()"></div></div><div class="goal-stats-grid"><div class="goal-input-box"><span class="setting-label">SWT Goal</span><input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" placeholder="0" ${swtDisabled}><button class="mini-lock-btn ${lockSwtBtn}" onclick="lockTarget(${idx}, 'swt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual SWT</span><span class="goal-val">${swtDisplay}</span></div><div class="goal-input-box"><span class="setting-label">GT Goal</span><input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" placeholder="0" ${gtDisabled}><button class="mini-lock-btn ${lockGtBtn}" onclick="lockTarget(${idx}, 'gt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual GT</span><span class="goal-val">${gtDisplay}</span></div></div><div style="text-align:center; background:rgba(255,255,255,0.05); padding:5px; border-radius:6px; margin-bottom:8px;"><span class="setting-label" style="display:inline;">Highest GT Score: </span><strong style="color:#f39c12;">${maxGT.toFixed(2)}</strong></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects ▼</button><div id="sg_${idx}" class="sub-grid-container">${subjectsHtml}<button class="save-sub-btn" onclick="saveSubjectProgress(${idx})">Save & Lock Progress</button></div></div>`;
             }); 
         }
 
         function saveGoals() { 
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] };
-            
-            const currentExams = { 
-                i_j: document.getElementById('goal_ini_jul').checked, 
-                u: document.getElementById('goal_upsc').checked, 
-                n: document.getElementById('goal_neet').checked, 
-                i_jan: document.getElementById('goal_ini_jan').checked 
-            };
-            
+            const currentExams = { i_j: document.getElementById('goal_ini_jul').checked, u: document.getElementById('goal_upsc').checked, n: document.getElementById('goal_neet').checked, i_jan: document.getElementById('goal_ini_jan').checked };
             const currentPhases = PHASES_CONFIG.map((_, idx) => { 
-                const existing = g.phases[idx] || {};
-                const s = existing.s || {};
-                
-                const fDate = document.getElementById(`d_${idx}_f`).value;
-                const tDate = document.getElementById(`d_${idx}_t`).value;
-
-                SUBJECTS_19.forEach((_, si) => {
-                    const el = document.getElementById(`chk_${idx}_${si}`);
-                    if(el && !el.disabled) {
-                        s[si] = el.checked;
-                    }
-                });
-                
+                const existing = g.phases[idx] || {}, s = existing.s || {}, fDate = document.getElementById(`d_${idx}_f`).value, tDate = document.getElementById(`d_${idx}_t`).value;
+                SUBJECTS_19.forEach((_, si) => { const el = document.getElementById(`chk_${idx}_${si}`); if(el && !el.disabled) { s[si] = el.checked; } });
                 return { ...existing, f: fDate, t: tDate, s: s }; 
             });
-
-            const newG = { exams: currentExams, phases: currentPhases };
-            localStorage.setItem(KEYS.GOALS, JSON.stringify(newG)); 
+            localStorage.setItem(KEYS.GOALS, JSON.stringify({ exams: currentExams, phases: currentPhases })); 
         }
 
         function lockExamGoals() {
-            saveGoals();
-            const g = JSON.parse(localStorage.getItem(KEYS.GOALS));
-            const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
-            Object.keys(map).forEach(key => {
-                const el = document.getElementById(map[key]);
-                if (g.exams[key]) el.classList.add('target-locked');
-                else el.classList.remove('target-locked');
-            });
+            saveGoals(); const g = JSON.parse(localStorage.getItem(KEYS.GOALS)), map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
+            Object.keys(map).forEach(key => { const el = document.getElementById(map[key]); if (g.exams[key]) el.classList.add('target-locked'); else el.classList.remove('target-locked'); });
             alert("Targets Locked! Let's Go! 🚀");
         }
 
         function loadGoalsToUI() { 
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; 
-            document.getElementById('goal_ini_jul').checked = g.exams?.i_j; 
-            document.getElementById('goal_upsc').checked = g.exams?.u; 
-            document.getElementById('goal_neet').checked = g.exams?.n; 
-            document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
-            if(g.exams) {
-                const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
-                Object.keys(map).forEach(key => {
-                    const el = document.getElementById(map[key]);
-                    if (g.exams[key]) el.classList.add('target-locked');
-                    else el.classList.remove('target-locked');
-                });
-            }
+            document.getElementById('goal_ini_jul').checked = g.exams?.i_j; document.getElementById('goal_upsc').checked = g.exams?.u; document.getElementById('goal_neet').checked = g.exams?.n; document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
+            if(g.exams) { const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' }; Object.keys(map).forEach(key => { const el = document.getElementById(map[key]); if (g.exams[key]) el.classList.add('target-locked'); else el.classList.remove('target-locked'); }); }
             renderGoalHTML(); 
         }
 
@@ -914,345 +752,109 @@
         function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; }
         function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
         function processRestore() { try { const d = JSON.parse(atob(document.getElementById('restoreInput').value)); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
-
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
-        
         function updateCountdowns() { 
-            const n = new Date();
-            const istStr = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
-            const swtInp = document.getElementById('swtDate');
-            const gtInp = document.getElementById('gtDate');
-            if(swtInp) swtInp.max = istStr;
-            if(gtInp) gtInp.max = istStr;
-
+            const n = new Date(); const istStr = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
+            if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
             const dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") }; 
-            Object.keys(dates).forEach(k => { 
-                const d = Math.ceil((dates[k] - n) / 86400000); 
-                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); 
-                if(el) el.innerText = d > 0 ? d : "LIVE"; 
-            }); 
+            Object.keys(dates).forEach(k => { const d = Math.ceil((dates[k] - n) / 86400000); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = d > 0 ? d : "LIVE"; }); 
         }
-
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const u = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${u} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(u/75)) + "🔥".repeat(Math.floor((u%75)/25)); }
         function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
-        function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0, w=Math.max(0, 200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(2); }
-        function saveSWT() { const d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value), sub=document.getElementById('swtSubject').value, ph=document.getElementById('swtPhase').value; if(!d || isNaN(t)) return; const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); data.push({ date: d, total: t, correct: parseInt(document.getElementById('swtCorrect').value), unat: parseInt(document.getElementById('swtUnat').value), wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), subject: sub, phase: ph }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); }
+        function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0, w=Math.max(0, (currentGTMode==='NEET'?200:200)-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(2); }
+
+        function saveSWT() { 
+            const sub=document.getElementById('swtSubject').value, ph=document.getElementById('swtPhase').value; 
+            if(!confirm(`⚠️ CONFIRMATION\n\nSubject: ${sub}\nPhase: ${ph}\n\nIs this session correct?`)) return;
+            const d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value); if(!d || isNaN(t)) return;
+            const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); data.push({ date: d, total: t, correct: parseInt(document.getElementById('swtCorrect').value), unat: parseInt(document.getElementById('swtUnat').value), wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), subject: sub, phase: ph }); 
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); 
+        }
         
-        function saveGT() { 
-            const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value), ph=document.getElementById('gtPhase').value; 
+        /* NEW: GT BREAKDOWN LOGIC */
+        function openGTBreakdown() {
+            const ph = document.getElementById('gtPhase').value;
+            if(!confirm(`⚠️ CONFIRMATION\n\nPhase: ${ph}\nMode: ${currentGTMode}\n\nProceed to enter subject-wise marks?`)) return;
+            const container = document.getElementById('gt-subject-inputs'); container.innerHTML = "";
+            SUBJECTS_19.forEach(s => {
+                container.innerHTML += `<div class="subject-breakdown-row"><span>${s}</span><input type="number" class="sb-input" id="sb_c_${s}" placeholder="C"><input type="number" class="sb-input" id="sb_w_${s}" placeholder="W"><input type="number" class="sb-input" id="sb_u_${s}" placeholder="U"></div>`;
+            });
+            document.getElementById('popup-overlay').style.display='flex'; document.getElementById('gt-breakdown-popup').style.display='block';
+        }
+        function closeGTBreakdown() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('gt-breakdown-popup').style.display='none'; }
+        
+        function finalizeGTSave() {
+            const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value), ph=document.getElementById('gtPhase').value, plat=document.getElementById('gtPlatform').value || "Unknown";
             if(!d) return; 
-            const w=Math.max(0,200-c-u), score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333)); 
+            const w=Math.max(0,(currentGTMode==='NEET'?200:200)-c-u), score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333));
+            const breakdown = {}; SUBJECTS_19.forEach(s => { breakdown[s] = { c: parseInt(document.getElementById(`sb_c_${s}`).value)||0, w: parseInt(document.getElementById(`sb_w_${s}`).value)||0, u: parseInt(document.getElementById(`sb_u_${s}`).value)||0 }; });
             const data = JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); 
-            data.push({ date: d, score, correct: c, unat: u, wrong: w, phase: ph }); 
+            data.push({ id: Date.now(), date: d, platform: plat, score, correct: c, unat: u, wrong: w, phase: ph, breakdown }); 
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
             localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); 
-            updateUI(); 
+            closeGTBreakdown(); updateUI(); 
         }
 
-        function switchGT(m) { currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background='var(--border)'; document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; calcGT(); renderGT(); }
+        function populateGTHistory() {
+            const data = JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]");
+            const select = document.getElementById('gtHistorySelect'); select.innerHTML = '<option value="">Select a GT to View Details</option>';
+            data.reverse().forEach((g, idx) => { select.innerHTML += `<option value="${g.id}">GT ${data.length - idx} on ${g.platform} (${g.date})</option>`; });
+        }
+
+        function renderGTBreakdownGraph() {
+            const id = document.getElementById('gtHistorySelect').value; if(!id) { document.getElementById('gtBreakdownChartContainer').style.display='none'; return; }
+            const data = JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]");
+            const g = data.find(x => x.id == id); if(!g || !g.breakdown) return;
+            document.getElementById('gtBreakdownChartContainer').style.display='block';
+            const xLabels = SUBJECTS_19; const yData = SUBJECTS_19.map(s => { const b = g.breakdown[s]; const total = b.c + b.w + b.u; return total > 0 ? ((b.c/total)*100).toFixed(1) : 0; });
+            if(gtBreakdownChart) gtBreakdownChart.destroy();
+            gtBreakdownChart = new Chart(document.getElementById('gtBreakdownChart'), { type:'line', data:{ labels:xLabels, datasets:[{ label:'Accuracy %', data:yData, borderColor:'#2ecc71', backgroundColor:'rgba(46, 204, 113, 0.1)', fill:true, tension:0.4 }] }, options:{ maintainAspectRatio:false, scales:{ y:{ min:0, max:100, ticks:{color:'#fff', font:{size:8}} }, x:{ ticks:{color:'#aaa', font:{size:7}, autoSkip:false, maxRotation:90, minRotation:90} } }, plugins:{legend:{display:false}} } });
+            let maxAcc = -1, minAcc = 101, sSub = "--", wSub = "--";
+            SUBJECTS_19.forEach(s => { const b = g.breakdown[s]; const total = b.c + b.w + b.u; if(total > 0) { const acc = (b.c/total)*100; if(acc > maxAcc) { maxAcc = acc; sSub = s; } if(acc < minAcc) { minAcc = acc; wSub = s; } } });
+            document.getElementById('gtSubjectStats').style.display='block';
+            document.getElementById('gtSubjectStats').innerHTML = `<div class="strong-weak-container"><div class="performance-label stat-strong"><span>Strong:</span><strong>${sSub}</strong></div><div class="performance-label stat-weak"><span>Weak:</span><strong>${wSub}</strong></div></div>`;
+        }
+
+        function switchGT(m) { currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background='var(--border)'; document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; calcGT(); populateGTHistory(); renderGT(); }
 
         function renderSWT() {
             const all = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"), sub = document.getElementById('swtSubject').value, f = all.filter(x => x.subject === sub);
-            
-            // 1. Subject Specific Trend
-            if(sChart) sChart.destroy(); 
-            // FIXED: Short date DD/MM for SWT
-            if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
-            
-            // 2. Cumulative Line Graph (Average per Subject)
-            if(scuChart) scuChart.destroy();
-            const perfData = {};
-            ALL_SWT_SUBS.forEach(s => perfData[s] = {sum:0, count:0, totalQs:0});
-            
-            all.forEach(l => {
-                if(perfData[l.subject]) {
-                    perfData[l.subject].sum += parseFloat(l.percent);
-                    perfData[l.subject].count++;
-                    perfData[l.subject].totalQs += parseInt(l.total);
-                }
-            });
-
-            const xLabels = ALL_SWT_SUBS; // Full Names
-
-            const yDataAvg = ALL_SWT_SUBS.map(s => {
-                return perfData[s].count > 0 ? (perfData[s].sum / perfData[s].count).toFixed(1) : null;
-            });
-
-            scuChart = new Chart(document.getElementById('swtCumulativeChart'), {
-                type: 'line',
-                data: {
-                    labels: xLabels,
-                    datasets: [{
-                        label: 'Avg Accuracy %',
-                        data: yDataAvg,
-                        borderColor: '#f39c12',
-                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        spanGaps: true,
-                        pointRadius: 3
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { min: 0, max: 100, ticks: { color: '#fff', font: { size: 9 } } },
-                        x: { ticks: { color: '#aaa', font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // 3. New Graph: Total Questions Solved
-            if(sqChart) sqChart.destroy();
-            const yDataQs = ALL_SWT_SUBS.map(s => perfData[s].totalQs);
-
-            sqChart = new Chart(document.getElementById('swtQuestionsChart'), {
-                type: 'line',
-                data: {
-                    labels: xLabels,
-                    datasets: [{
-                        label: 'Questions Solved',
-                        data: yDataQs,
-                        borderColor: '#2ecc71',
-                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        spanGaps: true,
-                        pointRadius: 3
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { ticks: { color: '#fff', font: { size: 9 } }, beginAtZero: true },
-                        x: { ticks: { color: '#aaa', font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // 4. NEW: Phase Analysis Charts
-            if(swtPhaseCountChart) swtPhaseCountChart.destroy();
-            if(swtPhaseAvgChart) swtPhaseAvgChart.destroy();
-
-            const phasesList = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"];
-            const phaseData = { "First Reading": {n:0, s:0}, "Second Reading": {n:0, s:0}, "Third Reading": {n:0, s:0}, "Extra Bonus Reading": {n:0, s:0} };
-            
-            all.forEach(x => {
-                let p = x.phase || "First Reading";
-                if(p === "Extra Bonus") p = "Extra Bonus Reading"; 
-                if(phaseData[p]) {
-                    phaseData[p].n++;
-                    phaseData[p].s += parseFloat(x.percent);
-                }
-            });
-
-            const pCounts = phasesList.map(p => phaseData[p].n);
-            const pAvgs = phasesList.map(p => phaseData[p].n > 0 ? (phaseData[p].s / phaseData[p].n).toFixed(1) : 0);
-
-            swtPhaseCountChart = new Chart(document.getElementById('swtPhaseCountChart'), {
-                type: 'bar',
-                data: {
-                    labels: phasesList,
-                    datasets: [{
-                        label: 'Tests Taken',
-                        data: pCounts,
-                        backgroundColor: '#3498db',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: '#fff', stepSize: 1 } },
-                        x: { ticks: { color: '#fff', font: { size: 9 } } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            swtPhaseAvgChart = new Chart(document.getElementById('swtPhaseAvgChart'), {
-                type: 'bar',
-                data: {
-                    labels: phasesList,
-                    datasets: [{
-                        label: 'Average %',
-                        data: pAvgs,
-                        backgroundColor: '#9b59b6',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, max: 100, ticks: { color: '#fff' } },
-                        x: { ticks: { color: '#fff', font: { size: 9 } } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // 5. Performance Indicators
-            let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--";
-            if(all.length>0) {
-                Object.keys(perfData).forEach(k => {
-                    if(perfData[k].count > 0) {
-                        const avg = perfData[k].sum / perfData[k].count;
-                        if(avg > maxAvg) { maxAvg = avg; sSub = k; }
-                        if(avg < minAvg) { minAvg = avg; wSub = k; }
-                    }
-                });
-                document.getElementById('swtStrong').innerText = sSub;
-                document.getElementById('swtWeak').innerText = wSub;
-            }
-
-            // 6. Usage Analysis
-            const missing = ALL_SWT_SUBS.filter(s => perfData[s].count === 0);
-            const usageBox = document.getElementById('swtUsageAnalysis');
-            let usageHtml = "";
-
-            if (missing.length > 0) {
-                usageHtml += `<div class="usage-box caution-box"><span class="usage-title">⚠️ Missing Subjects</span>${missing.join(', ')}</div>`;
-            }
-
-            if (all.length > 0) {
-                let maxC = -1, minC = 99999;
-                const attemptedSubs = ALL_SWT_SUBS.filter(s => perfData[s].count > 0);
-                
-                if (attemptedSubs.length > 0) {
-                    attemptedSubs.forEach(s => {
-                        const c = perfData[s].count;
-                        if(c > maxC) maxC = c;
-                        if(c < minC) minC = c;
-                    });
-                    const mostFreq = attemptedSubs.filter(s => perfData[s].count === maxC).map(s => `${s} (${maxC})`);
-                    const leastFreq = attemptedSubs.filter(s => perfData[s].count === minC).map(s => `${s} (${minC})`);
-
-                    usageHtml += `
-                        <div class="usage-box freq-box">
-                            <div style="margin-bottom:8px;">
-                                <span class="usage-title" style="color:#2ecc71;">Most Attempted</span>
-                                ${mostFreq.join(', ')}
-                            </div>
-                            <div>
-                                <span class="usage-title" style="color:#ef5350;">Rarely Attempted</span>
-                                ${leastFreq.join(', ')}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-
-            usageBox.innerHTML = usageHtml;
-            usageBox.style.display = usageHtml ? 'block' : 'none';
+            if(sChart) sChart.destroy(); if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
+            if(scuChart) scuChart.destroy(); const perfData = {}; ALL_SWT_SUBS.forEach(s => perfData[s] = {sum:0, count:0, totalQs:0});
+            all.forEach(l => { if(perfData[l.subject]) { perfData[l.subject].sum += parseFloat(l.percent); perfData[l.subject].count++; perfData[l.subject].totalQs += parseInt(l.total); } });
+            scuChart = new Chart(document.getElementById('swtCumulativeChart'), { type: 'line', data: { labels: ALL_SWT_SUBS, datasets: [{ label: 'Avg Accuracy %', data: ALL_SWT_SUBS.map(s => perfData[s].count > 0 ? (perfData[s].sum / perfData[s].count).toFixed(1) : null), borderColor: '#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', fill: true, tension: 0.4, spanGaps: true }] }, options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { color: '#fff', font: { size: 9 } } }, x: { ticks: { color: '#aaa', font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 } } }, plugins: { legend: { display: false } } } });
+            if(sqChart) sqChart.destroy(); sqChart = new Chart(document.getElementById('swtQuestionsChart'), { type: 'line', data: { labels: ALL_SWT_SUBS, datasets: [{ label: 'Questions Solved', data: ALL_SWT_SUBS.map(s => perfData[s].totalQs), borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.1)', fill: true, tension: 0.4, spanGaps: true }] }, options: { maintainAspectRatio: false, scales: { y: { ticks: { color: '#fff', font: { size: 9 } }, beginAtZero: true }, x: { ticks: { color: '#aaa', font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 } } }, plugins: { legend: { display: false } } } });
+            if(swtPhaseCountChart) swtPhaseCountChart.destroy(); if(swtPhaseAvgChart) swtPhaseAvgChart.destroy();
+            const phasesList = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"], phaseData = { "First Reading": {n:0, s:0}, "Second Reading": {n:0, s:0}, "Third Reading": {n:0, s:0}, "Extra Bonus Reading": {n:0, s:0} };
+            all.forEach(x => { let p = x.phase || "First Reading"; if(p === "Extra Bonus") p = "Extra Bonus Reading"; if(phaseData[p]) { phaseData[p].n++; phaseData[p].s += parseFloat(x.percent); } });
+            swtPhaseCountChart = new Chart(document.getElementById('swtPhaseCountChart'), { type: 'bar', data: { labels: phasesList, datasets: [{ label: 'Tests Taken', data: phasesList.map(p => phaseData[p].n), backgroundColor: '#3498db', borderRadius: 4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#fff', stepSize: 1 } }, x: { ticks: { color: '#fff', font: { size: 9 } } } }, plugins: { legend: { display: false } } } });
+            swtPhaseAvgChart = new Chart(document.getElementById('swtPhaseAvgChart'), { type: 'bar', data: { labels: phasesList, datasets: [{ label: 'Average %', data: phasesList.map(p => phaseData[p].n > 0 ? (phaseData[p].s / phaseData[p].n).toFixed(1) : 0), backgroundColor: '#9b59b6', borderRadius: 4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#fff' } }, x: { ticks: { color: '#fff', font: { size: 9 } } } }, plugins: { legend: { display: false } } } });
+            let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--"; if(all.length>0) { Object.keys(perfData).forEach(k => { if(perfData[k].count > 0) { const avg = perfData[k].sum / perfData[k].count; if(avg > maxAvg) { maxAvg = avg; sSub = k; } if(avg < minAvg) { minAvg = avg; wSub = k; } } }); document.getElementById('swtStrong').innerText = sSub; document.getElementById('swtWeak').innerText = wSub; }
+            const missing = ALL_SWT_SUBS.filter(s => perfData[s].count === 0), usageBox = document.getElementById('swtUsageAnalysis'); let usageHtml = "";
+            if (missing.length > 0) usageHtml += `<div class="usage-box caution-box"><span class="usage-title">⚠️ Missing Subjects</span>${missing.join(', ')}</div>`;
+            if (all.length > 0) { let maxC = -1, minC = 99999; const attemptedSubs = ALL_SWT_SUBS.filter(s => perfData[s].count > 0); if (attemptedSubs.length > 0) { attemptedSubs.forEach(s => { const c = perfData[s].count; if(c > maxC) maxC = c; if(c < minC) minC = c; }); const mostFreq = attemptedSubs.filter(s => perfData[s].count === maxC).map(s => `${s} (${maxC})`), leastFreq = attemptedSubs.filter(s => perfData[s].count === minC).map(s => `${s} (${minC})`); usageHtml += `<div class="usage-box freq-box"><div style="margin-bottom:8px;"><span class="usage-title" style="color:#2ecc71;">Most Attempted</span>${mostFreq.join(', ')}</div><div><span class="usage-title" style="color:#ef5350;">Rarely Attempted</span>${leastFreq.join(', ')}</div></div>`; } }
+            usageBox.innerHTML = usageHtml; usageBox.style.display = usageHtml ? 'block' : 'none';
         }
 
         function renderGT() {
-            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
-            const id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
-            
-            // Basic Line Charts
-            if(gNeetChart) gNeetChart.destroy(); 
-            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM for Neet Chart
-            if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
-            
-            if(gIniChart) gIniChart.destroy(); 
-            // MODIFIED: Shorten date on X-axis from YYYY-MM-DD to DD/MM for INI Chart
-            if(id.length>0) gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
-
-            // Helper to process phase data
+            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            if(gNeetChart) gNeetChart.destroy(); if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
+            if(gIniChart) gIniChart.destroy(); if(id.length>0) gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>{const p=x.date.split('-'); return `${p[2]}/${p[1]}`}), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}, x:{ticks:{color:'#aaa', maxRotation:0, autoSkip:true}}}}});
             const processPhaseData = (dataList) => {
-                const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"];
-                const stats = { "First Reading":{n:0, s:0, min:9999, max:-9999}, "Second Reading":{n:0, s:0, min:9999, max:-9999}, "Third Reading":{n:0, s:0, min:9999, max:-9999}, "Extra Bonus Reading":{n:0, s:0, min:9999, max:-9999} };
-                let overallMax = -9999, overallMin = 9999;
-
-                dataList.forEach(x => {
-                    let p = x.phase || "First Reading";
-                    if(p === "Extra Bonus") p = "Extra Bonus Reading";
-                    if(stats[p]) {
-                        stats[p].n++;
-                        stats[p].s += x.score;
-                        if(x.score > stats[p].max) stats[p].max = x.score;
-                        if(x.score < stats[p].min) stats[p].min = x.score;
-                    }
-                    if(x.score > overallMax) overallMax = x.score;
-                    if(x.score < overallMin) overallMin = x.score;
-                });
-
+                const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"], stats = { "First Reading":{n:0, s:0, min:9999, max:-9999}, "Second Reading":{n:0, s:0, min:9999, max:-9999}, "Third Reading":{n:0, s:0, min:9999, max:-9999}, "Extra Bonus Reading":{n:0, s:0, min:9999, max:-9999} }; let overallMax = -9999, overallMin = 9999;
+                dataList.forEach(x => { let p = x.phase || "First Reading"; if(p === "Extra Bonus") p = "Extra Bonus Reading"; if(stats[p]) { stats[p].n++; stats[p].s += x.score; if(x.score > stats[p].max) stats[p].max = x.score; if(x.score < stats[p].min) stats[p].min = x.score; } if(x.score > overallMax) overallMax = x.score; if(x.score < overallMin) overallMin = x.score; });
                 return { phases, stats, overallMax: dataList.length?overallMax:0, overallMin: dataList.length?overallMin:0 };
             };
-
-            // ---- NEET Analysis ----
-            const nData = processPhaseData(nd);
-            if(gNeetPhCount) gNeetPhCount.destroy();
-            gNeetPhCount = new Chart(document.getElementById('gtNeetPhaseCountChart'), {
-                type: 'bar',
-                data: { labels: nData.phases, datasets: [{ label: 'GTs Taken', data: nData.phases.map(p=>nData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff', stepSize:1} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
-            });
-
-            if(gNeetPhAvg) gNeetPhAvg.destroy();
-            gNeetPhAvg = new Chart(document.getElementById('gtNeetPhaseAvgChart'), {
-                type: 'bar',
-                data: { labels: nData.phases, datasets: [{ label: 'Avg Score', data: nData.phases.map(p=>nData.stats[p].n>0?(nData.stats[p].s/nData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff'} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
-            });
-
-            // NEET HTML Stats
-            let nStatsHtml = `
-            <div class="gt-stats-grid">
-                <div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div>
-                <div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div>
-            </div>
-            <div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">
-            `;
-            nData.phases.forEach(p => {
-                const s = nData.stats[p];
-                if(s.n > 0) {
-                    nStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`;
-                }
-            });
-            nStatsHtml += `</div>`;
-            document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
-
-
-            // ---- INICET Analysis ----
-            const iData = processPhaseData(id);
-            if(gIniPhCount) gIniPhCount.destroy();
-            gIniPhCount = new Chart(document.getElementById('gtIniPhaseCountChart'), {
-                type: 'bar',
-                data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff', stepSize:1} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
-            });
-
-            if(gIniPhAvg) gIniPhAvg.destroy();
-            gIniPhAvg = new Chart(document.getElementById('gtIniPhaseAvgChart'), {
-                type: 'bar',
-                data: { labels: iData.phases, datasets: [{ label: 'Avg Score', data: iData.phases.map(p=>iData.stats[p].n>0?(iData.stats[p].s/iData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff'} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
-            });
-
-            // INI HTML Stats
-            let iStatsHtml = `
-            <div class="gt-stats-grid">
-                <div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div>
-                <div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div>
-            </div>
-            <div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">
-            `;
-            iData.phases.forEach(p => {
-                const s = iData.stats[p];
-                if(s.n > 0) {
-                    iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`;
-                }
-            });
-            iStatsHtml += `</div>`;
-            document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
+            const nData = processPhaseData(nd); if(gNeetPhCount) gNeetPhCount.destroy(); gNeetPhCount = new Chart(document.getElementById('gtNeetPhaseCountChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'GTs Taken', data: nData.phases.map(p=>nData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff', stepSize:1} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} } });
+            if(gNeetPhAvg) gNeetPhAvg.destroy(); gNeetPhAvg = new Chart(document.getElementById('gtNeetPhaseAvgChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'Avg Score', data: nData.phases.map(p=>nData.stats[p].n>0?(nData.stats[p].s/nData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff'} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} } });
+            let nStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; nData.phases.forEach(p => { const s = nData.stats[p]; if(s.n > 0) nStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); nStatsHtml += `</div>`; document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
+            const iData = processPhaseData(id); if(gIniPhCount) gIniPhCount.destroy(); gIniPhCount = new Chart(document.getElementById('gtIniPhaseCountChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff', stepSize:1} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} } });
+            if(gIniPhAvg) gIniPhAvg.destroy(); gIniPhAvg = new Chart(document.getElementById('gtIniPhaseAvgChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'Avg Score', data: iData.phases.map(p=>iData.stats[p].n>0?(iData.stats[p].s/iData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff'} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} } });
+            let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); }
+        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); }
         updateUI();
     </script>
 </body>
