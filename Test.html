@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V7.4</title>
+    <title>Scalpel Master Pro V7.5 (Final)</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -51,13 +51,14 @@
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Accordion System */
+        /* Accordion System (FIXED VISIBILITY) */
         .accordion-wrapper { width: 100%; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
         .accordion-header { background: var(--accent); padding: 12px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
         .accordion-header:after { content: '▼'; font-size: 10px; transition: transform 0.3s; }
         .accordion-wrapper.open .accordion-header:after { transform: rotate(180deg); }
+        /* Fix for Table Visibility: Use large max-height */
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { max-height: 8000px; } /* Massively increased to prevent cutting off tables */
+        .accordion-wrapper.open .accordion-content { max-height: 9000px; overflow: visible; } 
         .accordion-inner { padding: 15px; }
 
         /* Standard Components */
@@ -79,13 +80,15 @@
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
         
         .chart-container { width: 100%; height: 160px; margin: 10px 0; }
-        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
+        
+        /* Matrix Table - Fixed Visibility */
+        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 300px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
-        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); min-width: 90px; }
+        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); white-space: nowrap; }
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
-        /* Goal Specifics */
+        /* Goal & PYQ Specifics */
         .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         .phase-block.completed { border-color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.1); }
@@ -96,9 +99,7 @@
         
         .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
         .sub-grid-container.open { max-height: 800px; padding: 8px; overflow-y: auto; }
-        
-        /* Fixed Subject Grid for readability */
-        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; } /* Changed to 2 cols */
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #aaa; }
         .sub-check-item input:checked + span { color: #2ecc71; font-weight: bold; }
         
@@ -158,6 +159,7 @@
         </div>
         <div class="popup-card" id="restore-popup" style="display:none;">
             <h3>Restore Data</h3>
+            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Paste the code from your Saved Messages below:</p>
             <textarea id="restoreInput" style="width:100%; height:80px; background:#0e1621; color:white; border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
             <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
             <button class="btn" onclick="closeRestore()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
@@ -409,8 +411,8 @@
 
         function clearData() { if(confirm("Are you sure?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
 
-        // --- RESTORED TIMER LOGIC ---
-        let timerInterval, activeSub = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET", activePhase = "";
+        // --- CORE TIMER LOGIC (RESTORED TO ORIGINAL) ---
+        let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
 
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -422,14 +424,33 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { 
-            if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); 
-            audioCtx.resume(); requestWakeLock(); 
-            activeSub = document.getElementById('subject').value; 
+            // VALIDATION
+            if (!document.getElementById('subject').value) return alert("Select Subject!"); 
+            
+            // CAPTURE STATE
+            activeSub = document.getElementById('subject').value;
             activePhase = document.getElementById('studyPhase').value;
+            
+            audioCtx.resume(); 
+            requestWakeLock(); 
             startStudyTimer(); 
         };
-        function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
-        function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
+
+        function startStudyTimer() { 
+            mode = "study"; 
+            isPaused = false; 
+            timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); 
+            if(timeLeft <= 0) return; 
+            
+            document.getElementById('startBtn').style.display='none'; 
+            document.getElementById('timer-controls').style.display='block'; 
+            runTimer(); 
+        }
+
+        function togglePause() { 
+            isPaused = !isPaused; 
+            document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; 
+        }
         
         function runTimer() { 
             clearInterval(timerInterval); 
@@ -443,14 +464,62 @@
             }, 1000); 
         }
 
-        function handleTransition() { clearInterval(timerInterval); startAlarm(mode==="study"?880:440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; }
-        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
-        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
-        function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
+        function handleTransition() { 
+            clearInterval(timerInterval); 
+            startAlarm(mode==="study"?880:440); 
+            document.getElementById('popup-overlay').style.display='flex'; 
+            // Logic for switching popup
+            if (mode === "study") {
+                document.getElementById('mcq-popup').style.display='block'; 
+                document.getElementById('break-popup').style.display='none';
+            } else {
+                document.getElementById('mcq-popup').style.display='none'; 
+                document.getElementById('break-popup').style.display='block';
+            }
+        }
+
+        function startBreak() { 
+            stopAlarm(); 
+            const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
+            // SAVE LOG HERE
+            saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); 
+            
+            document.getElementById('cycleMcqs').value=''; 
+            document.getElementById('popup-overlay').style.display='none'; 
+            
+            mode="break"; 
+            isPaused=false; 
+            timeLeft=parseInt(document.getElementById('breakTime').value)*60; 
+            runTimer(); 
+        }
+
+        function continueNextCycle() { 
+            stopAlarm(); 
+            document.getElementById('popup-overlay').style.display = 'none'; 
+            startStudyTimer(); 
+        }
+
+        function stopEntireSession() { 
+            stopAlarm(); 
+            clearInterval(timerInterval); 
+            if (wakeLock) { wakeLock.release(); wakeLock=null; } 
+            document.getElementById('popup-overlay').style.display='none'; 
+            document.getElementById('timer-display').innerText="00:00:00"; 
+            document.getElementById('startBtn').style.display='block'; 
+            document.getElementById('timer-controls').style.display='none'; 
+            mode="idle"; 
+            updateUI(); 
+        }
 
         function saveStudyLog(s, m, d, ph) { 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
-            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); 
+            logs.unshift({ 
+                date: new Date().toLocaleDateString('en-GB'), 
+                subject: s, 
+                mcqs: m, 
+                duration: d, 
+                phase: ph || "First Reading" 
+            }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
             updateUI();
         }
