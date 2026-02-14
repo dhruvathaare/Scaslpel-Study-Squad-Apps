@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V9.0</title>
+    <title>Scalpel Master Pro V10.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,17 +49,16 @@
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Accordion Logic - Simplified for stability */
+        /* Simplified Accordion - Guaranteed Visibility */
         .accordion-wrapper { width: 100%; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
         .accordion-header { background: var(--accent); padding: 12px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
         .accordion-header:after { content: '▼'; font-size: 10px; }
         .accordion-wrapper.open .accordion-header:after { content: '▲'; }
-        .accordion-content { display: none; padding: 15px; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { display: block; } /* No animation, pure function */
+        .accordion-content { display: none; padding: 15px; background: var(--card); width: 100%; box-sizing: border-box; }
+        .accordion-wrapper.open .accordion-content { display: block; } /* Removed all complex heights/animations */
 
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
-        .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
         
         input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; }
         input[type="date"] { color-scheme: dark; }
@@ -75,8 +74,8 @@
         
         .chart-container { width: 100%; height: 160px; margin: 10px 0; }
         
-        /* FULL VISIBILITY MATRIX TABLES */
-        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 100%; }
+        /* MATRIX TABLE FIX */
+        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 100%; display: table; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 6px 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
         .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); width: 35%; }
@@ -191,27 +190,25 @@
             <div class="accordion-wrapper open" id="acc-target">
                 <div class="accordion-header" onclick="toggleAccordion('acc-target')">Target Exams</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner">
-                        <div class="goal-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
-                        <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
-                        <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
-                        <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
-                        <button class="btn" style="background:#2ecc71; margin-top:10px; height:35px; line-height:35px; padding:0; font-size:12px;" onclick="saveExamTargets()">Save Targets</button>
-                    </div>
+                    <div class="goal-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
+                    <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
+                    <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
+                    <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
+                    <button class="btn" style="background:#2ecc71; margin-top:10px; height:35px; line-height:35px; padding:0; font-size:12px;" onclick="saveExamTargets()">Save Targets</button>
                 </div>
             </div>
 
             <div class="accordion-wrapper" id="acc-pyq">
                 <div class="accordion-header" onclick="toggleAccordion('acc-pyq')">PYQ Papers Goal</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner" id="pyq-container"></div>
+                    <div id="pyq-container"></div>
                 </div>
             </div>
 
             <div class="accordion-wrapper" id="acc-phases">
                 <div class="accordion-header" onclick="toggleAccordion('acc-phases')">Reading Phases</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner" id="goal-phases-container"></div>
+                    <div id="goal-phases-container"></div>
                 </div>
             </div>
         </div>
@@ -220,58 +217,55 @@
             <div class="accordion-wrapper open" id="acc-radar">
                 <div class="accordion-header" onclick="toggleAccordion('acc-radar')">Revision Radar</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner">
-                        <div id="radar-container" class="radar-grid"></div>
-                        <div id="radar-empty" style="display:none; font-size:11px; color:#2ecc71; margin-top:10px; font-family:'Oswald';">ALL SUBJECTS ON TRACK ✅</div>
-                    </div>
+                    <p style="font-size:10px; color:#aaa; margin:0;">Neglected Subjects (>10 or >20 days)</p>
+                    <div id="radar-container" class="radar-grid"></div>
+                    <div id="radar-empty" style="display:none; font-size:11px; color:#2ecc71; margin-top:10px; font-family:'Oswald';">ALL SUBJECTS ON TRACK ✅</div>
                 </div>
             </div>
 
             <div class="accordion-wrapper open" id="acc-timer">
                 <div class="accordion-header" onclick="toggleAccordion('acc-timer')">Study Timer</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner">
-                        <span class="setting-label">Reading Phase</span>
-                        <select id="studyPhase">
-                            <option value="First Reading">First Reading</option>
-                            <option value="Second Reading">Second Reading</option>
-                            <option value="Third Reading">Third Reading</option>
-                            <option value="Extra Bonus">Extra Bonus Reading</option>
-                        </select>
+                    <span class="setting-label">Reading Phase</span>
+                    <select id="studyPhase">
+                        <option value="First Reading">First Reading</option>
+                        <option value="Second Reading">Second Reading</option>
+                        <option value="Third Reading">Third Reading</option>
+                        <option value="Extra Bonus">Extra Bonus Reading</option>
+                    </select>
 
-                        <span class="setting-label">Subject</span>
-                        <select id="subject">
-                            <option value="" disabled selected>Select Subject</option>
-                            <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
-                            <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
-                            <option>FMT</option><option>PSM</option>
-                            <option>Ophthalmology</option><option>ENT</option>
-                            <option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option>
-                            <option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
-                            <option>Mixed Bag</option><option>Integrated Systems</option>
-                        </select>
-                        
-                        <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
-                            <div style="flex:2;">
-                                <span class="setting-label" style="text-align:center;">Study Duration</span>
-                                <div style="display:flex; gap:5px;">
-                                    <div style="flex:1;"><input type="number" id="studyHr" value="2"><div class="sub-label">Hours</div></div>
-                                    <div style="flex:1;"><input type="number" id="studyMin" value="0"><div class="sub-label">Minutes</div></div>
-                                </div>
-                            </div>
-                            <div style="flex:1;">
-                                <span class="setting-label" style="text-align:center;">Break</span>
-                                <input type="number" id="breakTime" value="15">
-                                <div class="sub-label">Minutes</div>
+                    <span class="setting-label">Subject</span>
+                    <select id="subject">
+                        <option value="" disabled selected>Select Subject</option>
+                        <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+                        <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
+                        <option>FMT</option><option>PSM</option>
+                        <option>Ophthalmology</option><option>ENT</option>
+                        <option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option>
+                        <option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
+                        <option>Mixed Bag</option><option>Integrated Systems</option>
+                    </select>
+                    
+                    <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
+                        <div style="flex:2;">
+                            <span class="setting-label" style="text-align:center;">Study Duration</span>
+                            <div style="display:flex; gap:5px;">
+                                <div style="flex:1;"><input type="number" id="studyHr" value="2"><div class="sub-label">Hours</div></div>
+                                <div style="flex:1;"><input type="number" id="studyMin" value="0"><div class="sub-label">Minutes</div></div>
                             </div>
                         </div>
-
-                        <div id="timer-display">00:00:00</div>
-                        <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
-                        <div id="timer-controls" style="display:none; width:100%;">
-                            <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
-                            <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
+                        <div style="flex:1;">
+                            <span class="setting-label" style="text-align:center;">Break</span>
+                            <input type="number" id="breakTime" value="15">
+                            <div class="sub-label">Minutes</div>
                         </div>
+                    </div>
+
+                    <div id="timer-display">00:00:00</div>
+                    <button id="startBtn" class="btn" style="width:100%;">Start Session</button>
+                    <div id="timer-controls" style="display:none; width:100%;">
+                        <div style="display:flex; gap:8px;"><button id="pauseBtn" class="btn" style="background:#f39c12;flex:1;" onclick="togglePause()">Pause</button><button class="btn" style="background:#8e44ad;flex:1;" onclick="handleTransition()">Skip</button></div>
+                        <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
                     </div>
                 </div>
             </div>
@@ -279,40 +273,32 @@
             <div class="accordion-wrapper" id="acc-progress">
                 <div class="accordion-header" onclick="toggleAccordion('acc-progress')">Daily Progress</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner">
-                        <div class="chart-container"><canvas id="hoursChart"></canvas></div>
-                        <div class="chart-container"><canvas id="mcqChart"></canvas></div>
-                        <table class="log-table">
-                            <thead><tr><th class="col-date">Date</th><th class="col-hrs">Hrs</th><th class="col-cyc">Cyc</th><th class="col-mcq">MCQ</th><th class="col-sub">Subjects</th></tr></thead>
-                            <tbody id="dailyLogBody"></tbody>
-                        </table>
-                    </div>
+                    <div class="chart-container"><canvas id="hoursChart"></canvas></div>
+                    <div class="chart-container"><canvas id="mcqChart"></canvas></div>
+                    <table class="log-table">
+                        <thead><tr><th class="col-date">Date</th><th class="col-hrs">Hrs</th><th class="col-cyc">Cyc</th><th class="col-mcq">MCQ</th><th class="col-sub">Subjects</th></tr></thead>
+                        <tbody id="dailyLogBody"></tbody>
+                    </table>
                 </div>
             </div>
 
             <div class="accordion-wrapper" id="acc-matrix">
                 <div class="accordion-header" onclick="toggleAccordion('acc-matrix')">Phase Matrices</div>
                 <div class="accordion-content">
-                    <div class="accordion-inner">
-                        <h3 style="margin:0 0 5px 0; color:#5288c1; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (Days Spent)</h3>
-                        <div style="overflow-x:auto;">
-                            <table class="matrix-table">
-                                <thead>
-                                    <tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
-                                </thead>
-                                <tbody id="matrixBody"></tbody>
-                            </table>
-                        </div>
+                    <h3 style="margin:0 0 5px 0; color:#5288c1; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (Days Spent)</h3>
+                    <div style="overflow-x:auto;">
+                        <table class="matrix-table">
+                            <thead><tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead>
+                            <tbody id="matrixBody"></tbody>
+                        </table>
+                    </div>
 
-                        <h3 style="margin:20px 0 5px 0; color:#2ecc71; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (MCQs Solved)</h3>
-                        <div style="overflow-x:auto;">
-                            <table class="matrix-table">
-                                <thead>
-                                    <tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
-                                </thead>
-                                <tbody id="mcqMatrixBody"></tbody>
-                            </table>
-                        </div>
+                    <h3 style="margin:20px 0 5px 0; color:#2ecc71; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Phase Matrix (MCQs Solved)</h3>
+                    <div style="overflow-x:auto;">
+                        <table class="matrix-table">
+                            <thead><tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead>
+                            <tbody id="mcqMatrixBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -419,10 +405,8 @@
 
         function startStudyTimer() { 
             mode = "study"; isPaused = false; 
-            // Fix NaN issue: Default to 0
             const h = parseInt(document.getElementById('studyHr').value) || 0;
             const m = parseInt(document.getElementById('studyMin').value) || 0;
-            
             timeLeft = (h * 3600) + (m * 60); 
             
             if(timeLeft <= 0) return alert("Please enter duration!"); 
@@ -451,7 +435,6 @@
             startAlarm(mode==="study"?880:440); 
             document.getElementById('popup-overlay').style.display='flex'; 
             
-            // Fix Popup Switching
             if(mode === "study") {
                 document.getElementById('mcq-popup').style.display='block'; 
                 document.getElementById('break-popup').style.display='none'; 
@@ -539,9 +522,8 @@
         
         function saveSWT() { 
             const d=document.getElementById('swtDate').value; 
-            if(!d) return alert("Date required.");
+            if(!d) return alert("Enter date.");
             if(new Date(d) > new Date()) return alert("Future dates restricted!");
-            
             const t=parseInt(document.getElementById('swtTotal').value); if(isNaN(t)) return; 
             const data=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); 
             data.push({ date:d, total:t, correct:parseInt(document.getElementById('swtCorrect').value), unat:parseInt(document.getElementById('swtUnat').value), wrong:parseInt(document.getElementById('swtW').innerText), percent:document.getElementById('swtP').innerText.replace('%',''), subject:document.getElementById('swtSubject').value }); 
@@ -550,9 +532,8 @@
         
         function saveGT() { 
             const d=document.getElementById('gtDate').value; 
-            if(!d) return alert("Date required.");
+            if(!d) return alert("Enter date.");
             if(new Date(d) > new Date()) return alert("Future dates restricted!");
-
             const data=JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); 
             data.push({ date:d, score:parseFloat(document.getElementById('gtS').innerText), correct:parseInt(document.getElementById('gtCorrect').value), unat:parseInt(document.getElementById('gtUnat').value), wrong:parseInt(document.getElementById('gtW').innerText) }); 
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); updateUI(); 
