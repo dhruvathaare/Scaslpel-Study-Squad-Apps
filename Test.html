@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.3</title>
+    <title>Scalpel Master Pro V6.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -80,8 +80,9 @@
         
         .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
-        .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
-        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
+        /* CHANGED: grid-template-columns to 1fr 1fr for 2 columns */
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
+        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #aaa; }
 
         .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; }
@@ -567,7 +568,8 @@
         function renderGoalHTML() {
             const container = document.getElementById('goal-phases-container'); container.innerHTML = "<h3>Reading Phases</h3>";
             PHASES_CONFIG.forEach((p, idx) => {
-                container.innerHTML += `<div class="phase-block" id="pb_${idx}"><div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" onchange="saveGoals()"></div></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects</button><div id="sg_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s, si) => `<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${si}" onchange="saveGoals()"> <span>${s.substring(0,4)}..</span></label>`).join('')}</div></div></div>`;
+                // MODIFIED: Changed ${s.substring(0,4)}.. to ${s} to show full name
+                container.innerHTML += `<div class="phase-block" id="pb_${idx}"><div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" onchange="saveGoals()"></div></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects</button><div id="sg_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s, si) => `<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${si}" onchange="saveGoals()"> <span>${s}</span></label>`).join('')}</div></div></div>`;
             }); loadGoalsToUI();
         }
         function saveGoals() { 
@@ -666,8 +668,6 @@
             if(sChart) sChart.destroy(); 
             if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
             
-            // Removed redundancy here: No longer generating the text list
-
             // 2. Cumulative Line Graph (Average per Subject)
             if(scuChart) scuChart.destroy();
             const perfData = {};
