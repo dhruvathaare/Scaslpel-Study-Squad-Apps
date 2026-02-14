@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.0</title>
+    <title>Scalpel Master Pro V6.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -92,7 +92,8 @@
         .target-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); }
 
         /* PYQ Specifics */
-        .pyq-header-bar { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; cursor:pointer; margin-bottom:5px; border:1px solid rgba(82, 136, 193, 0.2); }
+        .pyq-header-bar { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; cursor:pointer; margin-bottom:5px; border:1px solid rgba(82, 136, 193, 0.2); transition: background 0.3s;}
+        .pyq-header-bar:hover { background:rgba(255,255,255,0.1); }
         .pyq-content { display:none; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:15px; }
         .pyq-content.open { display:block; animation: fadeIn 0.3s; }
         .pyq-col-container { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
@@ -112,8 +113,10 @@
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
         
-        .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; opacity: 0.6; }
-        .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; }
+        .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; opacity: 0.9; }
+        .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; margin-top: 10px; width: 100%; }
+        .backup-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 8px; }
+        .restore-btn { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; cursor: pointer; width: 100%; font-weight: bold; }
 
         /* SWT Analytics Extras */
         .strong-weak-container { display: flex; justify-content: space-between; margin: 15px 0; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
@@ -138,6 +141,13 @@
             <h3>Break Finished!</h3>
             <button class="btn" onclick="continueNextCycle()" style="background:#2ecc71; width:100%;">Start Next Cycle</button>
             <button class="btn" onclick="stopEntireSession()" style="background:#ef5350; margin-top:10px; width:100%;">End Session</button>
+        </div>
+        <div class="popup-card" id="restore-popup" style="display:none;">
+            <h3>Restore Data</h3>
+            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Paste the code from your Saved Messages below:</p>
+            <textarea id="restoreInput" style="width:100%; height:80px; background:#0e1621; color:white; border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
+            <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
+            <button class="btn" onclick="closeRestore()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
         </div>
     </div>
 
@@ -343,6 +353,14 @@
         </div>
 
         <div class="danger-zone">
+            <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
+            <p style="font-size:10px; color:#aaa; line-height:1.4; margin-bottom:10px;">
+                1. Tap <b>Backup</b> to copy your secret code.<br>
+                2. Paste it in your Telegram <b>Saved Messages</b>.<br>
+                3. Use <b>Restore</b> to load it back anytime.
+            </p>
+            <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
+            <button class="restore-btn" onclick="openRestore()">Restore Data</button>
             <button class="clear-btn" onclick="clearData()">Clear All Local Data</button>
         </div>
     </div>
@@ -562,6 +580,58 @@
                 else badge.classList.remove('unlocked');
             });
         }
+
+        // --- DATA BACKUP SYSTEM (MAGIC COPY) ---
+        function exportData() {
+            const backup = {};
+            Object.keys(KEYS).forEach(k => {
+                backup[k] = localStorage.getItem(KEYS[k]);
+            });
+            const code = btoa(JSON.stringify(backup));
+            
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Backup Code Copied! Paste it in Telegram Saved Messages.");
+            }).catch(err => {
+                alert("Failed to copy. Please allow clipboard permissions.");
+            });
+        }
+
+        function openRestore() {
+            document.getElementById('popup-overlay').style.display='flex';
+            document.getElementById('restore-popup').style.display='block';
+            document.getElementById('mcq-popup').style.display='none';
+            document.getElementById('break-popup').style.display='none';
+        }
+
+        function closeRestore() {
+            document.getElementById('popup-overlay').style.display='none';
+            document.getElementById('restore-popup').style.display='none';
+        }
+
+        function processRestore() {
+            const input = document.getElementById('restoreInput').value.trim();
+            if(!input) return alert("Please paste the code first.");
+            
+            try {
+                const decoded = atob(input);
+                const data = JSON.parse(decoded);
+                
+                if(!data || typeof data !== 'object') throw new Error("Invalid Format");
+
+                if(confirm("Warning: This will OVERWRITE all current data on this device. Are you sure?")) {
+                    Object.keys(data).forEach(k => {
+                        if(Object.values(KEYS).includes(k)) {
+                            localStorage.setItem(k, data[k]);
+                        }
+                    });
+                    alert("Data Restored Successfully!");
+                    location.reload();
+                }
+            } catch(e) {
+                alert("Invalid Code! Please copy the exact code from your backup.");
+            }
+        }
+
 
         // --- GOAL MANAGEMENT ---
         function renderGoalHTML() {
@@ -860,6 +930,20 @@
                 document.getElementById('swtReminderList').innerText = missing.join(", ");
             } else {
                 remBox.style.display = 'none';
+            }
+        }
+
+        function renderGT() {
+            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            if(gNeetChart) gNeetChart.destroy();
+            if(nd.length > 0) {
+                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
+                document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            }
+            if(gIniChart) gIniChart.destroy();
+            if(id.length > 0) {
+                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+                document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
             }
         }
 
