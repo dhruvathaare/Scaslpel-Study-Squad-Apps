@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.13</title>
+    <title>Scalpel Master Pro V6.14</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -221,6 +221,16 @@
 
             </div>
 
+            <div class="card">
+                <h3 style="margin-top:0; color:#f39c12;">Monthly Goals Reached</h3>
+                <div style="overflow-x:auto;">
+                    <table class="matrix-table">
+                        <thead><tr><th>Month</th><th>MCQs</th><th>SWTs</th><th>GTs</th></tr></thead>
+                        <tbody id="monthlyGoalBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="card" id="goal-phases-container">
                 <h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>
             </div>
@@ -399,6 +409,7 @@
         const SUBJECTS_EXTRA = ["Mixed Bag", "Integrated Systems"];
         const ALL_SWT_SUBS = [...SUBJECTS_19, ...SUBJECTS_EXTRA];
 
+        // MODIFIED: UPDATED MEDAL CONFIGURATION
         const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🥉' },{ id: 'r2', name: '2. Second Reading', badge: '🥈' },{ id: 'r3', name: '3. Third Reading', badge: '🥇' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
         
         const PYQ_CATS = [
@@ -408,7 +419,7 @@
             { id: 'upsc', label: 'UPSC CMS', type: 'list', start: 2025, end: 2020 }
         ];
 
-        /* ================= BASE TIMER LOGIC (UNTOUCHED) ================= */
+        /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -417,16 +428,11 @@
         function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
         function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
 
-        // GATEKEEPING LOGIC APPLIED ONLY HERE
         document.getElementById('startBtn').onclick = () => { 
-            // 1. GATEKEEPING: Check Subject
             const s = document.getElementById('subject').value;
             if (!s) { alert("⚠️ Stop! Please select a Subject first."); return; }
-            // 2. GATEKEEPING: Confirm
             const p = document.getElementById('studyPhase').value;
             if(!confirm(`Are you ready?\n\n📚 Subject: ${s}\n🏆 Phase: ${p}\n\nIs this the correct study session?`)) return;
-
-            // 3. BASE CODE TRIGGER
             audioCtx.resume(); requestWakeLock(); activeSub = s; activePhase = p; startStudyTimer(); 
         };
 
@@ -491,6 +497,52 @@
                 html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cyc}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`; 
             });
             document.getElementById('dailyLogBody').innerHTML = html;
+        }
+
+        // NEW: MONTHLY AGGREGATION
+        function renderMonthlyTable() {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const data = Array(12).fill().map(() => ({mcq:0, swt:0, gt:0}));
+
+            // 1. Logs (MCQs) - DD/MM/YYYY
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+            logs.forEach(l => {
+                const parts = l.date.split('/'); // DD, MM, YYYY
+                if(parts.length === 3) {
+                    const m = parseInt(parts[1]) - 1;
+                    if(m >= 0 && m < 12) data[m].mcq += (parseInt(l.mcqs)||0);
+                }
+            });
+
+            // 2. SWTs - YYYY-MM-DD
+            const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
+            swts.forEach(s => {
+                const parts = s.date.split('-'); // YYYY, MM, DD
+                if(parts.length === 3) {
+                    const m = parseInt(parts[1]) - 1;
+                    if(m >= 0 && m < 12) data[m].swt++;
+                }
+            });
+
+            // 3. GTs (NEET + INI) - YYYY-MM-DD
+            const neet = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
+            const ini = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            [...neet, ...ini].forEach(g => {
+                const parts = g.date.split('-');
+                if(parts.length === 3) {
+                    const m = parseInt(parts[1]) - 1;
+                    if(m >= 0 && m < 12) data[m].gt++;
+                }
+            });
+
+            let html = "";
+            months.forEach((mName, idx) => {
+                const d = data[idx];
+                if(d.mcq > 0 || d.swt > 0 || d.gt > 0) {
+                    html += `<tr><td>${mName}</td><td>${d.mcq}</td><td>${d.swt}</td><td>${d.gt}</td></tr>`;
+                }
+            });
+            document.getElementById('monthlyGoalBody').innerHTML = html;
         }
 
         function renderMatrix() {
@@ -645,8 +697,6 @@
             });
         }
 
-        // --- NEW FEATURES FOR GOALS: LOCK BUTTONS & SUBJECT SAVE ---
-
         function lockTarget(phaseIdx, type) {
             if(!confirm("Are you sure? Once locked, this goal cannot be modified.")) return;
             
@@ -673,14 +723,12 @@
             if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {s:{}, s_locked:{}};
             if(!g.phases[phaseIdx].s_locked) g.phases[phaseIdx].s_locked = {};
 
-            let subjectsList = "";
             SUBJECTS_19.forEach((s, si) => {
                 const el = document.getElementById(`chk_${phaseIdx}_${si}`);
                 if(el && el.checked) {
                     g.phases[phaseIdx].s[si] = true;
                     if(!g.phases[phaseIdx].s_locked[si]) {
                         g.phases[phaseIdx].s_locked[si] = true; // Lock it
-                        subjectsList += s + ", ";
                     }
                 }
             });
@@ -750,7 +798,7 @@
                     const isChecked = pData.s ? pData.s[si] : false;
                     const isLocked = pData.s_locked ? pData.s_locked[si] : false;
                     const disabledAttr = isLocked ? 'disabled' : '';
-                    const labelStyle = isLocked ? 'color:#2ecc71; font-weight:bold;' : ''; // Green if locked
+                    const labelStyle = isLocked ? 'color:#2ecc71; font-weight:bold;' : ''; 
                     
                     subjectsHtml += `<label class="sub-check-item" style="${labelStyle}">
                         <input type="checkbox" id="chk_${idx}_${si}" ${isChecked ? 'checked' : ''} ${disabledAttr} onchange="saveGoals()"> 
@@ -812,16 +860,13 @@
                 i_jan: document.getElementById('goal_ini_jan').checked 
             };
             
-            // Only update dates and non-locked checklist items
             const currentPhases = PHASES_CONFIG.map((_, idx) => { 
                 const existing = g.phases[idx] || {};
                 const s = existing.s || {};
                 
-                // Read dates
                 const fDate = document.getElementById(`d_${idx}_f`).value;
                 const tDate = document.getElementById(`d_${idx}_t`).value;
 
-                // Read checkboxes (only if not locked)
                 SUBJECTS_19.forEach((_, si) => {
                     const el = document.getElementById(`chk_${idx}_${si}`);
                     if(el && !el.disabled) {
@@ -834,7 +879,6 @@
 
             const newG = { exams: currentExams, phases: currentPhases };
             localStorage.setItem(KEYS.GOALS, JSON.stringify(newG)); 
-            // We don't re-render here to avoid flickering inputs while typing dates
         }
 
         function lockExamGoals() {
@@ -863,7 +907,7 @@
                     else el.classList.remove('target-locked');
                 });
             }
-            renderGoalHTML(); // Initial render of the complex goal HTML
+            renderGoalHTML(); 
         }
 
         function exportData() { const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const code = btoa(JSON.stringify(b)); navigator.clipboard.writeText(code).then(() => alert("Code Copied!")); }
@@ -1208,7 +1252,7 @@
             document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); }
+        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); }
         updateUI();
     </script>
 </body>
