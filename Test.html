@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V7.3</title>
+    <title>Scalpel Master Pro V7.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,7 +25,6 @@
         
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
-        /* Header & Badges */
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
@@ -34,7 +33,7 @@
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
-        /* Dashboard & Exam Grid */
+        /* Dashboard */
         .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); }
@@ -58,7 +57,7 @@
         .accordion-header:after { content: '▼'; font-size: 10px; transition: transform 0.3s; }
         .accordion-wrapper.open .accordion-header:after { transform: rotate(180deg); }
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { max-height: 5000px; } /* Large height for long tables */
+        .accordion-wrapper.open .accordion-content { max-height: 8000px; } /* Massively increased to prevent cutting off tables */
         .accordion-inner { padding: 15px; }
 
         /* Standard Components */
@@ -83,10 +82,10 @@
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
-        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); min-width: 80px; }
+        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); min-width: 90px; }
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
-        /* Goal & PYQ Specifics */
+        /* Goal Specifics */
         .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         .phase-block.completed { border-color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.1); }
@@ -96,15 +95,17 @@
         .phase-badge.unlocked { filter: grayscale(0%); opacity: 1; transform: scale(1.2); text-shadow: 0 0 15px rgba(255,215,0,0.6); }
         
         .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
-        .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
-        .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
-        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
+        .sub-grid-container.open { max-height: 800px; padding: 8px; overflow-y: auto; }
+        
+        /* Fixed Subject Grid for readability */
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; } /* Changed to 2 cols */
+        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #aaa; }
         .sub-check-item input:checked + span { color: #2ecc71; font-weight: bold; }
         
         .target-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); }
 
         /* Yellow Days Dashboard Box */
-        .days-dashboard { border: 1px solid #f39c12; background: rgba(243, 156, 18, 0.15); color: #f39c12; padding: 8px; border-radius: 8px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 12px; text-transform: uppercase; margin-top: 8px; letter-spacing: 1px; }
+        .days-dashboard { border: 1px solid #f39c12; background: rgba(243, 156, 18, 0.15); color: #f39c12; padding: 8px; border-radius: 8px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 12px; text-transform: uppercase; margin-top: 8px; letter-spacing: 1px; font-weight: bold; }
 
         /* PYQ Dropboxes */
         .pyq-dropbox { border: 1px solid rgba(82, 136, 193, 0.3); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
@@ -408,7 +409,9 @@
 
         function clearData() { if(confirm("Are you sure?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
 
-        let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
+        // --- RESTORED TIMER LOGIC ---
+        let timerInterval, activeSub = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET", activePhase = "";
+
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
@@ -421,18 +424,36 @@
         document.getElementById('startBtn').onclick = () => { 
             if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); 
             audioCtx.resume(); requestWakeLock(); 
-            activeSub = document.getElementById('subject').value; activePhase = document.getElementById('studyPhase').value;
+            activeSub = document.getElementById('subject').value; 
+            activePhase = document.getElementById('studyPhase').value;
             startStudyTimer(); 
         };
         function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
-        function runTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused) { timeLeft--; let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; document.getElementById('timer-display').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; if (timeLeft<=0) handleTransition(); } }, 1000); }
+        
+        function runTimer() { 
+            clearInterval(timerInterval); 
+            timerInterval = setInterval(() => { 
+                if (!isPaused) { 
+                    timeLeft--; 
+                    let h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60; 
+                    document.getElementById('timer-display').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; 
+                    if (timeLeft<=0) handleTransition(); 
+                } 
+            }, 1000); 
+        }
+
         function handleTransition() { clearInterval(timerInterval); startAlarm(mode==="study"?880:440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; }
         function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
         function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
         function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
-        function saveStudyLog(s, m, d, ph) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); updateUI(); }
+        function saveStudyLog(s, m, d, ph) { 
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
+            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); 
+            localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
+            updateUI();
+        }
 
         // --- PYQ LOGIC ---
         function renderPYQ() {
@@ -460,7 +481,7 @@
             const container = document.getElementById('goal-phases-container'); if(!container) return; container.innerHTML = "";
             PHASES_CONFIG.forEach((p, idx) => {
                 const div = document.createElement('div'); div.className = 'phase-block'; div.id = `phase_block_${idx}`;
-                div.innerHTML = `<div class="phase-header"><span class="phase-title">${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div class="date-grid"><div><span class="setting-label">From</span><input type="date" id="date_${idx}_from" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="date_${idx}_to" onchange="saveGoals()"></div></div><div id="days_${idx}" class="days-dashboard">0 DAYS</div><button class="btn sm-btn" style="margin-top:8px; background:rgba(255,255,255,0.1); width:100%;" onclick="toggleSubGrid(${idx})">Show/Hide Subjects</button><div id="sub_grid_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s,sIdx)=>`<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${sIdx}" onchange="saveGoals()"><span>${s.substring(0,4)}..</span></label>`).join('')}</div></div><div class="target-row"><div style="flex:1;"><span class="setting-label">Target SWTs</span><div style="display:flex; gap:5px;"><input type="number" id="swt_target_${idx}" placeholder="0" oninput="saveGoals()"><input type="checkbox" id="swt_done_${idx}" onchange="saveGoals()"></div></div><div style="flex:1;"><span class="setting-label">Target GTs</span><div style="display:flex; gap:5px;"><input type="number" id="gt_target_${idx}" placeholder="0" oninput="saveGoals()"><input type="checkbox" id="gt_done_${idx}" onchange="saveGoals()"></div></div></div>`;
+                div.innerHTML = `<div class="phase-header"><span class="phase-title">${p.name}</span><span id="badge_${idx}" class="phase-badge">${p.badge}</span></div><div class="date-grid"><div><span class="setting-label">From</span><input type="date" id="date_${idx}_from" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="date_${idx}_to" onchange="saveGoals()"></div></div><div id="days_${idx}" class="days-dashboard">0 DAYS</div><button class="btn sm-btn" style="margin-top:8px; background:rgba(255,255,255,0.1); width:100%;" onclick="toggleSubGrid(${idx})">Show/Hide Subjects</button><div id="sub_grid_${idx}" class="sub-grid-container"><div class="sub-grid">${SUBJECTS_19.map((s,sIdx)=>`<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${sIdx}" onchange="saveGoals()"><span>${s}</span></label>`).join('')}</div></div><div class="target-row"><div style="flex:1;"><span class="setting-label">Target SWTs</span><div style="display:flex; gap:5px;"><input type="number" id="swt_target_${idx}" placeholder="0" oninput="saveGoals()"><input type="checkbox" id="swt_done_${idx}" onchange="saveGoals()"></div></div><div style="flex:1;"><span class="setting-label">Target GTs</span><div style="display:flex; gap:5px;"><input type="number" id="gt_target_${idx}" placeholder="0" oninput="saveGoals()"><input type="checkbox" id="gt_done_${idx}" onchange="saveGoals()"></div></div></div>`;
                 container.appendChild(div);
             });
             loadGoalsToUI();
