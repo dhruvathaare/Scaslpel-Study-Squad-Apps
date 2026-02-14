@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V7.5 (Final)</title>
+    <title>Scalpel Master Pro V8.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,6 +25,7 @@
         
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
         
+        /* Header */
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
@@ -51,15 +52,16 @@
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
 
-        /* Accordion System (FIXED VISIBILITY) */
+        /* Accordion System */
         .accordion-wrapper { width: 100%; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
         .accordion-header { background: var(--accent); padding: 12px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
         .accordion-header:after { content: '▼'; font-size: 10px; transition: transform 0.3s; }
         .accordion-wrapper.open .accordion-header:after { transform: rotate(180deg); }
-        /* Fix for Table Visibility: Use large max-height */
-        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: var(--card); }
-        .accordion-wrapper.open .accordion-content { max-height: 9000px; overflow: visible; } 
+        .accordion-content { display: none; background: var(--card); }
+        .accordion-wrapper.open .accordion-content { display: block; animation: slideDown 0.3s ease-out; }
         .accordion-inner { padding: 15px; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Standard Components */
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; }
@@ -81,11 +83,11 @@
         
         .chart-container { width: 100%; height: 160px; margin: 10px 0; }
         
-        /* Matrix Table - Fixed Visibility */
-        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 300px; }
-        .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
+        /* Matrix Table */
+        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; min-width: 100%; }
+        .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 6px 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: white; }
-        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); white-space: nowrap; }
+        .matrix-row-head { text-align: left !important; font-weight: bold; color: #ddd; background: rgba(0,0,0,0.2); width: 30%; }
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
         /* Goal & PYQ Specifics */
@@ -97,8 +99,8 @@
         .phase-badge { font-size: 24px; filter: grayscale(100%); opacity: 0.3; transition: all 0.5s; }
         .phase-badge.unlocked { filter: grayscale(0%); opacity: 1; transform: scale(1.2); text-shadow: 0 0 15px rgba(255,215,0,0.6); }
         
-        .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
-        .sub-grid-container.open { max-height: 800px; padding: 8px; overflow-y: auto; }
+        .sub-grid-container { display: none; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; padding: 8px; }
+        .sub-grid-container.open { display: block; }
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #aaa; }
         .sub-check-item input:checked + span { color: #2ecc71; font-weight: bold; }
@@ -112,7 +114,7 @@
         .pyq-dropbox { border: 1px solid rgba(82, 136, 193, 0.3); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
         .pyq-head { background: rgba(255,255,255,0.05); padding: 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .pyq-body { display: none; padding: 10px; background: rgba(0,0,0,0.3); }
-        .pyq-body.open { display: block; animation: fadeIn 0.3s; }
+        .pyq-body.open { display: block; }
         .pyq-col-container { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
         .pyq-col-header { font-size:10px; color:#5288c1; text-transform:uppercase; font-weight:bold; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:3px; }
 
@@ -141,7 +143,6 @@
         .reminder-list { font-size: 10px; line-height: 1.4; opacity: 0.9; }
         
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body>
@@ -234,7 +235,6 @@
                 <div class="accordion-header" onclick="toggleAccordion('acc-radar')">Revision Radar</div>
                 <div class="accordion-content">
                     <div class="accordion-inner">
-                        <p style="font-size:10px; color:#aaa; margin:0;">Neglected Subjects (>10 or >20 days)</p>
                         <div id="radar-container" class="radar-grid"></div>
                         <div id="radar-empty" style="display:none; font-size:11px; color:#2ecc71; margin-top:10px; font-family:'Oswald';">ALL SUBJECTS ON TRACK ✅</div>
                     </div>
@@ -312,7 +312,7 @@
                         <div style="overflow-x:auto;">
                             <table class="matrix-table">
                                 <thead>
-                                    <tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
+                                    <tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
                                 </thead>
                                 <tbody id="matrixBody"></tbody>
                             </table>
@@ -322,7 +322,7 @@
                         <div style="overflow-x:auto;">
                             <table class="matrix-table">
                                 <thead>
-                                    <tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
+                                    <tr><th class="matrix-row-head">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr>
                                 </thead>
                                 <tbody id="mcqMatrixBody"></tbody>
                             </table>
@@ -411,7 +411,7 @@
 
         function clearData() { if(confirm("Are you sure?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
 
-        // --- CORE TIMER LOGIC (RESTORED TO ORIGINAL) ---
+        // --- TIMER LOGIC (CRITICAL FIXES) ---
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
 
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
@@ -424,33 +424,27 @@
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'none'; }); btn.classList.add('active'); btn.style.background = 'var(--accent)'; document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
 
         document.getElementById('startBtn').onclick = () => { 
-            // VALIDATION
-            if (!document.getElementById('subject').value) return alert("Select Subject!"); 
-            
-            // CAPTURE STATE
-            activeSub = document.getElementById('subject').value;
+            if (!document.getElementById('subject').value) return tg.showAlert("Select Subject!"); 
+            audioCtx.resume(); requestWakeLock(); 
+            activeSub = document.getElementById('subject').value; 
             activePhase = document.getElementById('studyPhase').value;
-            
-            audioCtx.resume(); 
-            requestWakeLock(); 
             startStudyTimer(); 
         };
 
         function startStudyTimer() { 
-            mode = "study"; 
-            isPaused = false; 
-            timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); 
-            if(timeLeft <= 0) return; 
+            mode = "study"; isPaused = false; 
+            const h = parseInt(document.getElementById('studyHr').value) || 0;
+            const m = parseInt(document.getElementById('studyMin').value) || 0;
+            timeLeft = (h * 3600) + (m * 60); 
+            
+            if(timeLeft <= 0) return alert("Please enter duration!"); 
             
             document.getElementById('startBtn').style.display='none'; 
             document.getElementById('timer-controls').style.display='block'; 
             runTimer(); 
         }
 
-        function togglePause() { 
-            isPaused = !isPaused; 
-            document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; 
-        }
+        function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         
         function runTimer() { 
             clearInterval(timerInterval); 
@@ -468,58 +462,32 @@
             clearInterval(timerInterval); 
             startAlarm(mode==="study"?880:440); 
             document.getElementById('popup-overlay').style.display='flex'; 
-            // Logic for switching popup
-            if (mode === "study") {
-                document.getElementById('mcq-popup').style.display='block'; 
-                document.getElementById('break-popup').style.display='none';
-            } else {
-                document.getElementById('mcq-popup').style.display='none'; 
-                document.getElementById('break-popup').style.display='block';
-            }
+            document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; 
+            document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; 
         }
 
         function startBreak() { 
             stopAlarm(); 
             const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
-            // SAVE LOG HERE
-            saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); 
+            // Fix: Add to Log
+            const h = parseInt(document.getElementById('studyHr').value) || 0;
+            const mn = parseInt(document.getElementById('studyMin').value) || 0;
+            saveStudyLog(activeSub, m, (h*60)+mn, activePhase); 
             
             document.getElementById('cycleMcqs').value=''; 
             document.getElementById('popup-overlay').style.display='none'; 
             
-            mode="break"; 
-            isPaused=false; 
-            timeLeft=parseInt(document.getElementById('breakTime').value)*60; 
+            mode="break"; isPaused=false; 
+            timeLeft=parseInt(document.getElementById('breakTime').value || 15)*60; 
             runTimer(); 
         }
 
-        function continueNextCycle() { 
-            stopAlarm(); 
-            document.getElementById('popup-overlay').style.display = 'none'; 
-            startStudyTimer(); 
-        }
-
-        function stopEntireSession() { 
-            stopAlarm(); 
-            clearInterval(timerInterval); 
-            if (wakeLock) { wakeLock.release(); wakeLock=null; } 
-            document.getElementById('popup-overlay').style.display='none'; 
-            document.getElementById('timer-display').innerText="00:00:00"; 
-            document.getElementById('startBtn').style.display='block'; 
-            document.getElementById('timer-controls').style.display='none'; 
-            mode="idle"; 
-            updateUI(); 
-        }
+        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
+        function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
 
         function saveStudyLog(s, m, d, ph) { 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
-            logs.unshift({ 
-                date: new Date().toLocaleDateString('en-GB'), 
-                subject: s, 
-                mcqs: m, 
-                duration: d, 
-                phase: ph || "First Reading" 
-            }); 
+            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph || "First Reading" }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
             updateUI();
         }
@@ -564,18 +532,75 @@
         // --- RADAR ---
         function renderRevisionRadar() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const last = {}; SUBJECTS_19.forEach(s=>last[s]=null); logs.forEach(l => { if(SUBJECTS_19.includes(l.subject)) { const parts=l.date.split('/'); const d=new Date(parts[2], parts[1]-1, parts[0]); if(!last[l.subject] || d>last[l.subject]) last[l.subject]=d; }}); const neg = []; const today=new Date(); today.setHours(0,0,0,0); SUBJECTS_19.forEach(s => { let d=999; if(last[s]) d=Math.ceil((today-last[s])/(1000*60*60*24)); if(d>10) neg.push({s,d}); }); neg.sort((a,b)=>b.d-a.d); const c=document.getElementById('radar-container'), e=document.getElementById('radar-empty'); if(neg.length===0) { c.innerHTML=""; e.style.display='block'; } else { e.style.display='none'; c.innerHTML=neg.map(n=>`<div class="radar-item ${n.d>20?'radar-crit':'radar-warn'}"><span>${n.s}</span><span class="radar-days">${n.d===999?'NEVER':n.d+'d'}</span></div>`).join(''); } }
 
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderMCQMatrix(); renderRevisionRadar(); }
+        function updateUI() { 
+            // Enforce Date Limits on Init
+            const today = new Date().toISOString().split("T")[0];
+            document.getElementById('swtDate').setAttribute('max', today);
+            document.getElementById('gtDate').setAttribute('max', today);
+
+            renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderMCQMatrix(); renderRevisionRadar(); 
+        }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0,t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w=Math.max(0,200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(currentGTMode==='NEET'?0:2); }
-        function saveSWT() { const d=document.getElementById('swtDate').value; if(!d || new Date(d)>new Date()) return alert(d?"Future date!":"Enter date."); const t=parseInt(document.getElementById('swtTotal').value); if(isNaN(t)) return; const data=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); data.push({ date:d, total:t, correct:parseInt(document.getElementById('swtCorrect').value), unat:parseInt(document.getElementById('swtUnat').value), wrong:parseInt(document.getElementById('swtW').innerText), percent:document.getElementById('swtP').innerText.replace('%',''), subject:document.getElementById('swtSubject').value }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); }
-        function saveGT() { const d=document.getElementById('gtDate').value; if(!d || new Date(d)>new Date()) return alert(d?"Future date!":"Enter date."); const data=JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); data.push({ date:d, score:parseFloat(document.getElementById('gtS').innerText), correct:parseInt(document.getElementById('gtCorrect').value), unat:parseInt(document.getElementById('gtUnat').value), wrong:parseInt(document.getElementById('gtW').innerText) }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); updateUI(); }
+        
+        // FUTURE DATE PROTECTION
+        function saveSWT() { 
+            const d=document.getElementById('swtDate').value; 
+            if(!d) return alert("Enter date.");
+            const sel = new Date(d); const now = new Date(); sel.setHours(0,0,0,0); now.setHours(0,0,0,0);
+            if(sel > now) return alert("Future dates restricted!");
+
+            const t=parseInt(document.getElementById('swtTotal').value); if(isNaN(t)) return; 
+            const data=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); 
+            data.push({ date:d, total:t, correct:parseInt(document.getElementById('swtCorrect').value), unat:parseInt(document.getElementById('swtUnat').value), wrong:parseInt(document.getElementById('swtW').innerText), percent:document.getElementById('swtP').innerText.replace('%',''), subject:document.getElementById('swtSubject').value }); 
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); 
+        }
+        
+        function saveGT() { 
+            const d=document.getElementById('gtDate').value; 
+            if(!d) return alert("Enter date.");
+            const sel = new Date(d); const now = new Date(); sel.setHours(0,0,0,0); now.setHours(0,0,0,0);
+            if(sel > now) return alert("Future dates restricted!");
+
+            const data=JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); 
+            data.push({ date:d, score:parseFloat(document.getElementById('gtS').innerText), correct:parseInt(document.getElementById('gtCorrect').value), unat:parseInt(document.getElementById('gtUnat').value), wrong:parseInt(document.getElementById('gtW').innerText) }); 
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); updateUI(); 
+        }
+        
         function switchGT(m) { currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background='var(--border)'; document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; calcGT(); renderGT(); }
         let hChart, mChart, gNeetChart, gIniChart, sChart, sTrendChart;
         function renderData() { const logs=JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"), grouped={}; logs.forEach(l=>{ if(!grouped[l.date]) grouped[l.date]={h:0,m:0,subs:new Set(),cyc:0}; grouped[l.date].h+=l.duration/60; grouped[l.date].m+=l.mcqs; grouped[l.date].subs.add(l.subject); grouped[l.date].cyc++; }); const labels=Object.keys(grouped).reverse().slice(-7), hours=labels.map(l=>grouped[l].h), mcqs=labels.map(l=>grouped[l].m); if(hChart) hChart.destroy(); hChart=new Chart(document.getElementById('hoursChart'),{type:'line',data:{labels,datasets:[{label:'Hours',data:hours,borderColor:'#f39c12',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); if(mChart) mChart.destroy(); mChart=new Chart(document.getElementById('mcqChart'),{type:'line',data:{labels,datasets:[{label:'MCQs',data:mcqs,borderColor:'#5288c1',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); document.getElementById('dailyLogBody').innerHTML = Object.keys(grouped).reverse().map(d=>`<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cyc}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`).join(''); }
         function renderSWT() { const all=JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"), sub=document.getElementById('swtSubject').value, filt=all.filter(x=>x.subject===sub); if(sChart) sChart.destroy(); sChart=new Chart(document.getElementById('swtChart'),{type:'line',data:{labels:filt.map(x=>x.date),datasets:[{label:sub,data:filt.map(x=>x.percent),borderColor:'#5288c1',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{color:'#fff'}}}}}); document.getElementById('swtAnalysis').innerHTML=filt.length?filt.map(x=>`• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong})`).reverse().join('<br>'):"No Data"; if(sTrendChart) sTrendChart.destroy(); let sum=0; const trend=all.map((x,i)=>(sum+=parseFloat(x.percent))/(i+1)); sTrendChart=new Chart(document.getElementById('swtTrendChart'),{type:'line',data:{labels:all.map(x=>x.date),datasets:[{label:'Avg %',data:trend,borderColor:'#f39c12',fill:true,backgroundColor:'rgba(243,156,18,0.1)',tension:0.4}]},options:{maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{color:'#fff'}}},plugins:{legend:{display:false}}}}); const perf={}; all.forEach(l=>{ if(!perf[l.subject]) perf[l.subject]={s:0,c:0}; perf[l.subject].s+=parseFloat(l.percent); perf[l.subject].c++; }); let max=-1, min=101, sSub="--", wSub="--"; Object.keys(perf).forEach(k=>{ const a=perf[k].s/perf[k].c; if(a>max){max=a;sSub=k;} if(a<min){min=a;wSub=k;} }); document.getElementById('swtStrong').innerText=sSub; document.getElementById('swtStrongVal').innerText=max>=0?max.toFixed(1)+'%':'0%'; document.getElementById('swtWeak').innerText=wSub; document.getElementById('swtWeakVal').innerText=min<=100?min.toFixed(1)+'%':'0%'; const done=new Set(all.map(x=>x.subject)), miss=SUBJECTS_ALL_SWT.filter(x=>!done.has(x)); document.getElementById('swtReminder').style.display=miss.length?'block':'none'; document.getElementById('swtReminderList').innerText=miss.join(', '); }
         function renderGT() { const n=JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), i=JSON.parse(localStorage.getItem(KEYS.INI)||"[]"); if(gNeetChart) gNeetChart.destroy(); gNeetChart=new Chart(document.getElementById('gtNeetChart'),{type:'line',data:{labels:n.map(x=>x.date),datasets:[{label:'NEET',data:n.map(x=>x.score),borderColor:'#f39c12',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); document.getElementById('gtNeetAnalysis').innerHTML=n.map(x=>`• ${x.date}: <b>${x.score}</b>`).reverse().join('<br>'); if(gIniChart) gIniChart.destroy(); gIniChart=new Chart(document.getElementById('gtInicetChart'),{type:'line',data:{labels:i.map(x=>x.date),datasets:[{label:'INICET',data:i.map(x=>x.score),borderColor:'#2ecc71',tension:0.3}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{color:'#fff'}}}}}); document.getElementById('gtInicetAnalysis').innerHTML=i.map(x=>`• ${x.date}: <b>${x.score}</b>`).reverse().join('<br>'); }
-        function renderMatrix() { try { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 }; const m = {}; SUBJECTS_19.forEach(s=>m[s]=[new Set(),new Set(),new Set(),new Set()]); logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0].add(l.date); }); let h="", tot=[0,0,0,0]; SUBJECTS_19.forEach(s=>{ const d=m[s].map(x=>x.size); d.forEach((v,i)=>tot[i]+=v); h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; }); document.getElementById('matrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`; } catch(e){} }
-        function renderMCQMatrix() { try { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 }; const m = {}; SUBJECTS_19.forEach(s=>m[s]=[0,0,0,0]); logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0]+=parseInt(l.mcqs)||0; }); let h="", tot=[0,0,0,0]; SUBJECTS_19.forEach(s=>{ const d=m[s]; d.forEach((v,i)=>tot[i]+=v); h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; }); document.getElementById('mcqMatrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`; } catch(e){} }
+        
+        function renderMatrix() { 
+            try { 
+                const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
+                const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 }; 
+                const m = {}; SUBJECTS_19.forEach(s=>m[s]=[new Set(),new Set(),new Set(),new Set()]); 
+                logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0].add(l.date); }); 
+                let h="", tot=[0,0,0,0]; 
+                SUBJECTS_19.forEach(s=>{ 
+                    const d=m[s].map(x=>x.size); d.forEach((v,i)=>tot[i]+=v); 
+                    h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
+                }); 
+                document.getElementById('matrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`; 
+            } catch(e){console.error(e)} 
+        }
+        function renderMCQMatrix() { 
+            try { 
+                const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
+                const map = { "First Reading":0, "Second Reading":1, "Third Reading":2, "Extra Bonus":3 }; 
+                const m = {}; SUBJECTS_19.forEach(s=>m[s]=[0,0,0,0]); 
+                logs.forEach(l=>{ if(m[l.subject]) m[l.subject][map[l.phase]||0]+=parseInt(l.mcqs)||0; }); 
+                let h="", tot=[0,0,0,0]; 
+                SUBJECTS_19.forEach(s=>{ 
+                    const d=m[s]; d.forEach((v,i)=>tot[i]+=v); 
+                    h+=`<tr><td class="matrix-row-head">${s}</td>${d.map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`; 
+                }); 
+                document.getElementById('mcqMatrixBody').innerHTML=h+`<tr><td class="matrix-total">TOTAL</td>${tot.map(v=>`<td class="matrix-total">${v}</td>`).join('')}</tr>`; 
+            } catch(e){console.error(e)} 
+        }
 
         renderGoalHTML(); renderPYQ(); updateUI();
     </script>
