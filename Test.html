@@ -78,11 +78,11 @@
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
 
-        /* PYQ Specific Styles for Tabs */
-        .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; }
+        /* PYQ Specific Styles - FIXED FOR CUP VISIBILITY */
+        .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-top: 15px; /* Added padding top for cup space */ }
+        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; /* Ensure cup isn't clipped */ }
         .pyq-tab.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: bold; }
-        .pyq-tab-cup { display: none; position: absolute; top: -5px; right: -5px; font-size: 14px; text-shadow: 0 0 5px gold;}
+        .pyq-tab-cup { display: none; position: absolute; top: -12px; right: -5px; font-size: 18px; text-shadow: 0 0 10px gold; z-index: 100; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .pyq-tab-cup.show { display: block; }
         .pyq-panel { display: none; animation: fadeIn 0.3s; }
         .pyq-panel.active { display: block; }
@@ -91,6 +91,7 @@
         .pyq-col-header { font-size: 10px; color: #5288c1; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 4px; }
         
         @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
 
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
@@ -322,7 +323,6 @@
 
         const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🥉' },{ id: 'r2', name: '2. Second Reading', badge: '🥈' },{ id: 'r3', name: '3. Third Reading', badge: '🥇' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
         
-        // NEW PYQ CONFIGURATION (Strictly as requested)
         const PYQ_CATS = [
             { id: 'neet', label: 'NEET PG', type: 'list', start: 2025, end: 2020 },
             { id: 'ini', label: 'INICET', type: 'cols', col1: 'May', col2: 'Nov', start: 2025, end: 2014 },
@@ -423,20 +423,17 @@
             document.getElementById('mcqMatrixBody').innerHTML = mHtml;
         }
 
-        // --- UPDATED PYQ RENDERER FOR TABS & CHAMPION CUP ---
         function renderPYQ() {
             const container = document.getElementById('pyq-panels-root');
-            if(container.innerHTML !== "") return; // Render only once
+            if(container.innerHTML !== "") return;
 
             let html = "";
             PYQ_CATS.forEach((cat, index) => {
-                // Set first panel active by default
                 const activeClass = index === 0 ? "active" : "";
                 
                 html += `<div id="pyq_panel_${cat.id}" class="pyq-panel ${activeClass}">`;
                 
                 if (cat.type === 'list') {
-                    // Single Column List
                     for(let y=cat.start; y>=cat.end; y--) {
                         html += `
                         <label class="pyq-list-row">
@@ -445,7 +442,6 @@
                         </label>`;
                     }
                 } else {
-                    // Two Columns
                     html += `<div class="pyq-col-grid">
                         <div>
                             <div class="pyq-col-header">${cat.col1}</div>`;
@@ -465,7 +461,6 @@
                     html += `</div></div>`;
                 }
 
-                // Add Save & Lock Button
                 html += `<button class="btn sm-btn" style="margin-top:15px; width:100%; background:var(--accent);" onclick="saveLockPYQ('${cat.id}')">Save & Lock Progress</button>`;
                 html += `</div>`;
             });
@@ -475,21 +470,18 @@
         }
 
         function switchPyq(id, btn) {
-            // UI Switch Tabs
             document.querySelectorAll('.pyq-tab').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
             
-            // Show Panel
             document.querySelectorAll('.pyq-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(`pyq_panel_${id}`).classList.add('active');
         }
 
         function saveLockPYQ(catId) {
-            // Save current state
             const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
             const catConfig = PYQ_CATS.find(c => c.id === catId);
             
-            data[catId] = {}; // Reset for this category to ensure clean save
+            data[catId] = {}; 
             
             let allChecked = true;
 
@@ -511,7 +503,6 @@
 
             localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
             
-            // Check for Cup
             const cup = document.getElementById(`cup_${catId}`);
             if(allChecked) {
                 cup.classList.add('show');
