@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.18</title>
+    <title>Scalpel Master Pro V6.19</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -54,7 +54,7 @@
             .container { max-width: 95%; } 
             .card { width: 100%; }
             .chart-container { height: 280px; } 
-            .matrix-table th, .matrix-table td { white-space: normal; } /* Allow text wrap in wide mode */
+            .matrix-table th, .matrix-table td { white-space: normal; }
         }
 
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
@@ -87,19 +87,17 @@
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
         
-        /* Theme Tab Specific Style */
         .theme-toggle-tab { flex: 0.6; border-right: 1px solid var(--border); color: var(--accent) !important; opacity: 1 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;}
 
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
         
-        /* ACCORDION STYLES */
+        /* ACCORDION STYLES - NOW BLUE */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 5px 0; }
-        .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; }
+        .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--accent) !important; }
         .arrow { transition: transform 0.3s ease; font-size: 12px; opacity: 0.7; }
         .accordion-content { display: none; margin-top: 15px; animation: slideDown 0.3s ease-out; }
         .accordion-content.open { display: block; }
         .accordion-header.active .arrow { transform: rotate(180deg); }
-        
         @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
@@ -145,9 +143,6 @@
         .pyq-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .pyq-col-header { font-size: 10px; color: #5288c1; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed rgba(128,128,128,0.3); padding-bottom: 4px; }
         
-        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(128,128,128,0.2); padding: 4px; text-align: center; }
         .matrix-table th { background: rgba(82, 136, 193, 0.2); color: var(--text); }
@@ -201,6 +196,16 @@
         .sb-input { padding: 4px !important; font-size: 10px !important; }
 
         .instruction-box { background: var(--instruction-bg); padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 10px; color: #888; text-align: left; line-height: 1.4; border-left: 2px solid var(--accent); }
+
+        /* TOUGH SUBJECT ALERT STYLES */
+        .alert-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; margin-bottom: 5px; border-radius: 8px; font-size: 11px; font-weight: bold; border: 1px solid transparent; }
+        .alert-item span.days { opacity: 0.8; font-size: 10px; }
+        .alert-safe { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border-color: #2ecc71; }
+        .alert-yellow { background: rgba(241, 196, 15, 0.1); color: #f1c40f; border-color: #f1c40f; }
+        .alert-orange { background: rgba(230, 126, 34, 0.1); color: #e67e22; border-color: #e67e22; }
+        .alert-red { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border-color: #e74c3c; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); } 70% { box-shadow: 0 0 0 5px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
     </style>
 </head>
 <body>
@@ -229,8 +234,7 @@
             <div class="subject-breakdown-row subject-breakdown-header">
                 <span>Subject</span><span>C</span><span>I</span><span>U</span>
             </div>
-            <div id="gt-subject-inputs" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
-                </div>
+            <div id="gt-subject-inputs" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
             <button class="btn" onclick="finalizeGTSave()" style="background:#2ecc71; width:100%;">Finalize & Save</button>
             <button class="btn" onclick="closeGTBreakdown()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
         </div>
@@ -277,7 +281,7 @@
         <div id="tab-goal" class="tab-content">
             <div class="card">
                 <div class="accordion-header" onclick="toggleAccordion('acc_exams', this)">
-                    <h3 style="color:var(--accent);">My Target Exams</h3>
+                    <h3>My Target Exams</h3>
                     <span class="arrow">▼</span>
                 </div>
                 <div id="acc_exams" class="accordion-content">
@@ -290,8 +294,20 @@
             </div>
             
             <div class="card">
+                <div class="accordion-header" onclick="toggleAccordion('acc_tough', this)">
+                    <h3>My Tough Subjects</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div id="acc_tough" class="accordion-content">
+                    <div style="font-size:10px; color:#888; margin-bottom:10px;">Select subjects you want to monitor closely:</div>
+                    <div id="tough-subject-selector" class="sub-grid">
+                        </div>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="accordion-header" onclick="toggleAccordion('acc_pyq', this)">
-                    <h3 style="color:#2ecc71;">PYQ PAPERS GOAL</h3>
+                    <h3>PYQ PAPERS GOAL</h3>
                     <span class="arrow">▼</span>
                 </div>
                 <div id="acc_pyq" class="accordion-content">
@@ -307,7 +323,7 @@
 
             <div class="card">
                 <div class="accordion-header" onclick="toggleAccordion('acc_monthly', this)">
-                    <h3 style="color:#f39c12;">Monthly Goals Reached</h3>
+                    <h3>Monthly Goals Reached</h3>
                     <span class="arrow">▼</span>
                 </div>
                 <div id="acc_monthly" class="accordion-content">
@@ -322,7 +338,7 @@
 
             <div class="card">
                 <div class="accordion-header" onclick="toggleAccordion('acc_phases', this)">
-                    <h3 style="color:#f39c12;">Reading Phases</h3>
+                    <h3>Reading Phases</h3>
                     <span class="arrow">▼</span>
                 </div>
                 <div id="acc_phases" class="accordion-content">
@@ -340,6 +356,9 @@
         </div>
 
         <div id="tab-daily" class="tab-content active">
+            <div id="tough-dashboard" style="width:100%; margin-bottom:15px;">
+                </div>
+
             <div class="card">
                 <span class="setting-label">Reading Phase</span>
                 <select id="studyPhase">
@@ -529,7 +548,7 @@
         document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
 
         const prefix = `SSS_PRO_V3_${tgUser.id}_`;
-        const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ' };
+        const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ', TOUGH: prefix+'TOUGH' };
         
         const SUBJECTS_19 = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", "Orthopedics", "Psychiatry", "Radiology"];
         const SUBJECTS_EXTRA = ["Mixed Bag", "Integrated Systems"];
@@ -565,9 +584,88 @@
 
         function toggleAccordion(id, header) {
             const content = document.getElementById(id);
-            const isOpen = content.classList.contains('open');
             content.classList.toggle('open');
             header.classList.toggle('active');
+        }
+
+        /* TOUGH SUBJECTS LOGIC */
+        function renderToughSubjectsSelector() {
+            const saved = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "{}");
+            const container = document.getElementById('tough-subject-selector');
+            let html = "";
+            SUBJECTS_19.forEach(s => {
+                const checked = saved[s] ? "checked" : "";
+                html += `<label class="sub-check-item">
+                    <input type="checkbox" id="tough_${s}" ${checked} onchange="saveToughSubjects()"> 
+                    <span>${s}</span>
+                </label>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function saveToughSubjects() {
+            const selection = {};
+            SUBJECTS_19.forEach(s => {
+                const el = document.getElementById(`tough_${s}`);
+                if (el && el.checked) selection[s] = true;
+            });
+            localStorage.setItem(KEYS.TOUGH, JSON.stringify(selection));
+            renderToughDashboard(); // Update dashboard immediately
+        }
+
+        function renderToughDashboard() {
+            const saved = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "{}");
+            const selectedSubjects = Object.keys(saved).filter(k => saved[k]);
+            const container = document.getElementById('tough-dashboard');
+            
+            if (selectedSubjects.length === 0) {
+                container.innerHTML = "";
+                return;
+            }
+
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
+            let html = `<div style="font-size:10px; opacity:0.7; margin-bottom:5px; text-transform:uppercase;">🚨 TOUGH SUBJECT MONITOR</div>`;
+            
+            const now = new Date();
+            // Reset hours for accurate date diff
+            now.setHours(0,0,0,0);
+
+            selectedSubjects.forEach(s => {
+                // Find last study date
+                let lastDate = null;
+                // Parse dates manually: DD/MM/YYYY
+                for(let l of logs) {
+                    if (l.subject === s) {
+                        const parts = l.date.split('/');
+                        if(parts.length === 3) {
+                            const d = new Date(parts[2], parts[1]-1, parts[0]);
+                            if (!lastDate || d > lastDate) lastDate = d;
+                        }
+                    }
+                }
+
+                let statusClass = "alert-red";
+                let msg = "Not studied recently!";
+                let days = "Never";
+
+                if (lastDate) {
+                    const diffTime = Math.abs(now - lastDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    days = `${diffDays} days ago`;
+
+                    if (diffDays <= 10) { statusClass = "alert-safe"; msg = "On Track"; }
+                    else if (diffDays <= 20) { statusClass = "alert-yellow"; msg = "Needs Revision"; }
+                    else if (diffDays <= 30) { statusClass = "alert-orange"; msg = "Gap Warning"; }
+                    else { statusClass = "alert-red"; msg = "Critical Gap"; }
+                }
+
+                html += `<div class="alert-item ${statusClass}">
+                    <span>${s}</span>
+                    <span class="days">${msg} (${days})</span>
+                </div>`;
+            });
+
+            container.innerHTML = html;
         }
 
         /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
@@ -986,7 +1084,7 @@
             let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); }
+        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); }
         updateUI();
     </script>
 </body>
