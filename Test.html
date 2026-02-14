@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V4.1</title>
+    <title>Scalpel Master Pro V6.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -58,12 +58,13 @@
         
         input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; }
         input[type="date"] { color-scheme: dark; }
-        input[type="checkbox"] { width: auto; transform: scale(1.2); }
+        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); }
 
         /* Timer & Buttons */
         #timer-display { font-size: 52px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
-        
+        .sm-btn { padding: 6px 12px; font-size: 10px; border-radius: 6px; }
+
         /* Tables */
         .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         .log-table th, .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -72,13 +73,31 @@
         /* Goal & Matrix Styles */
         .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .goal-row:last-child { border-bottom: none; }
-        .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); transition: border-color 0.3s; }
+        .phase-block.completed { border-color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.1); }
         .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .phase-title { font-size: 12px; font-weight: bold; color: var(--accent); }
-        .phase-badge { font-size: 20px; filter: grayscale(100%); opacity: 0.3; transition: all 0.3s; }
-        .phase-badge.unlocked { filter: grayscale(0%); opacity: 1; transform: scale(1.1); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .phase-title { font-size: 13px; font-weight: bold; color: var(--accent); }
+        .phase-badge { font-size: 24px; filter: grayscale(100%); opacity: 0.3; transition: all 0.5s; }
+        .phase-badge.unlocked { filter: grayscale(0%); opacity: 1; transform: scale(1.2); text-shadow: 0 0 15px rgba(255,215,0,0.6); }
         .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; }
         .days-calc { font-size: 10px; color: #f39c12; margin-top: 5px; text-align: right; font-weight: bold; }
+
+        /* New Subject Grid in Goal */
+        .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
+        .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: left; }
+        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #aaa; }
+        .sub-check-item input:checked + span { color: #2ecc71; font-weight: bold; }
+        
+        .target-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); }
+
+        /* PYQ Specifics */
+        .pyq-header-bar { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; cursor:pointer; margin-bottom:5px; border:1px solid rgba(82, 136, 193, 0.2); }
+        .pyq-content { display:none; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:15px; }
+        .pyq-content.open { display:block; animation: fadeIn 0.3s; }
+        .pyq-col-container { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+        .pyq-col-header { font-size:10px; color:#5288c1; text-transform:uppercase; font-weight:bold; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:3px; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
 
         .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
         .matrix-table th, .matrix-table td { border: 1px solid rgba(255,255,255,0.1); padding: 4px; text-align: center; }
@@ -95,6 +114,16 @@
         
         .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; opacity: 0.6; }
         .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; }
+
+        /* SWT Analytics Extras */
+        .strong-weak-container { display: flex; justify-content: space-between; margin: 15px 0; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; }
+        .stat-box strong { display: block; font-size: 14px; margin-bottom: 2px; }
+        .stat-strong { color: #2ecc71; }
+        .stat-weak { color: #ef5350; }
+        
+        .reminder-box { background: rgba(230, 126, 34, 0.15); border: 1px solid #e67e22; color: #e67e22; padding: 12px; border-radius: 10px; margin-top: 15px; display: none; text-align: left; }
+        .reminder-title { font-weight: bold; font-size: 12px; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .reminder-list { font-size: 10px; line-height: 1.4; opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -168,72 +197,13 @@
             </div>
 
             <div class="card">
-                <h3 style="margin-top:0; color:#f39c12;">Reading Timeline</h3>
-                
-                <div class="phase-block">
-                    <div class="phase-header">
-                        <span class="phase-title">1. First Reading</span>
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <span style="font-size:9px;">All 19 Done?</span>
-                            <input type="checkbox" id="done_r1" onchange="saveGoals()">
-                            <span id="badge_r1" class="phase-badge">🥉</span>
-                        </div>
-                    </div>
-                    <div class="date-grid">
-                        <div><span class="setting-label">From</span><input type="date" id="date_r1_from" onchange="saveGoals()"></div>
-                        <div><span class="setting-label">To</span><input type="date" id="date_r1_to" onchange="saveGoals()"></div>
-                    </div>
-                    <div id="days_r1" class="days-calc">0 Days</div>
-                </div>
-
-                <div class="phase-block">
-                    <div class="phase-header">
-                        <span class="phase-title">2. Second Reading</span>
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <span style="font-size:9px;">All 19 Done?</span>
-                            <input type="checkbox" id="done_r2" onchange="saveGoals()">
-                            <span id="badge_r2" class="phase-badge">🥈</span>
-                        </div>
-                    </div>
-                    <div class="date-grid">
-                        <div><span class="setting-label">From</span><input type="date" id="date_r2_from" onchange="saveGoals()"></div>
-                        <div><span class="setting-label">To</span><input type="date" id="date_r2_to" onchange="saveGoals()"></div>
-                    </div>
-                    <div id="days_r2" class="days-calc">0 Days</div>
-                </div>
-
-                <div class="phase-block">
-                    <div class="phase-header">
-                        <span class="phase-title">3. Third Reading</span>
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <span style="font-size:9px;">All 19 Done?</span>
-                            <input type="checkbox" id="done_r3" onchange="saveGoals()">
-                            <span id="badge_r3" class="phase-badge">🥇</span>
-                        </div>
-                    </div>
-                    <div class="date-grid">
-                        <div><span class="setting-label">From</span><input type="date" id="date_r3_from" onchange="saveGoals()"></div>
-                        <div><span class="setting-label">To</span><input type="date" id="date_r3_to" onchange="saveGoals()"></div>
-                    </div>
-                    <div id="days_r3" class="days-calc">0 Days</div>
-                </div>
-
-                <div class="phase-block" style="border-color:#f39c12;">
-                    <div class="phase-header">
-                        <span class="phase-title" style="color:#f39c12;">4. Extra Bonus</span>
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <span style="font-size:9px;">All 19 Done?</span>
-                            <input type="checkbox" id="done_r4" onchange="saveGoals()">
-                            <span id="badge_r4" class="phase-badge">🏆</span>
-                        </div>
-                    </div>
-                    <div class="date-grid">
-                        <div><span class="setting-label">From</span><input type="date" id="date_r4_from" onchange="saveGoals()"></div>
-                        <div><span class="setting-label">To</span><input type="date" id="date_r4_to" onchange="saveGoals()"></div>
-                    </div>
-                    <div id="days_r4" class="days-calc">0 Days</div>
-                </div>
+                <h3 style="margin-top:0; color:#2ecc71;">PYQ PAPERS GOAL</h3>
+                <div id="pyq-container"></div>
             </div>
+
+            <div class="card" id="goal-phases-container">
+                <h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>
+                </div>
         </div>
 
         <div id="tab-daily" class="tab-content active">
@@ -247,7 +217,16 @@
                 </select>
 
                 <span class="setting-label">Subject</span>
-                <select id="subject"><option value="" disabled selected>Select Subject</option><option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option></select>
+                <select id="subject">
+                    <option value="" disabled selected>Select Subject</option>
+                    <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+                    <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option>
+                    <option>FMT</option><option>PSM</option>
+                    <option>Ophthalmology</option><option>ENT</option>
+                    <option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option>
+                    <option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
+                    <option>Mixed Bag</option><option>Integrated Systems</option>
+                </select>
                 
                 <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
                     <div style="flex:2;">
@@ -296,6 +275,22 @@
                         <tbody id="matrixBody"></tbody>
                     </table>
                 </div>
+
+                <h3 style="margin:15px 0 5px 0; color:#2ecc71; font-size:14px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">Phase Matrix (MCQs Solved)</h3>
+                <div style="overflow-x:auto;">
+                    <table class="matrix-table" id="mcqMatrix">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Subject</th>
+                                <th>1st</th>
+                                <th>2nd</th>
+                                <th>3rd</th>
+                                <th>Bonus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mcqMatrixBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -307,8 +302,31 @@
                 <div style="display:flex; gap:5px; margin-top:5px;"><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="swtCorrect" oninput="calcSWT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="swtUnat" oninput="calcSWT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
+                
+                <h4 style="color:#5288c1; margin:15px 0 5px 0; font-size:13px; text-align:left;">Subject Performance</h4>
                 <div class="chart-container"><canvas id="swtChart"></canvas></div>
-                <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5;"></div>
+                <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5; max-height:100px; overflow-y:auto;"></div>
+
+                <h4 style="color:#f39c12; margin:20px 0 5px 0; font-size:13px; text-align:left; border-top:1px dashed rgba(255,255,255,0.1); padding-top:10px;">Cumulative Average Trend</h4>
+                <div class="chart-container"><canvas id="swtTrendChart"></canvas></div>
+
+                <div class="strong-weak-container">
+                    <div class="stat-box" style="text-align:left;">
+                        <span style="opacity:0.7;">Strongest</span>
+                        <strong class="stat-strong" id="swtStrong">--</strong>
+                        <span id="swtStrongVal">0%</span>
+                    </div>
+                    <div class="stat-box" style="text-align:right;">
+                        <span style="opacity:0.7;">Weakest</span>
+                        <strong class="stat-weak" id="swtWeak">--</strong>
+                        <span id="swtWeakVal">0%</span>
+                    </div>
+                </div>
+
+                <div id="swtReminder" class="reminder-box">
+                    <span class="reminder-title">⚠️ Pending Subjects</span>
+                    <div id="swtReminderList" class="reminder-list"></div>
+                </div>
             </div>
         </div>
 
@@ -337,7 +355,31 @@
         document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
 
         const prefix = `SSS_PRO_V3_${tgUser.id}_`;
-        const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS' };
+        const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ' };
+        
+        const SUBJECTS_19 = [
+            "Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", 
+            "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", 
+            "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", 
+            "Orthopedics", "Psychiatry", "Radiology"
+        ];
+        // For SWT Analysis including extras
+        const SUBJECTS_ALL_SWT = [...SUBJECTS_19, "Mixed Bag", "Integrated Systems"];
+        
+        const PHASES_CONFIG = [
+            { id: 'r1', name: '1. First Reading', badge: '🥉' },
+            { id: 'r2', name: '2. Second Reading', badge: '🥈' },
+            { id: 'r3', name: '3. Third Reading', badge: '🥇' },
+            { id: 'r4', name: '4. Extra Bonus', badge: '🏆' }
+        ];
+
+        // PYQ CONFIGURATION
+        const PYQ_CATS = [
+            { id: 'neet', name: 'NEET PG', type:'single', start:2025, end:2016 },
+            { id: 'ini', name: 'INICET/AIIMS', type:'dual', start:2025, end:2014, c1:'May', c2:'Nov' },
+            { id: 'fmge', name: 'FMGE', type:'dual', start:2025, end:2021, c1:'July', c2:'Dec' },
+            { id: 'upsc', name: 'UPSC CMS', type:'single', start:2025, end:2021 }
+        ];
 
         function updateCountdowns() {
             const now = new Date();
@@ -410,7 +452,176 @@
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
 
+        // --- PYQ LOGIC ---
+        function renderPYQ() {
+            const container = document.getElementById('pyq-container');
+            if(container.innerHTML !== "") return; // Render once
+
+            PYQ_CATS.forEach(cat => {
+                let html = `
+                    <div class="pyq-header-bar" onclick="togglePYQ('${cat.id}')">
+                        <span style="font-weight:bold; font-size:12px;">${cat.name}</span>
+                        <span id="pyq_badge_${cat.id}" class="phase-badge">🏆</span>
+                    </div>
+                    <div id="pyq_content_${cat.id}" class="pyq-content">
+                `;
+
+                if (cat.type === 'single') {
+                    html += `<div class="sub-grid">`;
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        html += `
+                            <label class="sub-check-item">
+                                <input type="checkbox" id="pyq_${cat.id}_${y}" onchange="savePYQ()">
+                                <span>${y}</span>
+                            </label>`;
+                    }
+                    html += `</div>`;
+                } else {
+                    html += `<div class="pyq-col-container">
+                        <div>
+                            <div class="pyq-col-header">${cat.c1} Session</div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">`;
+                            for(let y=cat.start; y>=cat.end; y--) {
+                                html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_1" onchange="savePYQ()"> <span>${y}</span></label>`;
+                            }
+                    html += `</div></div>
+                        <div>
+                            <div class="pyq-col-header">${cat.c2} Session</div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">`;
+                            for(let y=cat.start; y>=cat.end; y--) {
+                                html += `<label class="sub-check-item"><input type="checkbox" id="pyq_${cat.id}_${y}_2" onchange="savePYQ()"> <span>${y}</span></label>`;
+                            }
+                    html += `</div></div></div>`;
+                }
+                html += `</div>`;
+                container.innerHTML += html;
+            });
+            loadPYQ();
+        }
+
+        function togglePYQ(id) {
+            document.getElementById(`pyq_content_${id}`).classList.toggle('open');
+        }
+
+        function savePYQ() {
+            const data = {};
+            PYQ_CATS.forEach(cat => {
+                data[cat.id] = {};
+                if(cat.type === 'single') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        data[cat.id][y] = document.getElementById(`pyq_${cat.id}_${y}`).checked;
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        data[cat.id][`${y}_1`] = document.getElementById(`pyq_${cat.id}_${y}_1`).checked;
+                        data[cat.id][`${y}_2`] = document.getElementById(`pyq_${cat.id}_${y}_2`).checked;
+                    }
+                }
+            });
+            localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
+            checkPYQMedals(data);
+        }
+
+        function loadPYQ() {
+            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
+            PYQ_CATS.forEach(cat => {
+                if(!data[cat.id]) return;
+                if(cat.type === 'single') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el = document.getElementById(`pyq_${cat.id}_${y}`);
+                        if(el) el.checked = data[cat.id][y] || false;
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el1 = document.getElementById(`pyq_${cat.id}_${y}_1`);
+                        const el2 = document.getElementById(`pyq_${cat.id}_${y}_2`);
+                        if(el1) el1.checked = data[cat.id][`${y}_1`] || false;
+                        if(el2) el2.checked = data[cat.id][`${y}_2`] || false;
+                    }
+                }
+            });
+            checkPYQMedals(data);
+        }
+
+        function checkPYQMedals(data) {
+            if(!data) return;
+            PYQ_CATS.forEach(cat => {
+                const catData = data[cat.id] || {};
+                let allDone = true;
+                if(cat.type === 'single') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        if(!catData[y]) { allDone = false; break; }
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        if(!catData[`${y}_1`] || !catData[`${y}_2`]) { allDone = false; break; }
+                    }
+                }
+                const badge = document.getElementById(`pyq_badge_${cat.id}`);
+                if(allDone) badge.classList.add('unlocked');
+                else badge.classList.remove('unlocked');
+            });
+        }
+
         // --- GOAL MANAGEMENT ---
+        function renderGoalHTML() {
+            const container = document.getElementById('goal-phases-container');
+            container.innerHTML = `<h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>`;
+            
+            PHASES_CONFIG.forEach((p, idx) => {
+                const div = document.createElement('div');
+                div.className = 'phase-block';
+                div.id = `phase_block_${idx}`;
+                div.innerHTML = `
+                    <div class="phase-header">
+                        <span class="phase-title">${p.name}</span>
+                        <span id="badge_${idx}" class="phase-badge">${p.badge}</span>
+                    </div>
+                    <div class="date-grid">
+                        <div><span class="setting-label">From</span><input type="date" id="date_${idx}_from" onchange="saveGoals()"></div>
+                        <div><span class="setting-label">To</span><input type="date" id="date_${idx}_to" onchange="saveGoals()"></div>
+                    </div>
+                    <div id="days_${idx}" class="days-calc">0 Days</div>
+                    
+                    <button class="btn sm-btn" style="margin-top:8px; background:rgba(255,255,255,0.1); width:100%;" onclick="toggleSubGrid(${idx})">Show/Hide Subjects</button>
+                    
+                    <div id="sub_grid_${idx}" class="sub-grid-container">
+                        <div class="sub-grid">
+                            ${SUBJECTS_19.map((s, sIdx) => `
+                                <label class="sub-check-item">
+                                    <input type="checkbox" id="chk_${idx}_${sIdx}" onchange="saveGoals()">
+                                    <span>${s.substring(0,4)}..</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="target-row">
+                        <div style="flex:1;">
+                            <span class="setting-label">Target SWTs</span>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <input type="number" id="swt_target_${idx}" placeholder="0" oninput="saveGoals()">
+                                <input type="checkbox" id="swt_done_${idx}" onchange="saveGoals()">
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <span class="setting-label">Target GTs</span>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <input type="number" id="gt_target_${idx}" placeholder="0" oninput="saveGoals()">
+                                <input type="checkbox" id="gt_done_${idx}" onchange="saveGoals()">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            loadGoalsToUI();
+        }
+
+        function toggleSubGrid(idx) {
+            document.getElementById(`sub_grid_${idx}`).classList.toggle('open');
+        }
+
         function saveGoals() {
             const goals = {
                 exams: {
@@ -419,70 +630,129 @@
                     neet: document.getElementById('goal_neet').checked,
                     ini_jan: document.getElementById('goal_ini_jan').checked,
                 },
-                phases: ['r1', 'r2', 'r3', 'r4'].map(k => ({
-                    from: document.getElementById(`date_${k}_from`).value,
-                    to: document.getElementById(`date_${k}_to`).value,
-                    done: document.getElementById(`done_${k}`).checked
-                }))
+                phases: PHASES_CONFIG.map((_, idx) => {
+                    const subjects = {};
+                    SUBJECTS_19.forEach((s, sIdx) => {
+                        subjects[sIdx] = document.getElementById(`chk_${idx}_${sIdx}`).checked;
+                    });
+                    
+                    return {
+                        from: document.getElementById(`date_${idx}_from`).value,
+                        to: document.getElementById(`date_${idx}_to`).value,
+                        subjects: subjects,
+                        swtTarget: document.getElementById(`swt_target_${idx}`).value,
+                        swtDone: document.getElementById(`swt_done_${idx}`).checked,
+                        gtTarget: document.getElementById(`gt_target_${idx}`).value,
+                        gtDone: document.getElementById(`gt_done_${idx}`).checked
+                    };
+                })
             };
             localStorage.setItem(KEYS.GOALS, JSON.stringify(goals));
-            renderGoals();
+            checkMedals(goals);
         }
 
-        function renderGoals() {
-            const goals = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[{},{},{},{}] };
-            
-            // Restore Exams
-            document.getElementById('goal_ini_jul').checked = goals.exams.ini_jul;
-            document.getElementById('goal_upsc').checked = goals.exams.upsc;
-            document.getElementById('goal_neet').checked = goals.exams.neet;
-            document.getElementById('goal_ini_jan').checked = goals.exams.ini_jan;
+        function loadGoalsToUI() {
+            const goals = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] };
+            document.getElementById('goal_ini_jul').checked = goals.exams.ini_jul || false;
+            document.getElementById('goal_upsc').checked = goals.exams.upsc || false;
+            document.getElementById('goal_neet').checked = goals.exams.neet || false;
+            document.getElementById('goal_ini_jan').checked = goals.exams.ini_jan || false;
 
-            // Restore Phases
-            const pIds = ['r1', 'r2', 'r3', 'r4'];
-            pIds.forEach((id, idx) => {
+            PHASES_CONFIG.forEach((_, idx) => {
                 const data = goals.phases[idx] || {};
-                document.getElementById(`date_${id}_from`).value = data.from || "";
-                document.getElementById(`date_${id}_to`).value = data.to || "";
-                document.getElementById(`done_${id}`).checked = data.done || false;
+                document.getElementById(`date_${idx}_from`).value = data.from || "";
+                document.getElementById(`date_${idx}_to`).value = data.to || "";
                 
-                // Badge Logic
-                const badge = document.getElementById(`badge_${id}`);
-                if(data.done) badge.classList.add('unlocked');
-                else badge.classList.remove('unlocked');
+                const subData = data.subjects || {};
+                SUBJECTS_19.forEach((s, sIdx) => {
+                    document.getElementById(`chk_${idx}_${sIdx}`).checked = subData[sIdx] || false;
+                });
 
-                // Days Calc
+                document.getElementById(`swt_target_${idx}`).value = data.swtTarget || "";
+                document.getElementById(`swt_done_${idx}`).checked = data.swtDone || false;
+                document.getElementById(`gt_target_${idx}`).value = data.gtTarget || "";
+                document.getElementById(`gt_done_${idx}`).checked = data.gtDone || false;
+
                 if(data.from && data.to) {
                     const start = new Date(data.from);
                     const end = new Date(data.to);
                     const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                    document.getElementById(`days_${id}`).innerText = diff >= 0 ? `${diff} Days` : "Invalid Date";
+                    document.getElementById(`days_${idx}`).innerText = diff >= 0 ? `${diff} Days` : "Invalid Date";
+                }
+            });
+            checkMedals(goals);
+        }
+
+        function checkMedals(goals) {
+            if(!goals || !goals.phases) return;
+            PHASES_CONFIG.forEach((_, idx) => {
+                const data = goals.phases[idx];
+                if (!data) return;
+                const subData = data.subjects || {};
+                let allSubjectsDone = true;
+                for(let i=0; i<SUBJECTS_19.length; i++) {
+                    if(!subData[i]) { allSubjectsDone = false; break; }
+                }
+                const isComplete = allSubjectsDone && data.swtDone && data.gtDone;
+                const badge = document.getElementById(`badge_${idx}`);
+                const block = document.getElementById(`phase_block_${idx}`);
+                if(isComplete) {
+                    badge.classList.add('unlocked');
+                    block.classList.add('completed');
                 } else {
-                    document.getElementById(`days_${id}`).innerText = "0 Days";
+                    badge.classList.remove('unlocked');
+                    block.classList.remove('completed');
                 }
             });
         }
 
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderGoals(); renderMatrix(); }
+        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderMCQMatrix(); renderPYQ(); }
         
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const unique = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${unique} Days`; const medals = Math.floor(unique / 75), fires = Math.floor((unique % 75) / 25); document.getElementById('streakIcons').innerText = "🥇".repeat(medals) + "🔥".repeat(fires); }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0; const w = Math.max(0, 200 - c - u); const s = (currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333)); document.getElementById('gtW').innerText = w; document.getElementById('gtS').innerText = s.toFixed(currentGTMode==='NEET'?0:2); }
 
         function saveSWT() {
-            const d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value), c=parseInt(document.getElementById('swtCorrect').value), u=parseInt(document.getElementById('swtUnat').value), sub=document.getElementById('swtSubject').value;
-            if(!d || isNaN(t)) return;
+            const dStr=document.getElementById('swtDate').value;
+            if(!dStr) return;
+
+            // Security Check: No Future Dates
+            const selectedDate = new Date(dStr);
+            const today = new Date();
+            selectedDate.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+
+            if(selectedDate > today) {
+                alert("Future dates are not allowed!");
+                return;
+            }
+
+            const t=parseInt(document.getElementById('swtTotal').value), c=parseInt(document.getElementById('swtCorrect').value), u=parseInt(document.getElementById('swtUnat').value), sub=document.getElementById('swtSubject').value;
+            if(isNaN(t)) return;
             const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
-            data.push({ date: d, total: t, correct: c, unat: u, wrong: Math.max(0, t-c-u), percent: ((c/t)*100).toFixed(1), subject: sub });
+            data.push({ date: dStr, total: t, correct: c, unat: u, wrong: Math.max(0, t-c-u), percent: ((c/t)*100).toFixed(1), subject: sub });
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI();
         }
 
         function saveGT() {
-            const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value);
-            if(!d) return;
+            const dStr=document.getElementById('gtDate').value;
+            if(!dStr) return;
+
+            // Security Check: No Future Dates
+            const selectedDate = new Date(dStr);
+            const today = new Date();
+            selectedDate.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+
+            if(selectedDate > today) {
+                alert("Future dates are not allowed!");
+                return;
+            }
+
+            const c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value);
             const w = Math.max(0, 200 - c - u); const score = parseFloat(((currentGTMode === 'NEET') ? (c * 4 - w) : (c - (w * 0.333))).toFixed(2));
             const data = JSON.parse(localStorage.getItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI)||"[]");
-            data.push({ date: d, score, correct: c, unat: u, wrong: w });
+            data.push({ date: dStr, score, correct: c, unat: u, wrong: w });
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode === 'NEET' ? KEYS.NEET : KEYS.INI, JSON.stringify(data)); updateUI();
         }
 
@@ -494,7 +764,7 @@
             calcGT(); renderGT(); 
         }
 
-        let hChart, mChart, gNeetChart, gIniChart, sChart;
+        let hChart, mChart, gNeetChart, gIniChart, sChart, sTrendChart;
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const grouped = {};
@@ -510,74 +780,147 @@
         }
 
         function renderSWT() {
-            const sub = document.getElementById('swtSubject').value; const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]").filter(x => x.subject === sub);
-            if(sChart) sChart.destroy(); if(swts.length === 0) { document.getElementById('swtAnalysis').innerHTML = "No tests recorded."; return; }
-            sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:swts.map(x=>x.date), datasets:[{label:sub+'%', data:swts.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
-            document.getElementById('swtAnalysis').innerHTML = swts.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
-        }
-
-        function renderGT() {
-            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
-            if(gNeetChart) gNeetChart.destroy();
-            if(nd.length > 0) {
-                gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
-                document.getElementById('gtNeetAnalysis').innerHTML = nd.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            const allSwts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
+            const sub = document.getElementById('swtSubject').value; 
+            const filtered = allSwts.filter(x => x.subject === sub);
+            
+            // 1. Individual Subject Chart
+            if(sChart) sChart.destroy(); 
+            if(filtered.length > 0) {
+                sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:filtered.map(x=>x.date), datasets:[{label:sub+'%', data:filtered.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
+                document.getElementById('swtAnalysis').innerHTML = filtered.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+            } else {
+                document.getElementById('swtAnalysis').innerHTML = "No tests recorded for this subject.";
             }
-            if(gIniChart) gIniChart.destroy();
-            if(id.length > 0) {
-                gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
-                document.getElementById('gtInicetAnalysis').innerHTML = id.map(x => `• ${x.date}: <b>Score:${x.score}</b> (C:${x.correct} W:${x.wrong} U:${x.unat})`).reverse().join('<br>');
+
+            // 2. Cumulative Trend Chart (All Subjects)
+            if(sTrendChart) sTrendChart.destroy();
+            if(allSwts.length > 0) {
+                // Sort by date for proper trend
+                const sortedAll = [...allSwts].sort((a,b) => new Date(a.date) - new Date(b.date));
+                const trendLabels = sortedAll.map(x => x.date);
+                
+                // Calculate Cumulative Average at each point
+                let sum = 0;
+                const trendData = sortedAll.map((x, i) => {
+                    sum += parseFloat(x.percent);
+                    return (sum / (i + 1)).toFixed(1);
+                });
+
+                sTrendChart = new Chart(document.getElementById('swtTrendChart'), { 
+                    type:'line', 
+                    data:{
+                        labels: trendLabels, 
+                        datasets:[{
+                            label:'Cumulative Avg %', 
+                            data: trendData, 
+                            borderColor:'#f39c12', 
+                            backgroundColor:'rgba(243, 156, 18, 0.1)',
+                            fill: true,
+                            tension:0.4,
+                            pointRadius: 2
+                        }]
+                    }, 
+                    options:{
+                        maintainAspectRatio:false, 
+                        scales:{y:{min:0, max:100, ticks:{color:'#fff'}}},
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // 3. Strong vs Weak Analysis
+            if(allSwts.length > 0) {
+                const subPerf = {};
+                allSwts.forEach(log => {
+                    if(!subPerf[log.subject]) subPerf[log.subject] = { sum:0, count:0 };
+                    subPerf[log.subject].sum += parseFloat(log.percent);
+                    subPerf[log.subject].count++;
+                });
+                
+                let maxAvg = -1, minAvg = 101, strongSub = "--", weakSub = "--";
+                Object.keys(subPerf).forEach(s => {
+                    const avg = subPerf[s].sum / subPerf[s].count;
+                    if(avg > maxAvg) { maxAvg = avg; strongSub = s; }
+                    if(avg < minAvg) { minAvg = avg; weakSub = s; }
+                });
+
+                document.getElementById('swtStrong').innerText = strongSub;
+                document.getElementById('swtStrongVal').innerText = maxAvg.toFixed(1) + "%";
+                document.getElementById('swtWeak').innerText = weakSub;
+                document.getElementById('swtWeakVal').innerText = minAvg.toFixed(1) + "%";
+            }
+
+            // 4. Missing Subjects Reminder
+            const attemptedSubs = new Set(allSwts.map(x => x.subject));
+            const missing = SUBJECTS_ALL_SWT.filter(s => !attemptedSubs.has(s));
+            const remBox = document.getElementById('swtReminder');
+            if(missing.length > 0) {
+                remBox.style.display = 'block';
+                document.getElementById('swtReminderList').innerText = missing.join(", ");
+            } else {
+                remBox.style.display = 'none';
             }
         }
 
         function renderMatrix() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            // Filter options to exclude the extra two subjects for this table
             const subjects = Array.from(document.getElementById('subject').options)
                                  .map(o=>o.value)
                                  .filter(v => v && v !== "Mixed Bag" && v !== "Integrated Systems");
-            
-            const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus"];
             const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
-            
-            // Data Structure: Subject -> [Set of dates for P1, Set for P2...]
             const matrix = {};
             subjects.forEach(s => matrix[s] = [new Set(), new Set(), new Set(), new Set()]);
 
             logs.forEach(l => {
-                const s = l.subject;
-                const p = l.phase || "First Reading"; 
-                const idx = mapKey[p];
-                // Only count if subject is in our filtered list
-                if (matrix[s] && idx !== undefined) {
-                    matrix[s][idx].add(l.date);
-                }
+                const s = l.subject; const p = l.phase || "First Reading"; const idx = mapKey[p];
+                if (matrix[s] && idx !== undefined) matrix[s][idx].add(l.date);
             });
 
-            const tbody = document.getElementById('matrixBody');
-            tbody.innerHTML = "";
-            
+            const tbody = document.getElementById('matrixBody'); tbody.innerHTML = "";
             const colTotals = [0, 0, 0, 0];
-
             subjects.forEach(s => {
                 const days = matrix[s].map(set => set.size);
                 days.forEach((d, i) => colTotals[i] += d);
-
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="matrix-row-head">${s}</td>` + 
-                               days.map(d => `<td>${d > 0 ? d : '-'}</td>`).join('');
+                tr.innerHTML = `<td class="matrix-row-head">${s}</td>` + days.map(d => `<td>${d > 0 ? d : '-'}</td>`).join('');
                 tbody.appendChild(tr);
             });
-
-            // Total Row
             const trTotal = document.createElement('tr');
-            trTotal.innerHTML = `<td class="matrix-total">TOTAL DAYS</td>` + 
-                                colTotals.map(d => `<td class="matrix-total">${d}</td>`).join('');
+            trTotal.innerHTML = `<td class="matrix-total">TOTAL DAYS</td>` + colTotals.map(d => `<td class="matrix-total">${d}</td>`).join('');
             tbody.appendChild(trTotal);
         }
 
-        // Initial Calls
-        renderGoals();
+        function renderMCQMatrix() {
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+            const subjects = Array.from(document.getElementById('subject').options)
+                                 .map(o=>o.value)
+                                 .filter(v => v && v !== "Mixed Bag" && v !== "Integrated Systems");
+            const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
+            const matrix = {}; // Store MCQs count
+            subjects.forEach(s => matrix[s] = [0, 0, 0, 0]);
+
+            logs.forEach(l => {
+                const s = l.subject; const p = l.phase || "First Reading"; const idx = mapKey[p];
+                const m = parseInt(l.mcqs) || 0;
+                if (matrix[s] && idx !== undefined) matrix[s][idx] += m;
+            });
+
+            const tbody = document.getElementById('mcqMatrixBody'); tbody.innerHTML = "";
+            const colTotals = [0, 0, 0, 0];
+            subjects.forEach(s => {
+                const counts = matrix[s];
+                counts.forEach((c, i) => colTotals[i] += c);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="matrix-row-head">${s}</td>` + counts.map(c => `<td>${c > 0 ? c : '-'}</td>`).join('');
+                tbody.appendChild(tr);
+            });
+            const trTotal = document.createElement('tr');
+            trTotal.innerHTML = `<td class="matrix-total">TOTAL MCQs</td>` + colTotals.map(c => `<td class="matrix-total">${c}</td>`).join('');
+            tbody.appendChild(trTotal);
+        }
+
+        renderGoalHTML();
         updateUI();
     </script>
 </body>
