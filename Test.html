@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.11</title>
+    <title>Scalpel Master Pro V6.12</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -399,7 +399,7 @@
             { id: 'upsc', label: 'UPSC CMS', type: 'list', start: 2025, end: 2020 }
         ];
 
-        /* ================= ORIGINAL BASE CODE TIMER LOGIC ================= */
+        /* ================= BASE TIMER LOGIC (RESTORED) ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -408,25 +408,22 @@
         function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
         function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
 
+        // GATEKEEPING LOGIC APPLIED ONLY HERE
         document.getElementById('startBtn').onclick = () => { 
-            // 1. Check if Subject is Selected
-            const selectedSubject = document.getElementById('subject').value;
-            if (!selectedSubject) return tg.showAlert("Select Subject!"); 
-
-            // 2. Get Phase
-            const selectedPhase = document.getElementById('studyPhase').value;
-
-            // 3. Confirm Correct Session
-            const confirmMsg = `You have selected:\nSubject: ${selectedSubject}\nPhase: ${selectedPhase}\n\nIs this the correct study session?`;
+            // 1. Disclaimer: Check Subject
+            const s = document.getElementById('subject').value;
+            if (!s) { alert("⚠️ Stop! Please select a Subject first."); return; }
             
-            if (confirm(confirmMsg)) {
-                // Only proceed if user confirms
-                audioCtx.resume(); 
-                requestWakeLock(); 
-                activeSub = selectedSubject; 
-                activePhase = selectedPhase; 
-                startStudyTimer(); 
-            }
+            // 2. Confirmation: Check Session details
+            const p = document.getElementById('studyPhase').value;
+            if(!confirm(`Are you ready?\n\n📚 Subject: ${s}\n🏆 Phase: ${p}\n\nIs this the correct study session?`)) return;
+
+            // 3. Trigger Base Code
+            audioCtx.resume(); 
+            requestWakeLock(); 
+            activeSub = s; 
+            activePhase = p; 
+            startStudyTimer(); 
         };
 
         function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
@@ -454,7 +451,7 @@
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
-        /* ================= END ORIGINAL BASE CODE TIMER LOGIC ================= */
+        /* ================= END BASE TIMER LOGIC ================= */
 
         let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart;
         let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg;
@@ -586,9 +583,13 @@
                     if(!isChecked) allChecked = false;
                 }
             } else {
-                // Simplified logic for PYQ saving to avoid complexity
-                alert("Progress Saved.");
-                return; 
+                for(let y=catConfig.start; y>=catConfig.end; y--) {
+                    const c1 = document.getElementById(`pyq_${catId}_y_${catConfig.col1}_1`).checked;
+                    const c2 = document.getElementById(`pyq_${catId}_y_${catConfig.col2}_2`).checked;
+                    data[catId][`${y}_1`] = c1;
+                    data[catId][`${y}_2`] = c2;
+                    if(!c1 || !c2) allChecked = false;
+                }
             }
 
             localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
@@ -604,7 +605,40 @@
         }
 
         function loadPYQ() {
-            // Simplified loading to ensure no errors
+            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {};
+            
+            PYQ_CATS.forEach(cat => {
+                if(!data[cat.id]) return;
+                
+                let allChecked = true;
+
+                if(cat.type === 'list') {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el = document.getElementById(`pyq_${cat.id}_${y}`);
+                        if(el) {
+                            el.checked = data[cat.id][y] || false;
+                            if(!el.checked) allChecked = false;
+                        }
+                    }
+                } else {
+                    for(let y=cat.start; y>=cat.end; y--) {
+                        const el1 = document.getElementById(`pyq_${cat.id}_y_${cat.col1}_1`);
+                        const el2 = document.getElementById(`pyq_${cat.id}_y_${cat.col2}_2`);
+                        if(el1) {
+                            el1.checked = data[cat.id][`${y}_1`] || false;
+                            if(!el1.checked) allChecked = false;
+                        }
+                        if(el2) {
+                            el2.checked = data[cat.id][`${y}_2`] || false;
+                            if(!el2.checked) allChecked = false;
+                        }
+                    }
+                }
+
+                if(allChecked) {
+                    document.getElementById(`cup_${cat.id}`).classList.add('show');
+                }
+            });
         }
 
         function renderGoalHTML() {
