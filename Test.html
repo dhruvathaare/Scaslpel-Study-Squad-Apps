@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.5</title>
+    <title>Scalpel Master Pro V6.6</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -122,6 +122,13 @@
         .caution-box { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; color: #f39c12; }
         .freq-box { background: rgba(255, 255, 255, 0.05); border-color: var(--border); color: #fff; }
         .usage-title { font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; opacity: 0.9; font-size: 10px; }
+        
+        .gt-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; text-align: left; font-size: 10px; }
+        .gt-stat-box { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
+        .gt-stat-header { opacity: 0.7; margin-bottom: 4px; display: block; text-transform: uppercase; font-size: 9px; }
+        .gt-stat-val { font-weight: bold; font-size: 12px; }
+        .val-high { color: #2ecc71; } .val-low { color: #ef5350; }
+        .phase-stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 3px 0; }
     </style>
 </head>
 <body>
@@ -320,11 +327,44 @@
             <div class="card">
                 <h3>GT Intelligence</h3>
                 <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:10px; text-align:center; background:var(--border); font-size:10px; cursor:pointer;" onclick="switchGT('NEET')">NEET PG (+4/-1)</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:10px; text-align:center; background:rgba(0,0,0,0.2); font-size:10px; cursor:pointer;" onclick="switchGT('INICET')">INICET (+1/-0.33)</div></div>
+                
+                <span class="setting-label">Reading Phase</span>
+                <select id="gtPhase">
+                    <option value="First Reading">First Reading</option>
+                    <option value="Second Reading">Second Reading</option>
+                    <option value="Third Reading">Third Reading</option>
+                    <option value="Extra Bonus">Extra Bonus Reading</option>
+                </select>
+
                 <div style="display:flex; gap:5px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="gtDate"></div><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="gtCorrect" oninput="calcGT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="gtUnat" oninput="calcGT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="gtW">0</b></span><span>Score: <b id="gtS">0</b></span></div>
                 <button class="btn" onclick="saveGT()" style="background:#2ecc71; margin-top:10px; width:100%;">Save Result</button>
-                <div id="neet-area"><h4 style="color:#f39c12; margin-top:15px; font-size:13px;">NEET PG Progress</h4><div class="chart-container"><canvas id="gtNeetChart"></canvas></div><div id="gtNeetAnalysis" style="font-size:11px; text-align:left;"></div></div>
-                <div id="inicet-area" style="display:none;"><h4 style="color:#2ecc71; margin-top:15px; font-size:13px;">INICET Progress</h4><div class="chart-container"><canvas id="gtInicetChart"></canvas></div><div id="gtInicetAnalysis" style="font-size:11px; text-align:left;"></div></div>
+                
+                <div id="neet-area">
+                    <h4 style="color:#f39c12; margin-top:15px; font-size:13px;">NEET PG Progress</h4>
+                    <div class="chart-container"><canvas id="gtNeetChart"></canvas></div>
+                    
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
+                    <div class="chart-container"><canvas id="gtNeetPhaseCountChart"></canvas></div>
+
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
+                    <div class="chart-container"><canvas id="gtNeetPhaseAvgChart"></canvas></div>
+
+                    <div id="gtNeetStats" style="margin-top:10px;"></div>
+                </div>
+
+                <div id="inicet-area" style="display:none;">
+                    <h4 style="color:#2ecc71; margin-top:15px; font-size:13px;">INICET Progress</h4>
+                    <div class="chart-container"><canvas id="gtInicetChart"></canvas></div>
+                    
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
+                    <div class="chart-container"><canvas id="gtIniPhaseCountChart"></canvas></div>
+
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
+                    <div class="chart-container"><canvas id="gtIniPhaseAvgChart"></canvas></div>
+
+                    <div id="gtIniStats" style="margin-top:10px;"></div>
+                </div>
             </div>
         </div>
 
@@ -395,6 +435,8 @@
         }
 
         let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart;
+        let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg;
+
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const grouped = {};
@@ -671,7 +713,18 @@
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0, w=Math.max(0, 200-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(2); }
         function saveSWT() { const d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value), sub=document.getElementById('swtSubject').value, ph=document.getElementById('swtPhase').value; if(!d || isNaN(t)) return; const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); data.push({ date: d, total: t, correct: parseInt(document.getElementById('swtCorrect').value), unat: parseInt(document.getElementById('swtUnat').value), wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), subject: sub, phase: ph }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); }
-        function saveGT() { const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value); if(!d) return; const w=Math.max(0,200-c-u), score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333)); const data = JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); data.push({ date: d, score, correct: c, unat: u, wrong: w }); data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); updateUI(); }
+        
+        function saveGT() { 
+            const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value), ph=document.getElementById('gtPhase').value; 
+            if(!d) return; 
+            const w=Math.max(0,200-c-u), score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333)); 
+            const data = JSON.parse(localStorage.getItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI)||"[]"); 
+            data.push({ date: d, score, correct: c, unat: u, wrong: w, phase: ph }); 
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
+            localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); 
+            updateUI(); 
+        }
+
         function switchGT(m) { currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); document.getElementById(m==='NEET'?'tabNeet':'tabInicet').style.background='var(--border)'; document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; calcGT(); renderGT(); }
 
         function renderSWT() {
@@ -761,10 +814,9 @@
             const phasesList = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"];
             const phaseData = { "First Reading": {n:0, s:0}, "Second Reading": {n:0, s:0}, "Third Reading": {n:0, s:0}, "Extra Bonus Reading": {n:0, s:0} };
             
-            // Map legacy "Extra Bonus" to "Extra Bonus Reading" if needed, or handle variations
             all.forEach(x => {
                 let p = x.phase || "First Reading";
-                if(p === "Extra Bonus") p = "Extra Bonus Reading"; // normalize
+                if(p === "Extra Bonus") p = "Extra Bonus Reading"; 
                 if(phaseData[p]) {
                     phaseData[p].n++;
                     phaseData[p].s += parseFloat(x.percent);
@@ -872,9 +924,101 @@
         }
 
         function renderGT() {
-            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
+            const id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            
+            // Basic Line Charts
             if(gNeetChart) gNeetChart.destroy(); if(nd.length>0) gNeetChart = new Chart(document.getElementById('gtNeetChart'), { type:'line', data:{labels:nd.map(x=>x.date), datasets:[{label:'NEET', data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:800, ticks:{color:'#fff'}}}}});
             if(gIniChart) gIniChart.destroy(); if(id.length>0) gIniChart = new Chart(document.getElementById('gtInicetChart'), { type:'line', data:{labels:id.map(x=>x.date), datasets:[{label:'INICET', data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:200, ticks:{color:'#fff'}}}}});
+
+            // Helper to process phase data
+            const processPhaseData = (dataList) => {
+                const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"];
+                const stats = { "First Reading":{n:0, s:0, min:9999, max:-9999}, "Second Reading":{n:0, s:0, min:9999, max:-9999}, "Third Reading":{n:0, s:0, min:9999, max:-9999}, "Extra Bonus Reading":{n:0, s:0, min:9999, max:-9999} };
+                let overallMax = -9999, overallMin = 9999;
+
+                dataList.forEach(x => {
+                    let p = x.phase || "First Reading";
+                    if(p === "Extra Bonus") p = "Extra Bonus Reading";
+                    if(stats[p]) {
+                        stats[p].n++;
+                        stats[p].s += x.score;
+                        if(x.score > stats[p].max) stats[p].max = x.score;
+                        if(x.score < stats[p].min) stats[p].min = x.score;
+                    }
+                    if(x.score > overallMax) overallMax = x.score;
+                    if(x.score < overallMin) overallMin = x.score;
+                });
+
+                return { phases, stats, overallMax: dataList.length?overallMax:0, overallMin: dataList.length?overallMin:0 };
+            };
+
+            // ---- NEET Analysis ----
+            const nData = processPhaseData(nd);
+            if(gNeetPhCount) gNeetPhCount.destroy();
+            gNeetPhCount = new Chart(document.getElementById('gtNeetPhaseCountChart'), {
+                type: 'bar',
+                data: { labels: nData.phases, datasets: [{ label: 'GTs Taken', data: nData.phases.map(p=>nData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff', stepSize:1} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
+            });
+
+            if(gNeetPhAvg) gNeetPhAvg.destroy();
+            gNeetPhAvg = new Chart(document.getElementById('gtNeetPhaseAvgChart'), {
+                type: 'bar',
+                data: { labels: nData.phases, datasets: [{ label: 'Avg Score', data: nData.phases.map(p=>nData.stats[p].n>0?(nData.stats[p].s/nData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff'} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
+            });
+
+            // NEET HTML Stats
+            let nStatsHtml = `
+            <div class="gt-stats-grid">
+                <div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div>
+                <div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div>
+            </div>
+            <div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">
+            `;
+            nData.phases.forEach(p => {
+                const s = nData.stats[p];
+                if(s.n > 0) {
+                    nStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`;
+                }
+            });
+            nStatsHtml += `</div>`;
+            document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
+
+
+            // ---- INICET Analysis ----
+            const iData = processPhaseData(id);
+            if(gIniPhCount) gIniPhCount.destroy();
+            gIniPhCount = new Chart(document.getElementById('gtIniPhaseCountChart'), {
+                type: 'bar',
+                data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff', stepSize:1} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
+            });
+
+            if(gIniPhAvg) gIniPhAvg.destroy();
+            gIniPhAvg = new Chart(document.getElementById('gtIniPhaseAvgChart'), {
+                type: 'bar',
+                data: { labels: iData.phases, datasets: [{ label: 'Avg Score', data: iData.phases.map(p=>iData.stats[p].n>0?(iData.stats[p].s/iData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:'#fff'} }, x: { ticks:{color:'#fff', font:{size:9}} } }, plugins:{legend:{display:false}} }
+            });
+
+            // INI HTML Stats
+            let iStatsHtml = `
+            <div class="gt-stats-grid">
+                <div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div>
+                <div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div>
+            </div>
+            <div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">
+            `;
+            iData.phases.forEach(p => {
+                const s = iData.stats[p];
+                if(s.n > 0) {
+                    iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`;
+                }
+            });
+            iStatsHtml += `</div>`;
+            document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
         function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); }
