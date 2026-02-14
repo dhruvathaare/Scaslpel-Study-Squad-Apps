@@ -117,7 +117,12 @@
         .strong-weak-container { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; text-align: left; }
         .performance-label { font-family: 'Oswald', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;}
         .stat-strong { color: #2ecc71; } .stat-weak { color: #ef5350; }
-        .reminder-box { background: rgba(230, 126, 34, 0.15); border: 1px solid #e67e22; color: #e67e22; padding: 12px; border-radius: 10px; margin-top: 15px; display: none; text-align: left; }
+        
+        /* New Styles for Usage Analysis */
+        .usage-box { margin-top: 15px; padding: 12px; border-radius: 10px; text-align: left; font-size: 11px; line-height: 1.4; border: 1px solid; }
+        .caution-box { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; color: #f39c12; }
+        .freq-box { background: rgba(255, 255, 255, 0.05); border-color: var(--border); color: #fff; }
+        .usage-title { font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; opacity: 0.9; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -219,7 +224,8 @@
                 <span class="setting-label">Subject</span>
                 <select id="subject">
                     <option value="" disabled selected>Select Subject</option>
-                    <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option>
+                    <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+                    <option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option>
                 </select>
                 
                 <div style="display:flex; gap:10px; margin-top:8px; text-align:center;">
@@ -290,6 +296,8 @@
                         <strong id="swtWeak">--</strong>
                     </div>
                 </div>
+
+                <div id="swtUsageAnalysis"></div>
             </div>
         </div>
 
@@ -730,8 +738,9 @@
             });
 
             // 3. Performance Indicators (Strongest/Weakest)
+            let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--";
+            
             if(all.length>0) {
-                let maxAvg = -1, minAvg = 101, sSub = "--", wSub = "--";
                 Object.keys(perfData).forEach(k => {
                     if(perfData[k].count > 0) {
                         const avg = perfData[k].sum / perfData[k].count;
@@ -741,6 +750,45 @@
                 });
                 document.getElementById('swtStrong').innerText = sSub;
                 document.getElementById('swtWeak').innerText = wSub;
+            }
+
+            // 4. USAGE INTELLIGENCE (NEW FEATURE)
+            const missing = ALL_SWT_SUBS.filter(s => perfData[s].count === 0);
+            const usageBox = document.getElementById('swtUsageAnalysis');
+            
+            if (missing.length > 0) {
+                // Show Caution
+                usageBox.className = 'usage-box caution-box';
+                usageBox.innerHTML = `<span class="usage-title">⚠️ Missing Subjects</span>${missing.join(', ')}`;
+                usageBox.style.display = 'block';
+            } else {
+                // Show Frequency Analysis (Only if at least one subject recorded)
+                if (all.length > 0) {
+                    let maxC = -1, minC = 99999;
+                    ALL_SWT_SUBS.forEach(s => {
+                        const c = perfData[s].count;
+                        if(c > maxC) maxC = c;
+                        if(c < minC) minC = c;
+                    });
+
+                    const mostFreq = ALL_SWT_SUBS.filter(s => perfData[s].count === maxC).map(s => `${s} (${maxC})`);
+                    const leastFreq = ALL_SWT_SUBS.filter(s => perfData[s].count === minC).map(s => `${s} (${minC})`);
+
+                    usageBox.className = 'usage-box freq-box';
+                    usageBox.innerHTML = `
+                        <div style="margin-bottom:8px;">
+                            <span class="usage-title" style="color:#2ecc71;">Most Attempted</span>
+                            ${mostFreq.join(', ')}
+                        </div>
+                        <div>
+                            <span class="usage-title" style="color:#ef5350;">Least Attempted</span>
+                            ${leastFreq.join(', ')}
+                        </div>
+                    `;
+                    usageBox.style.display = 'block';
+                } else {
+                    usageBox.style.display = 'none';
+                }
             }
         }
 
