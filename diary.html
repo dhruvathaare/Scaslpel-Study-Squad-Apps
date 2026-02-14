@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.19</title>
+    <title>Scalpel Master Pro V6.20</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -91,7 +91,7 @@
 
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
         
-        /* ACCORDION STYLES - NOW BLUE */
+        /* ACCORDION STYLES */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 5px 0; }
         .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--accent) !important; }
         .arrow { transition: transform 0.3s ease; font-size: 12px; opacity: 0.7; }
@@ -627,13 +627,10 @@
             let html = `<div style="font-size:10px; opacity:0.7; margin-bottom:5px; text-transform:uppercase;">🚨 TOUGH SUBJECT MONITOR</div>`;
             
             const now = new Date();
-            // Reset hours for accurate date diff
             now.setHours(0,0,0,0);
 
             selectedSubjects.forEach(s => {
-                // Find last study date
                 let lastDate = null;
-                // Parse dates manually: DD/MM/YYYY
                 for(let l of logs) {
                     if (l.subject === s) {
                         const parts = l.date.split('/');
@@ -973,12 +970,41 @@
         function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
         function processRestore() { try { const d = JSON.parse(atob(document.getElementById('restoreInput').value)); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
+        
         function updateCountdowns() { 
-            const n = new Date(); const istStr = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
-            if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
-            const dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") }; 
-            Object.keys(dates).forEach(k => { const d = Math.ceil((dates[k] - n) / 86400000); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = d > 0 ? d : "LIVE"; }); 
+            // Current Time in IST
+            const now = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const istDate = new Date(utc + istOffset);
+
+            // Target Dates (ISO format ensures specific date handling)
+            const targets = {
+                iniJuly: new Date("2026-05-17T00:00:00+05:30"),
+                upsc:    new Date("2026-08-02T00:00:00+05:30"),
+                neet:    new Date("2026-08-30T00:00:00+05:30"),
+                iniJan:  new Date("2026-11-01T00:00:00+05:30")
+            };
+
+            Object.keys(targets).forEach(k => {
+                const target = targets[k];
+                const diffMs = target - istDate;
+                const d = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                
+                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1));
+                if(el) {
+                    if (d > 0) el.innerText = d;
+                    else if (d === 0) el.innerText = "TODAY";
+                    else el.innerText = "DONE";
+                }
+            });
+            
+            // IST Date Max for inputs
+            const istStr = istDate.toISOString().split('T')[0];
+            if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
+            if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
         }
+
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const u = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${u} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(u/75)) + "🔥".repeat(Math.floor((u%75)/25)); }
         function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
@@ -1085,7 +1111,10 @@
         }
 
         function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); }
+        
+        // Dynamic Interval for Countdown
         updateUI();
+        setInterval(updateCountdowns, 60000); // Check every minute
     </script>
 </body>
 </html>
