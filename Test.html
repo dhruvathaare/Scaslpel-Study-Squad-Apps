@@ -72,8 +72,6 @@
 
         .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); transition: all 0.3s; }
-        
-        /* CHAMPION STYLES */
         .phase-block.completed { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
         .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .phase-title { font-size: 13px; font-weight: bold; color: var(--accent); }
@@ -132,14 +130,14 @@
         .val-high { color: #2ecc71; } .val-low { color: #ef5350; }
         .phase-stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 3px 0; }
 
-        /* GOAL STATS CSS */
         .goal-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
-        .goal-input-box { background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px; text-align: center; }
-        .goal-input-box input { width: 80%; padding: 4px; font-size: 11px; margin-top: 2px; }
+        .goal-input-box { background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px; text-align: center; position: relative; }
+        .goal-input-box input { width: 70%; padding: 4px; font-size: 11px; margin-top: 2px; display: inline-block; }
         .goal-display-box { background: rgba(0,0,0,0.3); padding: 6px; border-radius: 6px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
         .goal-val { font-weight: bold; font-size: 14px; color: var(--accent); }
-        .goal-tick { color: #2ecc71; margin-left: 4px; }
-        .goal-lock-btn { background: none; border: none; font-size: 12px; cursor: pointer; opacity: 0.7; }
+        .mini-lock-btn { background: none; border: 1px solid var(--border); color: #888; border-radius: 4px; cursor: pointer; padding: 2px 5px; font-size: 10px; position: absolute; right: 4px; top: 18px; }
+        .mini-lock-btn.locked { border-color: #2ecc71; color: #2ecc71; pointer-events: none; }
+        .save-sub-btn { background: #27ae60; color: white; border: none; padding: 10px; width: 100%; margin-top: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -401,7 +399,7 @@
         const SUBJECTS_EXTRA = ["Mixed Bag", "Integrated Systems"];
         const ALL_SWT_SUBS = [...SUBJECTS_19, ...SUBJECTS_EXTRA];
 
-        const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🏆' },{ id: 'r2', name: '2. Second Reading', badge: '🏆' },{ id: 'r3', name: '3. Third Reading', badge: '🏆' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
+        const PHASES_CONFIG = [{ id: 'r1', name: '1. First Reading', badge: '🥉' },{ id: 'r2', name: '2. Second Reading', badge: '🥈' },{ id: 'r3', name: '3. Third Reading', badge: '🥇' },{ id: 'r4', name: '4. Extra Bonus', badge: '🏆' }];
         
         const PYQ_CATS = [
             { id: 'neet', label: 'NEET PG', type: 'list', start: 2025, end: 2020 },
@@ -410,7 +408,7 @@
             { id: 'upsc', label: 'UPSC CMS', type: 'list', start: 2025, end: 2020 }
         ];
 
-        /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
+        /* ================= BASE TIMER LOGIC (UNTOUCHED) ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
         const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -419,6 +417,7 @@
         function startAlarm(f) { stopAlarm(); alarmInterval = setInterval(() => playBeep(f, 200), 1000); }
         function stopAlarm() { if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; } }
 
+        // GATEKEEPING LOGIC APPLIED ONLY HERE
         document.getElementById('startBtn').onclick = () => { 
             // 1. GATEKEEPING: Check Subject
             const s = document.getElementById('subject').value;
@@ -646,24 +645,53 @@
             });
         }
 
-        // NEW: Lock Phase Targets
-        function lockPhaseTargets(idx) {
-            const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] };
-            if(!g.phases[idx]) g.phases[idx] = {};
+        // --- NEW FEATURES FOR GOALS: LOCK BUTTONS & SUBJECT SAVE ---
+
+        function lockTarget(phaseIdx, type) {
+            if(!confirm("Are you sure? Once locked, this goal cannot be modified.")) return;
             
-            g.phases[idx].tgt_swt = document.getElementById(`tgt_swt_${idx}`).value;
-            g.phases[idx].tgt_gt = document.getElementById(`tgt_gt_${idx}`).value;
-            g.phases[idx].locked = true;
+            const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] };
+            if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {};
+            
+            if(type === 'swt') {
+                g.phases[phaseIdx].tgt_swt = document.getElementById(`tgt_swt_${phaseIdx}`).value;
+                g.phases[phaseIdx].locked_swt = true;
+            } else {
+                g.phases[phaseIdx].tgt_gt = document.getElementById(`tgt_gt_${phaseIdx}`).value;
+                g.phases[phaseIdx].locked_gt = true;
+            }
             
             localStorage.setItem(KEYS.GOALS, JSON.stringify(g));
-            alert("🎯 Targets Locked! Time to hunt.");
-            renderGoalHTML(); // Refresh to disable inputs
+            renderGoalHTML();
+        }
+
+        function saveSubjectProgress(phaseIdx) {
+            const pName = PHASES_CONFIG[phaseIdx].name;
+            if(!confirm(`Have you strictly completed ${pName} reading of the selected subjects? This cannot be undone.`)) return;
+
+            const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] };
+            if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {s:{}, s_locked:{}};
+            if(!g.phases[phaseIdx].s_locked) g.phases[phaseIdx].s_locked = {};
+
+            let subjectsList = "";
+            SUBJECTS_19.forEach((s, si) => {
+                const el = document.getElementById(`chk_${phaseIdx}_${si}`);
+                if(el && el.checked) {
+                    g.phases[phaseIdx].s[si] = true;
+                    if(!g.phases[phaseIdx].s_locked[si]) {
+                        g.phases[phaseIdx].s_locked[si] = true; // Lock it
+                        subjectsList += s + ", ";
+                    }
+                }
+            });
+
+            localStorage.setItem(KEYS.GOALS, JSON.stringify(g));
+            renderGoalHTML();
         }
 
         function renderGoalHTML() {
             const container = document.getElementById('goal-phases-container'); container.innerHTML = "<h3>Reading Phases</h3>";
             
-            // Calculate Actuals
             const swtData = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
             const neetGT = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]");
             const iniGT = JSON.parse(localStorage.getItem(KEYS.INI) || "[]");
@@ -672,65 +700,78 @@
             PHASES_CONFIG.forEach((p, idx) => {
                 const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] };
                 const pData = g.phases[idx] || {};
-                const isLocked = pData.locked ? 'disabled' : '';
-                const pNameMap = { 0: "First Reading", 1: "Second Reading", 2: "Third Reading", 3: "Extra Bonus Reading" }; // Map index to legacy phase name
-                const phaseNameStr = pNameMap[idx]; // For matching with SWT/GT data string
+                const pNameMap = { 0: "First Reading", 1: "Second Reading", 2: "Third Reading", 3: "Extra Bonus Reading" };
+                const phaseNameStr = pNameMap[idx];
 
-                // Count Actuals
                 let actSWT = 0;
                 swtData.forEach(x => { 
-                    let ph = x.phase || "First Reading";
-                    if(ph === "Extra Bonus") ph = "Extra Bonus Reading";
+                    let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading";
                     if (ph === phaseNameStr) actSWT++; 
                 });
 
-                let actGT = 0;
-                let maxGT = 0;
+                let actGT = 0, maxGT = 0;
                 allGT.forEach(x => {
-                    let ph = x.phase || "First Reading";
-                    if(ph === "Extra Bonus") ph = "Extra Bonus Reading";
-                    if (ph === phaseNameStr) {
-                        actGT++;
-                        if(x.score > maxGT) maxGT = x.score;
-                    }
+                    let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading";
+                    if (ph === phaseNameStr) { actGT++; if(x.score > maxGT) maxGT = x.score; }
                 });
 
-                // Determine Ticks/Fire
-                const tgtSWT = parseInt(pData.tgt_swt) || 99999;
-                const tgtGT = parseInt(pData.tgt_gt) || 99999;
+                const tgtSWT = parseInt(pData.tgt_swt) || 0;
+                const tgtGT = parseInt(pData.tgt_gt) || 0;
                 
                 let swtDisplay = `${actSWT}`;
-                if (actSWT >= tgtSWT && tgtSWT !== 99999) swtDisplay += " ✅";
-                if (actSWT > tgtSWT && tgtSWT !== 99999) swtDisplay += " 🔥";
+                if (tgtSWT > 0 && actSWT >= tgtSWT) swtDisplay += " ✅";
+                if (tgtSWT > 0 && actSWT > tgtSWT) swtDisplay += " 🔥";
 
                 let gtDisplay = `${actGT}`;
-                if (actGT >= tgtGT && tgtGT !== 99999) gtDisplay += " ✅";
-                if (actGT > tgtGT && tgtGT !== 99999) gtDisplay += " 🔥";
+                if (tgtGT > 0 && actGT >= tgtGT) gtDisplay += " ✅";
+                if (tgtGT > 0 && actGT > tgtGT) gtDisplay += " 🔥";
 
-                // Check Champion Status
+                // Champion Logic
                 let isChampion = false;
                 let subjectsDone = true;
-                if (pData.s) {
-                    for(let i=0; i<SUBJECTS_19.length; i++) if(!pData.s[i]) subjectsDone = false;
+                if (pData.s_locked) {
+                    for(let i=0; i<SUBJECTS_19.length; i++) if(!pData.s_locked[i]) subjectsDone = false;
                 } else subjectsDone = false;
 
-                if (subjectsDone && actSWT >= tgtSWT && actGT >= tgtGT && tgtSWT !== 99999 && tgtGT !== 99999) isChampion = true;
+                if (subjectsDone && actSWT >= tgtSWT && actGT >= tgtGT && tgtSWT > 0 && tgtGT > 0) isChampion = true;
 
                 const championClass = isChampion ? 'completed' : '';
                 const championBadge = isChampion ? '🏆' : p.badge;
+
+                // Inputs Locking
+                const lockSwtBtn = pData.locked_swt ? 'locked' : '';
+                const lockGtBtn = pData.locked_gt ? 'locked' : '';
+                const swtDisabled = pData.locked_swt ? 'disabled' : '';
+                const gtDisabled = pData.locked_gt ? 'disabled' : '';
+
+                // Subject Grid
+                let subjectsHtml = `<div class="sub-grid">`;
+                SUBJECTS_19.forEach((s, si) => {
+                    const isChecked = pData.s ? pData.s[si] : false;
+                    const isLocked = pData.s_locked ? pData.s_locked[si] : false;
+                    const disabledAttr = isLocked ? 'disabled' : '';
+                    const labelStyle = isLocked ? 'color:#2ecc71; font-weight:bold;' : ''; // Green if locked
+                    
+                    subjectsHtml += `<label class="sub-check-item" style="${labelStyle}">
+                        <input type="checkbox" id="chk_${idx}_${si}" ${isChecked ? 'checked' : ''} ${disabledAttr} onchange="saveGoals()"> 
+                        <span>${s}</span>
+                    </label>`;
+                });
+                subjectsHtml += `</div>`;
 
                 container.innerHTML += `
                 <div class="phase-block ${championClass}" id="pb_${idx}">
                     <div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${championBadge}</span></div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
-                        <div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" onchange="saveGoals()"></div>
-                        <div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" onchange="saveGoals()"></div>
+                        <div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" value="${pData.f||''}" onchange="saveGoals()"></div>
+                        <div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" value="${pData.t||''}" onchange="saveGoals()"></div>
                     </div>
                     
                     <div class="goal-stats-grid">
                         <div class="goal-input-box">
                             <span class="setting-label">SWT Goal</span>
-                            <input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" placeholder="Target" ${isLocked}>
+                            <input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" placeholder="0" ${swtDisabled}>
+                            <button class="mini-lock-btn ${lockSwtBtn}" onclick="lockTarget(${idx}, 'swt')">🔒</button>
                         </div>
                         <div class="goal-display-box">
                             <span class="setting-label">Actual SWT</span>
@@ -738,7 +779,8 @@
                         </div>
                         <div class="goal-input-box">
                             <span class="setting-label">GT Goal</span>
-                            <input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" placeholder="Target" ${isLocked}>
+                            <input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" placeholder="0" ${gtDisabled}>
+                            <button class="mini-lock-btn ${lockGtBtn}" onclick="lockTarget(${idx}, 'gt')">🔒</button>
                         </div>
                         <div class="goal-display-box">
                             <span class="setting-label">Actual GT</span>
@@ -751,21 +793,18 @@
                         <strong style="color:#f39c12;">${maxGT.toFixed(2)}</strong>
                     </div>
 
-                    ${!pData.locked ? `<button class="goal-lock-btn" onclick="lockPhaseTargets(${idx})">🔒 Lock Targets</button>` : '<div style="font-size:10px; opacity:0.5; text-align:center;">Targets Locked 🔒</div>'}
-
-                    <button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects</button>
+                    <button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects ▼</button>
                     <div id="sg_${idx}" class="sub-grid-container">
-                        <div class="sub-grid">${SUBJECTS_19.map((s, si) => `<label class="sub-check-item"><input type="checkbox" id="chk_${idx}_${si}" onchange="saveGoals()"> <span>${s}</span></label>`).join('')}</div>
+                        ${subjectsHtml}
+                        <button class="save-sub-btn" onclick="saveSubjectProgress(${idx})">Save & Lock Progress</button>
                     </div>
                 </div>`;
             }); 
-            loadGoalsToUI();
         }
 
         function saveGoals() { 
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] };
             
-            // Preserve existing phase data (like targets) while updating dates/subjects
             const currentExams = { 
                 i_j: document.getElementById('goal_ini_jul').checked, 
                 u: document.getElementById('goal_upsc').checked, 
@@ -773,23 +812,29 @@
                 i_jan: document.getElementById('goal_ini_jan').checked 
             };
             
+            // Only update dates and non-locked checklist items
             const currentPhases = PHASES_CONFIG.map((_, idx) => { 
-                const s = {}; 
-                SUBJECTS_19.forEach((_, si) => s[si] = document.getElementById(`chk_${idx}_${si}`).checked);
-                
-                // Merge with existing data to keep targets/locked status
                 const existing = g.phases[idx] || {};
-                return { 
-                    ...existing,
-                    f: document.getElementById(`d_${idx}_f`).value, 
-                    t: document.getElementById(`d_${idx}_t`).value, 
-                    s 
-                }; 
+                const s = existing.s || {};
+                
+                // Read dates
+                const fDate = document.getElementById(`d_${idx}_f`).value;
+                const tDate = document.getElementById(`d_${idx}_t`).value;
+
+                // Read checkboxes (only if not locked)
+                SUBJECTS_19.forEach((_, si) => {
+                    const el = document.getElementById(`chk_${idx}_${si}`);
+                    if(el && !el.disabled) {
+                        s[si] = el.checked;
+                    }
+                });
+                
+                return { ...existing, f: fDate, t: tDate, s: s }; 
             });
 
             const newG = { exams: currentExams, phases: currentPhases };
             localStorage.setItem(KEYS.GOALS, JSON.stringify(newG)); 
-            renderGoalHTML(); // Re-render to check for Champion status updates
+            // We don't re-render here to avoid flickering inputs while typing dates
         }
 
         function lockExamGoals() {
@@ -806,14 +851,10 @@
 
         function loadGoalsToUI() { 
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; 
-            
-            // Exam Checkboxes
             document.getElementById('goal_ini_jul').checked = g.exams?.i_j; 
             document.getElementById('goal_upsc').checked = g.exams?.u; 
             document.getElementById('goal_neet').checked = g.exams?.n; 
             document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
-            
-            // Dashboard Highlights
             if(g.exams) {
                 const map = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan' };
                 Object.keys(map).forEach(key => {
@@ -822,24 +863,8 @@
                     else el.classList.remove('target-locked');
                 });
             }
-
-            // Phase Dates & Subjects
-            PHASES_CONFIG.forEach((_, idx) => { 
-                const d = g.phases[idx] || {}; 
-                const dateF = document.getElementById(`d_${idx}_f`);
-                const dateT = document.getElementById(`d_${idx}_t`);
-                if(dateF) dateF.value = d.f || ""; 
-                if(dateT) dateT.value = d.t || ""; 
-                
-                const sd = d.s || {}; 
-                SUBJECTS_19.forEach((_, si) => { 
-                    const el = document.getElementById(`chk_${idx}_${si}`); 
-                    if(el) el.checked = sd[si] || false; 
-                }); 
-            }); 
-            // checkMedals(g); // Removed, logic now integrated into renderGoalHTML
+            renderGoalHTML(); // Initial render of the complex goal HTML
         }
-        // function checkMedals(g) { ... } // Functionality moved to renderGoalHTML for dynamic updates
 
         function exportData() { const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const code = btoa(JSON.stringify(b)); navigator.clipboard.writeText(code).then(() => alert("Code Copied!")); }
         function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; }
