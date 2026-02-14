@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V4</title>
+    <title>Scalpel Master Pro V4.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -532,7 +532,11 @@
 
         function renderMatrix() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            const subjects = Array.from(document.getElementById('subject').options).map(o=>o.value).filter(v=>v);
+            // Filter options to exclude the extra two subjects for this table
+            const subjects = Array.from(document.getElementById('subject').options)
+                                 .map(o=>o.value)
+                                 .filter(v => v && v !== "Mixed Bag" && v !== "Integrated Systems");
+            
             const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus"];
             const mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 };
             
@@ -542,8 +546,9 @@
 
             logs.forEach(l => {
                 const s = l.subject;
-                const p = l.phase || "First Reading"; // Default for old data
+                const p = l.phase || "First Reading"; 
                 const idx = mapKey[p];
+                // Only count if subject is in our filtered list
                 if (matrix[s] && idx !== undefined) {
                     matrix[s][idx].add(l.date);
                 }
