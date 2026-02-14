@@ -33,12 +33,12 @@
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
-        /* EXAM COUNTDOWN STYLE */
-        .exam-countdown { background: rgba(239, 83, 80, 0.1); border: 1px solid #ef5350; padding: 10px; border-radius: 12px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
-        .exam-grid { display: flex; justify-content: space-around; margin-top: 5px; }
-        .exam-item { flex: 1; }
-        .exam-days { font-size: 18px; font-weight: bold; color: #ef5350; display: block; }
-        .exam-label { font-size: 9px; text-transform: uppercase; opacity: 0.8; }
+        /* BLUE EXAM DASHBOARD BOX */
+        .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); }
+        .exam-days { font-size: 16px; font-weight: bold; color: var(--accent); display: block; }
+        .exam-label { font-size: 8px; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px; margin-top: 2px; display: block; }
 
         .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
@@ -69,7 +69,6 @@
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; }
         
-        /* CLEAR DATA SECTION */
         .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; opacity: 0.6; }
         .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; }
     </style>
@@ -100,15 +99,23 @@
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
 
-        <div class="exam-countdown">
+        <div class="exam-dashboard">
             <div class="exam-grid">
+                <div class="exam-item">
+                    <span id="daysIniJuly" class="exam-days">--</span>
+                    <span class="exam-label">INICET JULY</span>
+                </div>
+                <div class="exam-item">
+                    <span id="daysUpsc" class="exam-days">--</span>
+                    <span class="exam-label">UPSC CMS</span>
+                </div>
                 <div class="exam-item">
                     <span id="daysNeet" class="exam-days">--</span>
                     <span class="exam-label">NEET PG 2026</span>
                 </div>
                 <div class="exam-item">
-                    <span id="daysIni" class="exam-days">--</span>
-                    <span class="exam-label">INICET MAY</span>
+                    <span id="daysIniJan" class="exam-days">--</span>
+                    <span class="exam-label">INICET JAN '27</span>
                 </div>
             </div>
         </div>
@@ -204,21 +211,25 @@
         const prefix = `SSS_PRO_V3_${tgUser.id}_`;
         const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT' };
 
-        // COUNTDOWN LOGIC
+        // UPDATED COUNTDOWN LOGIC
         function updateCountdowns() {
             const now = new Date();
-            const neetDate = new Date("2026-07-01"); // Update to exact date when announced
-            const iniDate = new Date("2026-05-10");  // Update to exact date when announced
+            const dates = {
+                iniJuly: new Date("2026-05-17"),
+                upsc: new Date("2026-08-02"),
+                neet: new Date("2026-08-30"),
+                iniJan: new Date("2026-11-01")
+            };
             
-            const diffNeet = neetDate - now;
-            const diffIni = iniDate - now;
-
-            document.getElementById('daysNeet').innerText = Math.ceil(diffNeet / (1000 * 60 * 60 * 24));
-            document.getElementById('daysIni').innerText = Math.ceil(diffIni / (1000 * 60 * 60 * 24));
+            Object.keys(dates).forEach(key => {
+                const diff = dates[key] - now;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                const elementId = 'days' + key.charAt(0).toUpperCase() + key.slice(1);
+                document.getElementById(elementId).innerText = days > 0 ? days : "LIVE";
+            });
         }
         updateCountdowns();
 
-        // CLEAR DATA LOGIC
         function clearData() {
             if(confirm("Are you sure? This will delete all your streaks, charts, and test logs on this device.")) {
                 Object.values(KEYS).forEach(k => localStorage.removeItem(k));
@@ -316,3 +327,4 @@
     </script>
 </body>
 </html>
+
