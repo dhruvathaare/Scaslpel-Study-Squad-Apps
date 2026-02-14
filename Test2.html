@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.17</title>
+    <title>Scalpel Master Pro V6.18</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,6 +19,7 @@
             --input-bg: #0e1621; 
             --chart-text: #ffffff;
             --chart-grid: #aaaaaa;
+            --instruction-bg: rgba(255,255,255,0.05);
         }
         
         [data-theme="light"] {
@@ -30,6 +31,7 @@
             --input-bg: #ffffff;
             --chart-text: #000000;
             --chart-grid: #555555;
+            --instruction-bg: rgba(0,0,0,0.05);
         }
 
         html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
@@ -49,31 +51,12 @@
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: max-width 0.3s ease; }
         
         @media (orientation: landscape) {
-            .container { max-width: 90%; }
+            .container { max-width: 95%; } 
             .card { width: 100%; }
-            .chart-container { height: 250px; } /* Taller charts in landscape */
+            .chart-container { height: 280px; } 
+            .matrix-table th, .matrix-table td { white-space: normal; } /* Allow text wrap in wide mode */
         }
 
-        /* Theme Toggle Button */
-        .theme-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--card);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
@@ -85,7 +68,6 @@
         .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); transition: all 0.3s ease; }
-        /* Light mode adjustment for exam items */
         [data-theme="light"] .exam-item { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); }
         
         .exam-item.target-locked { border: 1px solid #2ecc71; background: rgba(46, 204, 113, 0.2); box-shadow: 0 0 10px rgba(46, 204, 113, 0.3); transform: scale(1.02); }
@@ -99,13 +81,27 @@
         .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
 
-        .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
-        .tab-btn { flex: 1; padding: 12px 5px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: var(--text); opacity: 0.5; }
+        .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; align-items: center; }
+        .tab-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: var(--text); opacity: 0.5; text-align: center; }
         .tab-btn.active { opacity: 1; background: var(--accent); color: white; }
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
+        
+        /* Theme Tab Specific Style */
+        .theme-toggle-tab { flex: 0.6; border-right: 1px solid var(--border); color: var(--accent) !important; opacity: 1 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;}
 
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
+        
+        /* ACCORDION STYLES */
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 5px 0; }
+        .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; }
+        .arrow { transition: transform 0.3s ease; font-size: 12px; opacity: 0.7; }
+        .accordion-content { display: none; margin-top: 15px; animation: slideDown 0.3s ease-out; }
+        .accordion-content.open { display: block; }
+        .accordion-header.active .arrow { transform: rotate(180deg); }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
         .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
         
@@ -203,11 +199,11 @@
         .subject-breakdown-row { display: grid; grid-template-columns: 1fr 50px 50px 50px; gap: 5px; align-items: center; margin-bottom: 5px; font-size: 9px; }
         .subject-breakdown-header { font-weight: bold; color: var(--accent); margin-bottom: 8px; }
         .sb-input { padding: 4px !important; font-size: 10px !important; }
+
+        .instruction-box { background: var(--instruction-bg); padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 10px; color: #888; text-align: left; line-height: 1.4; border-left: 2px solid var(--accent); }
     </style>
 </head>
 <body>
-    <button class="theme-btn" onclick="toggleTheme()">🌗</button>
-
     <div id="popup-overlay">
         <div class="popup-card" id="mcq-popup">
             <h3>Cycle Complete</h3>
@@ -268,6 +264,10 @@
         <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
 
         <div class="nav-tabs">
+            <button class="tab-btn theme-toggle-tab" onclick="toggleTheme()">
+                <span style="font-size:14px; display:block; margin-bottom:2px;">🌗</span>
+                <span style="font-size:7px; opacity:0.8;">THEME</span>
+            </button>
             <div class="tab-btn" onclick="switchTab('tab-goal', this)">Goal</div>
             <div class="tab-btn active" onclick="switchTab('tab-daily', this)">Daily Analytics</div>
             <div class="tab-btn" onclick="switchTab('tab-swt', this)">SWT Analysis</div>
@@ -276,41 +276,66 @@
 
         <div id="tab-goal" class="tab-content">
             <div class="card">
-                <h3 style="margin-top:0; color:var(--accent);">Target Exams</h3>
-                <div class="goal-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
-                <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
-                <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
-                <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
-                
-                <button class="btn sm-btn" style="width:100%; margin-top:10px; background:var(--accent); font-weight:bold; font-size:12px; padding:12px;" onclick="lockExamGoals()">Lock & Let's Go!</button>
+                <div class="accordion-header" onclick="toggleAccordion('acc_exams', this)">
+                    <h3 style="color:var(--accent);">My Target Exams</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div id="acc_exams" class="accordion-content">
+                    <div class="goal-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
+                    <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
+                    <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
+                    <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
+                    <button class="btn sm-btn" style="width:100%; margin-top:10px; background:var(--accent); font-weight:bold; font-size:12px; padding:12px;" onclick="lockExamGoals()">Lock & Let's Go!</button>
+                </div>
             </div>
             
             <div class="card">
-                <h3 style="margin-top:0; color:#2ecc71;">PYQ PAPERS GOAL</h3>
-                
-                <div class="pyq-nav-container">
-                    <div class="pyq-tab active" onclick="switchPyq('neet', this)">NEET PG<span id="cup_neet" class="pyq-tab-cup">🏆</span></div>
-                    <div class="pyq-tab" onclick="switchPyq('ini', this)">INICET<span id="cup_ini" class="pyq-tab-cup">🏆</span></div>
-                    <div class="pyq-tab" onclick="switchPyq('fmge', this)">FMGE<span id="cup_fmge" class="pyq-tab-cup">🏆</span></div>
-                    <div class="pyq-tab" onclick="switchPyq('upsc', this)">UPSC<span id="cup_upsc" class="pyq-tab-cup">🏆</span></div>
+                <div class="accordion-header" onclick="toggleAccordion('acc_pyq', this)">
+                    <h3 style="color:#2ecc71;">PYQ PAPERS GOAL</h3>
+                    <span class="arrow">▼</span>
                 </div>
-
-                <div id="pyq-panels-root"></div>
-
+                <div id="acc_pyq" class="accordion-content">
+                    <div class="pyq-nav-container">
+                        <div class="pyq-tab active" onclick="switchPyq('neet', this)">NEET PG<span id="cup_neet" class="pyq-tab-cup">🏆</span></div>
+                        <div class="pyq-tab" onclick="switchPyq('ini', this)">INICET<span id="cup_ini" class="pyq-tab-cup">🏆</span></div>
+                        <div class="pyq-tab" onclick="switchPyq('fmge', this)">FMGE<span id="cup_fmge" class="pyq-tab-cup">🏆</span></div>
+                        <div class="pyq-tab" onclick="switchPyq('upsc', this)">UPSC<span id="cup_upsc" class="pyq-tab-cup">🏆</span></div>
+                    </div>
+                    <div id="pyq-panels-root"></div>
+                </div>
             </div>
 
             <div class="card">
-                <h3 style="margin-top:0; color:#f39c12;">Monthly Goals Reached</h3>
-                <div style="overflow-x:auto;">
-                    <table class="matrix-table">
-                        <thead><tr><th>Month</th><th>MCQs</th><th>SWTs</th><th>GTs</th></tr></thead>
-                        <tbody id="monthlyGoalBody"></tbody>
-                    </table>
+                <div class="accordion-header" onclick="toggleAccordion('acc_monthly', this)">
+                    <h3 style="color:#f39c12;">Monthly Goals Reached</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div id="acc_monthly" class="accordion-content">
+                    <div style="overflow-x:auto;">
+                        <table class="matrix-table">
+                            <thead><tr><th>Month</th><th>MCQs</th><th>SWTs</th><th>GTs</th></tr></thead>
+                            <tbody id="monthlyGoalBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="card" id="goal-phases-container">
-                <h3 style="margin-top:0; color:#f39c12;">Reading Phases</h3>
+            <div class="card">
+                <div class="accordion-header" onclick="toggleAccordion('acc_phases', this)">
+                    <h3 style="color:#f39c12;">Reading Phases</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div id="acc_phases" class="accordion-content">
+                    <div id="goal-phases-container"></div>
+                    <div class="instruction-box">
+                        <strong>How to use Phases:</strong><br>
+                        1. Define start/end dates for each reading.<br>
+                        2. Set numerical targets for SWTs and GTs.<br>
+                        3. Check off subjects as you complete them.<br>
+                        4. Click "Lock" to save your goal.<br>
+                        Achieve all targets + all subjects to unlock the trophy!
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -519,25 +544,30 @@
             { id: 'upsc', label: 'UPSC CMS', type: 'list', start: 2025, end: 2020 }
         ];
 
-        /* THEME LOGIC */
+        /* THEME & UI LOGIC */
         function toggleTheme() {
             const html = document.documentElement;
             const current = html.getAttribute('data-theme');
             const next = current === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', next);
             localStorage.setItem('SSS_THEME', next);
-            updateUI(); // Re-render charts to update colors
+            updateUI(); 
         }
-        // Load Saved Theme
         const savedTheme = localStorage.getItem('SSS_THEME');
         if(savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
 
-        // Helper to get Chart Colors based on theme
         function getThemeColor(type) {
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             if(type === 'text') return isLight ? '#000000' : '#ffffff';
             if(type === 'grid') return isLight ? '#e0e0e0' : 'rgba(255,255,255,0.1)';
             return '#ffffff';
+        }
+
+        function toggleAccordion(id, header) {
+            const content = document.getElementById(id);
+            const isOpen = content.classList.contains('open');
+            content.classList.toggle('open');
+            header.classList.toggle('active');
         }
 
         /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
@@ -785,7 +815,7 @@
         }
 
         function renderGoalHTML() {
-            const container = document.getElementById('goal-phases-container'); container.innerHTML = "<h3>Reading Phases</h3>";
+            const container = document.getElementById('goal-phases-container'); container.innerHTML = "";
             const swtData = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
             const neetGT = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]");
             const iniGT = JSON.parse(localStorage.getItem(KEYS.INI) || "[]");
@@ -961,3 +991,4 @@
     </script>
 </body>
 </html>
+
