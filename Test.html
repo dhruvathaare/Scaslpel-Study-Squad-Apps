@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.2</title>
+    <title>Scalpel Master Pro V6.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -286,8 +286,6 @@
                 <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #2ecc71; text-transform: uppercase;">Total Questions Solved (All Subjects)</h4>
                 <div class="chart-container"><canvas id="swtQuestionsChart"></canvas></div>
 
-                <div id="swtAnalysis" style="font-size:11px; text-align:left; line-height:1.5; max-height:100px; overflow-y:auto;"></div>
-                
                 <div class="strong-weak-container">
                     <div class="performance-label stat-strong">
                         <span>Strong Subject:</span>
@@ -667,7 +665,8 @@
             // 1. Subject Specific Trend
             if(sChart) sChart.destroy(); 
             if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:sub+'%', data:f.map(x=>x.percent), borderColor:'#5288c1', tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:'#fff'}}}}});
-            document.getElementById('swtAnalysis').innerHTML = f.map(x => `• ${x.date}: <b>${x.percent}%</b> (C:${x.correct} W:${x.wrong})`).reverse().join('<br>');
+            
+            // Removed redundancy here: No longer generating the text list
 
             // 2. Cumulative Line Graph (Average per Subject)
             if(scuChart) scuChart.destroy();
@@ -769,11 +768,6 @@
             // Part B: Frequency Stats (Always Visible if at least one test taken)
             if (all.length > 0) {
                 let maxC = -1, minC = 99999;
-                // Determine min/max among ATTEMPTED subjects for relevant stats
-                // Or among ALL subjects? "Rarely attempted" could imply 0. 
-                // Context: "Rarely attempted" usually means > 0 but low.
-                // Let's filter for subjects with count > 0 to find "Rare" attempts, 
-                // because "Missing" box already covers the 0s.
                 
                 const attemptedSubs = ALL_SWT_SUBS.filter(s => perfData[s].count > 0);
                 
