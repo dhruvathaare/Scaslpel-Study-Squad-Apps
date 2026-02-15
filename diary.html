@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.20</title>
+    <title>Scalpel Master Pro V6.21</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -91,7 +91,7 @@
 
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
         
-        /* ACCORDION STYLES */
+        /* ACCORDION STYLES - NOW BLUE */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 5px 0; }
         .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--accent) !important; }
         .arrow { transition: transform 0.3s ease; font-size: 12px; opacity: 0.7; }
@@ -667,7 +667,23 @@
 
         /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
-        const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
+        
+        // FIXED: Robust Wake Lock with Re-acquisition
+        const requestWakeLock = async () => { 
+            if ('wakeLock' in navigator) {
+                try { 
+                    wakeLock = await navigator.wakeLock.request('screen'); 
+                } catch (e) { console.error(e); }
+            }
+        };
+
+        // Re-acquire lock if page becomes visible again (e.g. user switched tabs)
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
         let alarmInterval = null;
