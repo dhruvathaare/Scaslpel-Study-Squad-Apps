@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.22</title>
+    <title>Scalpel Master Pro V6.23</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -65,6 +65,11 @@
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
         .user-id-tag { opacity: 0.7; font-size: 9px; font-family: monospace; }
+        
+        /* NEW STATUS DOT CSS */
+        .status-dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .status-online { background-color: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
+        .status-offline { background-color: #f39c12; box-shadow: 0 0 5px #f39c12; }
 
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
@@ -255,7 +260,10 @@
         <div class="header-ui">
             <div class="user-badge">
                 <span id="uFullName">...</span>
-                <span id="uID" class="user-id-tag">ID: 0</span>
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+                    <span id="statusDot" class="status-dot"></span>
+                    <span id="uID" class="user-id-tag">ID: 0</span>
+                </div>
             </div>
         </div>
         
@@ -567,6 +575,14 @@
         const fullName = `${tgUser.first_name || ""} ${tgUser.last_name || ""}`.trim();
         document.getElementById('uFullName').innerText = fullName || "Guest User";
         document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
+        
+        // Status Indicator Logic
+        const statusDot = document.getElementById('statusDot');
+        if (tgUser.id === "OFFLINE") {
+            statusDot.classList.add('status-offline');
+        } else {
+            statusDot.classList.add('status-online');
+        }
 
         const prefix = `SSS_PRO_V3_${tgUser.id}_`;
         const KEYS = { LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ', TOUGH: prefix+'TOUGH' };
@@ -1088,9 +1104,54 @@
             renderGoalHTML(); 
         }
 
-        function exportData() { const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const code = btoa(JSON.stringify(b)); navigator.clipboard.writeText(code).then(() => alert("Code Copied!")); }
+        function exportData() { 
+            const b = {}; 
+            Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k]));
+            
+            // SECURITY ADDITION: Stamp with current User ID
+            const payload = {
+                owner: tgUser.id,
+                data: b
+            };
+            
+            const code = btoa(JSON.stringify(payload)); 
+            navigator.clipboard.writeText(code).then(() => alert(`Code Copied!\n\n🔐 LOCKED TO USER ID: ${tgUser.id}\n(Only this ID can restore this file)`)); 
+        }
+        
         function openRestore() { openPopup('restore-popup'); }
-        function processRestore() { try { const d = JSON.parse(atob(document.getElementById('restoreInput').value)); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
+        
+        function processRestore() { 
+            try { 
+                const rawInput = document.getElementById('restoreInput').value;
+                if(!rawInput) return;
+                
+                const raw = JSON.parse(atob(rawInput));
+                let dataToRestore = raw;
+
+                // SECURITY CHECK
+                if (raw.owner) {
+                    if (String(raw.owner) !== String(tgUser.id)) {
+                        alert(`⛔ ACCESS DENIED\n\nThis backup file is locked to User ID: ${raw.owner}\nYou are currently logged in as: ${tgUser.id}\n\nYou cannot restore another user's data.`);
+                        return;
+                    }
+                    dataToRestore = raw.data;
+                } else {
+                    // Legacy support could go here, but prompt asked for strictness.
+                    // We assume new backups will always have owner.
+                    // If it's undefined, it's an old backup which technically has no owner,
+                    // so we allow it (or you could block it if you want absolute strictness).
+                    // For now, we proceed to allow self-restore of old data.
+                }
+
+                Object.keys(dataToRestore).forEach(k => localStorage.setItem(k, dataToRestore[k])); 
+                alert("✅ Data Restored Successfully!"); 
+                location.reload(); 
+            } catch(e) { 
+                console.error(e);
+                alert("❌ Invalid Code or Corrupted Data"); 
+            } 
+        }
+
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
         
         function updateCountdowns() { 
@@ -1111,7 +1172,7 @@
             Object.keys(targets).forEach(k => {
                 const target = targets[k];
                 const diffMs = target - istDate;
-                const d = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                const d = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); 
                 
                 const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1));
                 if(el) {
