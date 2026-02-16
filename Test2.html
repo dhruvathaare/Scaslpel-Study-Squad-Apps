@@ -157,8 +157,13 @@
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
-        .chart-container { width: 100%; height: 160px; margin: 10px 0; }
+        .chart-container { width: 100%; height: 160px; margin: 10px 0; position: relative; }
         
+        /* MONTH NAV STYLES */
+        .month-navigator { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; padding: 5px 10px; background: rgba(82, 136, 193, 0.1); border-radius: 10px; border: 1px solid var(--border); box-sizing: border-box;}
+        .month-nav-btn { background: var(--accent); color: white; border: none; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .month-display { font-family: 'Oswald', sans-serif; font-size: 14px; color: var(--accent); text-transform: uppercase; }
+
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; overflow-y: auto; max-height: 80vh; color: var(--text); }
         
@@ -404,13 +409,23 @@
             </div>
             
             <div class="card">
-                <h3 style="margin:0; color:#f39c12; font-size:16px;">Daily Progress</h3>
+                <div class="month-navigator">
+                    <button class="month-nav-btn" onclick="changeViewMonth(-1)">◀</button>
+                    <div class="month-display" id="currentViewMonthDisplay">MONTH YEAR</div>
+                    <button class="month-nav-btn" onclick="changeViewMonth(1)">▶</button>
+                </div>
+
+                <h3 style="margin:0; color:#f39c12; font-size:16px;">Study Hours Trends</h3>
                 <div class="chart-container"><canvas id="hoursChart"></canvas></div>
+                <h3 style="margin:10px 0 0 0; color:#5288c1; font-size:16px;">MCQs Solved Trends</h3>
                 <div class="chart-container"><canvas id="mcqChart"></canvas></div>
-                <table class="log-table">
-                    <thead><tr><th class="col-date">Date</th><th class="col-hrs">Hrs</th><th class="col-cyc">Cyc</th><th class="col-mcq">MCQ</th><th class="col-sub">Subjects</th></tr></thead>
-                    <tbody id="dailyLogBody"></tbody>
-                </table>
+                
+                <div style="overflow-x: auto; width: 100%; margin-top: 15px;">
+                    <table class="log-table">
+                        <thead><tr><th class="col-date">Date</th><th class="col-hrs">Hrs</th><th class="col-cyc">Cyc</th><th class="col-mcq">MCQ</th><th class="col-sub">Subjects</th></tr></thead>
+                        <tbody id="dailyLogBody"></tbody>
+                    </table>
+                </div>
 
                 <h3 style="margin:15px 0 5px 0; color:var(--accent); font-size:14px; border-top:1px solid rgba(128,128,128,0.2); padding-top:10px;">Phase Matrix (Days Spent)</h3>
                 <div style="overflow-x:auto;"><table class="matrix-table"><thead><tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead><tbody id="matrixBody"></tbody></table></div>
@@ -734,40 +749,78 @@
         let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
         let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg;
 
+        /* NEW MONTH NAVIGATOR LOGIC */
+        let currentViewDate = new Date();
+
+        function changeViewMonth(offset) {
+            currentViewDate.setMonth(currentViewDate.getMonth() + offset);
+            updateUI();
+        }
+
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            const grouped = {};
-            logs.forEach(l => { 
-                if (!grouped[l.date]) grouped[l.date] = {h:0, m:0, subs:new Set(), cyc:0}; 
-                grouped[l.date].h += l.duration/60; 
-                grouped[l.date].m += l.mcqs; 
-                grouped[l.date].subs.add(l.subject); 
-                grouped[l.date].cyc++; 
-            });
-            const rawLabels = Object.keys(grouped).reverse().slice(-7);
-            const chartLabels = rawLabels.map(d => d.substring(0, 5));
-            const hours = rawLabels.map(l => grouped[l].h), mcqs = rawLabels.map(l => grouped[l].m);
-            const avgH = hours.length ? (hours.reduce((a,b)=>a+b,0)/hours.length).toFixed(1) : 0;
-            const avgM = mcqs.length ? Math.round(mcqs.reduce((a,b)=>a+b,0)/mcqs.length) : 0;
             
+            // Get Month and Year from currentViewDate
+            const viewMonth = currentViewDate.getMonth();
+            const viewYear = currentViewDate.getFullYear();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentViewMonthDisplay').innerText = `${monthNames[viewMonth]} ${viewYear}`;
+
+            // Calculate number of days in that month
+            const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+            const labels = [];
+            const hoursData = Array(daysInMonth).fill(0);
+            const mcqsData = Array(daysInMonth).fill(0);
+            
+            // Filter Logs and populate daily slots
+            const tableLogs = [];
+            logs.forEach(l => {
+                const [d, m, y] = l.date.split('/');
+                const logDate = new Date(y, m - 1, d);
+                
+                if (logDate.getMonth() === viewMonth && logDate.getFullYear() === viewYear) {
+                    const dayIdx = parseInt(d) - 1;
+                    hoursData[dayIdx] += l.duration / 60;
+                    mcqsData[dayIdx] += l.mcqs;
+                    tableLogs.push(l);
+                }
+            });
+
+            for (let i = 1; i <= daysInMonth; i++) labels.push(i);
+
             const textColor = getThemeColor('text');
             const gridColor = getThemeColor('grid');
 
+            // HOURS CHART
             if(hChart) hChart.destroy(); 
             hChart = new Chart(document.getElementById('hoursChart'), { 
-                type:'line', data:{labels:chartLabels, datasets:[{label:'Hours', data:hours, borderColor:'#f39c12', tension:0.3}]}, 
-                options:{maintainAspectRatio:false, scales:{y:{min:0, max:16, ticks:{stepSize:1, color:textColor, callback: function(value) { return value + 'hr'; }}, grid:{color:gridColor}}, x:{ticks:{color:textColor, maxRotation:0, autoSkip:true}, grid:{color:gridColor}}}, plugins:{legend:{labels:{color:textColor}}, annotation:{annotations:{l1:{type:'line', yMin:avgH, yMax:avgH, borderColor:textColor, borderDash:[5,5]}}}}}
+                type:'line', data:{labels:labels, datasets:[{label:'Hours', data:hoursData, borderColor:'#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', fill: true, tension:0.3}]}, 
+                options:{maintainAspectRatio:false, scales:{y:{min:0, max:16, ticks:{stepSize:2, color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor}}}, plugins:{legend:{display:false}}}
             });
+
+            // MCQ CHART
             if(mChart) mChart.destroy(); 
             mChart = new Chart(document.getElementById('mcqChart'), { 
-                type:'line', data:{labels:chartLabels, datasets:[{label:'MCQs', data:mcqs, borderColor:'#5288c1', tension:0.3}]}, 
-                options:{maintainAspectRatio:false, scales:{y:{beginAtZero:true, ticks:{stepSize:20, color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, maxRotation:0, autoSkip:true}, grid:{color:gridColor}}}, plugins:{legend:{labels:{color:textColor}}, annotation:{annotations:{l1:{type:'line', yMin:avgM, yMax:avgM, borderColor:textColor, borderDash:[5,5]}}}}}
+                type:'line', data:{labels:labels, datasets:[{label:'MCQs', data:mcqsData, borderColor:'#5288c1', backgroundColor: 'rgba(82, 136, 193, 0.1)', fill: true, tension:0.3}]}, 
+                options:{maintainAspectRatio:false, scales:{y:{beginAtZero:true, ticks:{color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor}}}, plugins:{legend:{display:false}}}
             });
+
+            // LOG TABLE
             let html = ""; 
-            Object.keys(grouped).reverse().forEach(d => { 
-                html += `<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cyc}</td><td>${grouped[d].m}</td><td>${Array.from(grouped[d].subs).join(', ')}</td></tr>`; 
+            // Group the table logs by date again for display
+            const groupedTable = {};
+            tableLogs.forEach(l => {
+                if(!groupedTable[l.date]) groupedTable[l.date] = {h:0, m:0, subs:new Set(), cyc:0};
+                groupedTable[l.date].h += l.duration/60;
+                groupedTable[l.date].m += l.mcqs;
+                groupedTable[l.date].subs.add(l.subject);
+                groupedTable[l.date].cyc++;
             });
-            document.getElementById('dailyLogBody').innerHTML = html;
+
+            Object.keys(groupedTable).reverse().forEach(d => { 
+                html += `<tr><td>${d}</td><td>${groupedTable[d].h.toFixed(1)}h</td><td>${groupedTable[d].cyc}</td><td>${groupedTable[d].m}</td><td>${Array.from(groupedTable[d].subs).join(', ')}</td></tr>`; 
+            });
+            document.getElementById('dailyLogBody').innerHTML = html || '<tr><td colspan="5">No data for this month</td></tr>';
         }
 
         function renderMonthlyTable() {
