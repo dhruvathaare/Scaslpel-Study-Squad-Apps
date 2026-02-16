@@ -141,6 +141,7 @@
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #aaa; }
+
         .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-top: 15px; }
         .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; }
         [data-theme="light"] .pyq-tab { background: rgba(0,0,0,0.05); }
@@ -491,7 +492,7 @@
             </div>
         </div>
 
-         <div id="tab-gt" class="tab-content">
+        <div id="tab-gt" class="tab-content">
             <div class="card">
                 <h3>GT Intelligence</h3>
                 <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:10px; text-align:center; background:var(--border); font-size:10px; cursor:pointer;" onclick="switchGT('NEET')">NEET PG (+4/-1)</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:10px; text-align:center; background:rgba(0,0,0,0.2); font-size:10px; cursor:pointer;" onclick="switchGT('INICET')">INICET (+1/-0.33)</div></div>
@@ -567,7 +568,6 @@
             <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
         </div>
     </div>
-
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
         const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Local", last_name: "User" };
@@ -639,6 +639,7 @@
             document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
             stopAlarm(); // Safety stop for alarms
         }
+
         /* TOUGH SUBJECTS LOGIC */
         function renderToughSubjectsSelector() {
             const saved = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "{}");
@@ -716,8 +717,11 @@
             container.innerHTML = html;
         }
 
-        /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
+        /* ================= ORIGINAL BASE CODE TIMER LOGIC (UPDATED) ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
+        let initialDuration = 0; // NEW: To track full intended time
+        let elapsedDuration = 0; // NEW: To track exact time spent
+        let isStudySkipped = false; // NEW: To mark if cycle should be counted or not
         
         // FIXED: Robust Wake Lock with Re-acquisition
         const requestWakeLock = async () => { 
@@ -749,7 +753,21 @@
             audioCtx.resume(); requestWakeLock(); activeSub = s; activePhase = p; startStudyTimer(); 
         };
 
-        function startStudyTimer() { mode = "study"; isPaused = false; timeLeft = (parseInt(document.getElementById('studyHr').value)*3600) + (parseInt(document.getElementById('studyMin').value)*60); if(timeLeft <= 0) return; document.getElementById('startBtn').style.display='none'; document.getElementById('timer-controls').style.display='block'; runTimer(); }
+        function startStudyTimer() { 
+            mode = "study"; 
+            isPaused = false; 
+            isStudySkipped = false;
+            let h = parseInt(document.getElementById('studyHr').value) || 0;
+            let m = parseInt(document.getElementById('studyMin').value) || 0;
+            initialDuration = (h * 3600) + (m * 60); 
+            timeLeft = initialDuration;
+            
+            if(timeLeft <= 0) return; 
+            document.getElementById('startBtn').style.display='none'; 
+            document.getElementById('timer-controls').style.display='block'; 
+            runTimer(); 
+        }
+        
         function togglePause() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause"; }
         
         function runTimer() { 
@@ -767,14 +785,33 @@
         function handleTransition() { 
             clearInterval(timerInterval); 
             startAlarm(mode==="study"?880:440); 
-            if(mode === "study") openPopup('mcq-popup'); 
-            else openPopup('break-popup');
+            
+            if (mode === "study") {
+                // Calculate Exact Time Spent
+                elapsedDuration = initialDuration - timeLeft;
+                // If they skipped with more than 5 seconds remaining, mark as skipped cycle
+                if (timeLeft > 5) {
+                    isStudySkipped = true;
+                } else {
+                    // Natural finish
+                    elapsedDuration = initialDuration; 
+                    isStudySkipped = false;
+                }
+                openPopup('mcq-popup'); 
+            } else {
+                // Break Finished - Even if skipped, cycle counts
+                openPopup('break-popup');
+            }
         }
 
         function startBreak() { 
             stopAlarm(); 
             const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
-            saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); 
+            
+            // USE DYNAMIC TIME: Calculate minutes from actual seconds spent
+            let actualMinutes = Math.floor(elapsedDuration / 60);
+            
+            saveStudyLog(activeSub, m, actualMinutes, activePhase, isStudySkipped); 
             document.getElementById('cycleMcqs').value=''; 
             closePopup();
             mode="break"; 
@@ -801,9 +838,16 @@
             updateUI(); 
         }
 
-        function saveStudyLog(s, m, d, ph) { 
+        function saveStudyLog(s, m, d, ph, skipped) { 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
-            logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph }); 
+            logs.unshift({ 
+                date: new Date().toLocaleDateString('en-GB'), 
+                subject: s, 
+                mcqs: m, 
+                duration: d, 
+                phase: ph,
+                skipped: skipped || false // Mark if this cycle was skipped
+            }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
         /* ================= END BASE TIMER LOGIC ================= */
@@ -876,7 +920,11 @@
                 groupedTable[l.date].h += l.duration/60;
                 groupedTable[l.date].m += l.mcqs;
                 groupedTable[l.date].subs.add(l.subject);
-                groupedTable[l.date].cyc++;
+                
+                // NEW LOGIC: Only count cycle if NOT SKIPPED
+                if (!l.skipped) {
+                    groupedTable[l.date].cyc++;
+                }
             });
 
             Object.keys(groupedTable).reverse().forEach(d => { 
@@ -884,6 +932,7 @@
             });
             document.getElementById('dailyLogBody').innerHTML = html || '<tr><td colspan="5">No data for this month</td></tr>';
         }
+
         function renderMonthlyTable() {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const data = Array(12).fill().map(() => ({mcq:0, swt:0, gt:0}));
@@ -1327,3 +1376,4 @@
     </script>
 </body>
 </html>
+
