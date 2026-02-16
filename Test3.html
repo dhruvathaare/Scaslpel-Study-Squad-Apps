@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.40</title>
+    <title>Scalpel Master Pro V6.42</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -53,7 +53,6 @@
         /* CONTAINER & LANDSCAPE LOGIC */
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: max-width 0.3s ease; }
         
-        /* 1. BIGGER LOGO IN LANDSCAPE */
         @media (orientation: landscape) {
             .container { max-width: 95%; } 
             .card { width: 100%; padding: 20px; }
@@ -67,74 +66,31 @@
             
             /* Feature 1: Bigger Logo */
             .logo { width: 130px !important; height: 130px !important; border-width: 6px !important; }
-        }
 
-        /* 2. DESK CLOCK MODE (Landscape Only, when on Daily Tab) */
-        @media (orientation: landscape) {
-            body[data-active-tab="tab-daily"] .header-ui,
-            body[data-active-tab="tab-daily"] .logo,
-            body[data-active-tab="tab-daily"] h1,
-            body[data-active-tab="tab-daily"] .exam-dashboard,
-            body[data-active-tab="tab-daily"] .streak-section,
-            body[data-active-tab="tab-daily"] .quote,
-            body[data-active-tab="tab-daily"] .nav-tabs,
-            body[data-active-tab="tab-daily"] .danger-zone,
-            body[data-active-tab="tab-daily"] #tough-dashboard,
-            body[data-active-tab="tab-daily"] .card:not(#study-timer-card) {
-                display: none !important;
-            }
-
-            body[data-active-tab="tab-daily"] .container {
-                max-width: 100% !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            body[data-active-tab="tab-daily"] #tab-daily {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            body[data-active-tab="tab-daily"] #study-timer-card {
-                position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                margin: 0;
-                border-radius: 0;
-                border: none;
-                z-index: 9999;
+            /* Feature 2: Desk Clock Mode (Visual Only, No Lock) */
+            /* This targets the timer card when in landscape to make it huge */
+            #study-timer-card {
+                min-height: 85vh; /* Fills most of the screen */
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                background: var(--bg);
-                padding: 20px;
-                box-sizing: border-box;
+                border: 2px solid var(--accent);
+                box-shadow: 0 0 30px rgba(0,0,0,0.5);
             }
 
-            body[data-active-tab="tab-daily"] #timer-display {
-                font-size: 18vh !important; /* Huge Clock */
-                line-height: 1;
-                margin: 10px 0;
-                font-weight: 800;
+            #timer-display {
+                font-size: 16vh !important; /* Huge Clock Text */
+                margin: 20px 0 !important;
                 text-shadow: 0 0 20px rgba(82,136,193,0.3);
             }
 
-            body[data-active-tab="tab-daily"] .clock-row {
-                display: flex; gap: 20px; width: 80%; justify-content: center; margin-bottom: 10px;
-            }
-            body[data-active-tab="tab-daily"] select { font-size: 18px; padding: 10px; }
-            body[data-active-tab="tab-daily"] input { font-size: 18px; }
-            body[data-active-tab="tab-daily"] .setting-label { font-size: 14px; margin-bottom: 5px; opacity: 0.8; }
-            body[data-active-tab="tab-daily"] #startBtn, 
-            body[data-active-tab="tab-daily"] #timer-controls .btn {
-                font-size: 24px; padding: 20px; max-width: 500px;
+            /* Scale up inputs inside the clock card in landscape */
+            #study-timer-card input, 
+            #study-timer-card select,
+            #study-timer-card .btn {
+                font-size: 18px !important;
+                padding: 15px !important;
             }
         }
 
@@ -357,7 +313,7 @@
                 <div class="exam-item" id="dash_neet"><span id="daysNeet" class="exam-days">--</span><span class="exam-label">NEET PG 2026</span></div>
                 <div class="exam-item" id="dash_ini_jan"><span id="daysIniJan" class="exam-days">--</span><span class="exam-label">INICET JAN '27</span></div>
                 <div class="exam-item" id="dash_fmge_jun"><span id="daysFmgeJun" class="exam-days">--</span><span class="exam-label">FMGE JUNE '26</span></div>
-                <div class="exam-item" id="dash_fmge_dec"><span id="daysFmgeDec" class="exam-days">--</span><span class="exam-label">FMGE DEC '26</span></div>
+                <div class="exam-item" id="dash_fmge_dec"><span id="daysFmgeDec" class="exam-days">--</span><span class="exam-label">Date yet to be announced</span></div>
             </div>
         </div>
 
@@ -918,7 +874,6 @@
                 u: document.getElementById('goal_upsc').checked, 
                 n: document.getElementById('goal_neet').checked, 
                 i_jan: document.getElementById('goal_ini_jan').checked,
-                // NEW EXAMS
                 f_jun: document.getElementById('goal_fmge_jun').checked,
                 f_dec: document.getElementById('goal_fmge_dec').checked
             };
@@ -933,7 +888,6 @@
             document.getElementById('goal_upsc').checked = g.exams?.u; 
             document.getElementById('goal_neet').checked = g.exams?.n; 
             document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
-            // NEW EXAMS
             document.getElementById('goal_fmge_jun').checked = g.exams?.f_jun;
             document.getElementById('goal_fmge_dec').checked = g.exams?.f_dec;
 
@@ -968,10 +922,19 @@
                 neet: new Date("2026-08-30T00:00:00+05:30"), 
                 iniJan: new Date("2026-11-01T00:00:00+05:30"),
                 fmgeJun: new Date("2026-06-28T00:00:00+05:30"),
-                // Using tentative December date as placeholder, user can update in code if official date releases
-                fmgeDec: new Date("2026-12-20T00:00:00+05:30") 
+                fmgeDec: new Date("2026-12-20T00:00:00+05:30") // Placeholder date
             };
-            Object.keys(targets).forEach(k => { const diff = Math.ceil((targets[k] - istDate) / (1000 * 60 * 60 * 24)); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE"); });
+            Object.keys(targets).forEach(k => { 
+                const diff = Math.ceil((targets[k] - istDate) / (1000 * 60 * 60 * 24)); 
+                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); 
+                if(el) {
+                    if (k === 'fmgeDec') {
+                         el.innerText = "TBA";
+                    } else {
+                         el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE");
+                    }
+                }
+            });
              // IST Date Max for inputs
             const istStr = istDate.toISOString().split('T')[0];
             if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
