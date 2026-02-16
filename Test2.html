@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.21</title>
+    <title>Scalpel Master Pro V6.22</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,6 +36,7 @@
 
         html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
         
+        /* FIX: Ensure body allows scrolling in landscape */
         body { 
             display: flex; 
             flex-direction: column; 
@@ -43,20 +44,21 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             padding: 15px; 
             box-sizing: border-box; 
-            overflow-y: auto; 
+            overflow-y: auto !important; 
+            -webkit-overflow-scrolling: touch;
             min-height: 100vh;
-            -webkit-overflow-scrolling: touch; /* Smooth scroll for iOS */
         }
         
-        /* Landscape Mode Logic - FIXED SCROLL BUG */
+        /* Landscape Mode Logic */
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: max-width 0.3s ease; }
         
         @media (orientation: landscape) {
-            html, body { height: auto; overflow-y: auto !important; }
-            .container { max-width: 95%; height: auto; } 
+            .container { max-width: 95%; } 
             .card { width: 100%; }
             .chart-container { height: 280px; } 
             .matrix-table th, .matrix-table td { white-space: normal; }
+            /* FIX: Ensure long forms don't get cut off */
+            body { height: auto; }
         }
 
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
@@ -81,6 +83,7 @@
 
         .streak-section { margin-bottom: 10px; }
         .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
+        .streak-icons-div { font-size: 24px; margin: 5px 0; }
         .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
 
         .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; align-items: center; }
@@ -105,10 +108,11 @@
         .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
         .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
         
-        input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; }
+        /* FIX: Added better touch handling for inputs */
+        input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; appearance: none; -webkit-appearance: none; }
         input[type="date"] { color-scheme: dark; }
         [data-theme="light"] input[type="date"] { color-scheme: light; }
-        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); }
+        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); -webkit-appearance: checkbox; appearance: checkbox; }
 
         #timer-display { font-size: 52px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
@@ -264,7 +268,7 @@
 
         <div class="streak-section">
             <div id="streakText" class="streak-text">Consistency: 0 Days</div>
-            <div id="streakIcons" style="font-size:24px; margin:5px 0;"></div>
+            <div id="streakIcons" class="streak-icons-div"></div>
             <div style="font-size:9px; color:#888;">🔥 per 25 days | 🥇 per 75 days</div>
         </div>
         <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
@@ -1123,7 +1127,7 @@
             const nData = processPhaseData(nd); if(gNeetPhCount) gNeetPhCount.destroy(); gNeetPhCount = new Chart(document.getElementById('gtNeetPhaseCountChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'GTs Taken', data: nData.phases.map(p=>nData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor, stepSize:1}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             if(gNeetPhAvg) gNeetPhAvg.destroy(); gNeetPhAvg = new Chart(document.getElementById('gtNeetPhaseAvgChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'Avg Score', data: nData.phases.map(p=>nData.stats[p].n>0?(nData.stats[p].s/nData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             let nStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; nData.phases.forEach(p => { const s = nData.stats[p]; if(s.n > 0) nStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); nStatsHtml += `</div>`; document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
-            const iData = processPhaseData(id); if(gIniPhCount) gIniPhCount.destroy(); iData = new Chart(document.getElementById('gtIniPhaseCountChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor, stepSize:1}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
+            const iData = processPhaseData(id); if(gIniPhCount) gIniPhCount.destroy(); gIniPhCount = new Chart(document.getElementById('gtIniPhaseCountChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor, stepSize:1}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             if(gIniPhAvg) gIniPhAvg.destroy(); gIniPhAvg = new Chart(document.getElementById('gtIniPhaseAvgChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'Avg Score', data: iData.phases.map(p=>iData.stats[p].n>0?(iData.stats[p].s/iData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
