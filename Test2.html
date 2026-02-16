@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.19</title>
+    <title>Scalpel Master Pro V6.21</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -45,13 +45,15 @@
             box-sizing: border-box; 
             overflow-y: auto; 
             min-height: 100vh;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll for iOS */
         }
         
-        /* Landscape Mode Logic */
+        /* Landscape Mode Logic - FIXED SCROLL BUG */
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: max-width 0.3s ease; }
         
         @media (orientation: landscape) {
-            .container { max-width: 95%; } 
+            html, body { height: auto; overflow-y: auto !important; }
+            .container { max-width: 95%; height: auto; } 
             .card { width: 100%; }
             .chart-container { height: 280px; } 
             .matrix-table th, .matrix-table td { white-space: normal; }
@@ -627,13 +629,10 @@
             let html = `<div style="font-size:10px; opacity:0.7; margin-bottom:5px; text-transform:uppercase;">🚨 TOUGH SUBJECT MONITOR</div>`;
             
             const now = new Date();
-            // Reset hours for accurate date diff
             now.setHours(0,0,0,0);
 
             selectedSubjects.forEach(s => {
-                // Find last study date
                 let lastDate = null;
-                // Parse dates manually: DD/MM/YYYY
                 for(let l of logs) {
                     if (l.subject === s) {
                         const parts = l.date.split('/');
@@ -670,7 +669,23 @@
 
         /* ================= ORIGINAL BASE CODE TIMER LOGIC (UNTOUCHED) ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
-        const requestWakeLock = async () => { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} };
+        
+        // FIXED: Robust Wake Lock with Re-acquisition
+        const requestWakeLock = async () => { 
+            if ('wakeLock' in navigator) {
+                try { 
+                    wakeLock = await navigator.wakeLock.request('screen'); 
+                } catch (e) { console.error(e); }
+            }
+        };
+
+        // Re-acquire lock if page becomes visible again (e.g. user switched tabs)
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(f, d) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.value = 0.1; o.start(); setTimeout(() => o.stop(), d); }
         let alarmInterval = null;
@@ -973,12 +988,41 @@
         function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
         function processRestore() { try { const d = JSON.parse(atob(document.getElementById('restoreInput').value)); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
+        
         function updateCountdowns() { 
-            const n = new Date(); const istStr = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
-            if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
-            const dates = { iniJuly: new Date("2026-05-17"), upsc: new Date("2026-08-02"), neet: new Date("2026-08-30"), iniJan: new Date("2026-11-01") }; 
-            Object.keys(dates).forEach(k => { const d = Math.ceil((dates[k] - n) / 86400000); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = d > 0 ? d : "LIVE"; }); 
+            // Current Time in IST
+            const now = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const istDate = new Date(utc + istOffset);
+
+            // Target Dates (ISO format ensures specific date handling)
+            const targets = {
+                iniJuly: new Date("2026-05-17T00:00:00+05:30"),
+                upsc:    new Date("2026-08-02T00:00:00+05:30"),
+                neet:    new Date("2026-08-30T00:00:00+05:30"),
+                iniJan:  new Date("2026-11-01T00:00:00+05:30")
+            };
+
+            Object.keys(targets).forEach(k => {
+                const target = targets[k];
+                const diffMs = target - istDate;
+                const d = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                
+                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1));
+                if(el) {
+                    if (d > 0) el.innerText = d;
+                    else if (d === 0) el.innerText = "TODAY";
+                    else el.innerText = "DONE";
+                }
+            });
+            
+            // IST Date Max for inputs
+            const istStr = istDate.toISOString().split('T')[0];
+            if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
+            if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
         }
+
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const u = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${u} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(u/75)) + "🔥".repeat(Math.floor((u%75)/25)); }
         function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
@@ -1079,13 +1123,16 @@
             const nData = processPhaseData(nd); if(gNeetPhCount) gNeetPhCount.destroy(); gNeetPhCount = new Chart(document.getElementById('gtNeetPhaseCountChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'GTs Taken', data: nData.phases.map(p=>nData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor, stepSize:1}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             if(gNeetPhAvg) gNeetPhAvg.destroy(); gNeetPhAvg = new Chart(document.getElementById('gtNeetPhaseAvgChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'Avg Score', data: nData.phases.map(p=>nData.stats[p].n>0?(nData.stats[p].s/nData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             let nStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; nData.phases.forEach(p => { const s = nData.stats[p]; if(s.n > 0) nStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); nStatsHtml += `</div>`; document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
-            const iData = processPhaseData(id); if(gIniPhCount) gIniPhCount.destroy(); gIniPhCount = new Chart(document.getElementById('gtIniPhaseCountChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor, stepSize:1}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
+            const iData = processPhaseData(id); if(gIniPhCount) gIniPhCount.destroy(); iData = new Chart(document.getElementById('gtIniPhaseCountChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor, stepSize:1}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             if(gIniPhAvg) gIniPhAvg.destroy(); gIniPhAvg = new Chart(document.getElementById('gtIniPhaseAvgChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'Avg Score', data: iData.phases.map(p=>iData.stats[p].n>0?(iData.stats[p].s/iData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:textColor}, grid:{color:gridColor} }, x: { ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor} } }, plugins:{legend:{display:false}} } });
             let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
         function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); }
+        
+        // Dynamic Interval for Countdown
         updateUI();
+        setInterval(updateCountdowns, 60000); // Check every minute
     </script>
 </body>
 </html>
