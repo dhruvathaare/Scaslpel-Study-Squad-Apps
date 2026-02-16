@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.42</title>
+    <title>Scalpel Master Pro V6.50</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -64,13 +64,11 @@
             .streak-text { font-size: 26px !important; }
             .quote { font-size: 16px !important; }
             
-            /* Feature 1: Bigger Logo */
             .logo { width: 130px !important; height: 130px !important; border-width: 6px !important; }
 
-            /* Feature 2: Desk Clock Mode (Visual Only, No Lock) */
-            /* This targets the timer card when in landscape to make it huge */
+            /* Desk Clock Mode - Visual Only */
             #study-timer-card {
-                min-height: 85vh; /* Fills most of the screen */
+                min-height: 85vh; 
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -80,12 +78,11 @@
             }
 
             #timer-display {
-                font-size: 16vh !important; /* Huge Clock Text */
+                font-size: 16vh !important; 
                 margin: 20px 0 !important;
                 text-shadow: 0 0 20px rgba(82,136,193,0.3);
             }
 
-            /* Scale up inputs inside the clock card in landscape */
             #study-timer-card input, 
             #study-timer-card select,
             #study-timer-card .btn {
@@ -117,7 +114,8 @@
         @media (orientation: landscape) { .exam-days { font-size: 20px; } }
         .exam-item.target-locked .exam-days { color: #2ecc71; } 
         
-        .exam-label { font-size: 8px; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px; margin-top: 2px; display: block; }
+        /* INCREASED FONT AND BOLD FOR EXAM NAMES */
+        .exam-label { font-size: 11px; font-weight: 900; text-transform: uppercase; opacity: 1; letter-spacing: 0.5px; margin-top: 2px; display: block; color: var(--text); }
 
         .streak-section { margin-bottom: 15px; width: 100%; text-align: center; padding: 5px; }
         .streak-text { font-size: 22px; font-weight: 800; color: #f39c12; display: block; }
@@ -313,7 +311,7 @@
                 <div class="exam-item" id="dash_neet"><span id="daysNeet" class="exam-days">--</span><span class="exam-label">NEET PG 2026</span></div>
                 <div class="exam-item" id="dash_ini_jan"><span id="daysIniJan" class="exam-days">--</span><span class="exam-label">INICET JAN '27</span></div>
                 <div class="exam-item" id="dash_fmge_jun"><span id="daysFmgeJun" class="exam-days">--</span><span class="exam-label">FMGE JUNE '26</span></div>
-                <div class="exam-item" id="dash_fmge_dec"><span id="daysFmgeDec" class="exam-days">--</span><span class="exam-label">Date yet to be announced</span></div>
+                <div class="exam-item" id="dash_fmge_dec"><span id="daysFmgeDec" class="exam-days">--</span><span class="exam-label">FMGE DEC '26</span></div>
             </div>
         </div>
 
@@ -700,7 +698,7 @@
             const container = document.getElementById('tough-dashboard');
             if (selectedSubjects.length === 0) { container.innerHTML = ""; return; }
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
-            let html = `<div class="tough-dash-title">Tough Question Tracker</div>`;
+            let html = `<div class="tough-dash-title">Tough Subjects Radar</div>`;
             const now = new Date(); now.setHours(0,0,0,0);
             selectedSubjects.forEach(s => {
                 let lastDate = null;
@@ -813,12 +811,52 @@
         }
 
         function renderMonthlyTable() {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], data = Array(12).fill().map(() => ({mcq:0, swt:0, gt:0}));
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.forEach(l => { const parts = l.date.split('/'); if(parts.length === 3) { const m = parseInt(parts[1]) - 1; if(m >= 0 && m < 12) data[m].mcq += (parseInt(l.mcqs)||0); } });
-            const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); swts.forEach(s => { const parts = s.date.split('-'); if(parts.length === 3) { const m = parseInt(parts[1]) - 1; if(m >= 0 && m < 12) data[m].swt++; } });
-            const neet = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), ini = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
-            [...neet, ...ini].forEach(g => { const parts = g.date.split('-'); if(parts.length === 3) { const m = parseInt(parts[1]) - 1; if(m >= 0 && m < 12) data[m].gt++; } });
-            let html = ""; months.forEach((mName, idx) => { const d = data[idx]; if(d.mcq > 0 || d.swt > 0 || d.gt > 0) html += `<tr><td>${mName}</td><td>${d.mcq}</td><td>${d.swt}</td><td>${d.gt}</td></tr>`; });
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const data = {}; 
+
+            const init = (k) => { if(!data[k]) data[k] = {mcq:0, swt:0, gt:0}; };
+
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
+            logs.forEach(l => {
+                const parts = l.date.split('/'); 
+                if(parts.length === 3) {
+                    const k = `${parts[2]}-${parts[1].padStart(2,'0')}`;
+                    init(k);
+                    data[k].mcq += (parseInt(l.mcqs)||0);
+                }
+            });
+
+            const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
+            swts.forEach(s => {
+                const parts = s.date.split('-');
+                if(parts.length === 3) {
+                    const k = `${parts[0]}-${parts[1]}`;
+                    init(k);
+                    data[k].swt++;
+                }
+            });
+
+            const neet = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
+            const ini = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
+            [...neet, ...ini].forEach(g => {
+                const parts = g.date.split('-');
+                if(parts.length === 3) {
+                    const k = `${parts[0]}-${parts[1]}`;
+                    init(k);
+                    data[k].gt++;
+                }
+            });
+
+            const keys = Object.keys(data).sort().reverse();
+            let html = "";
+            keys.forEach(k => {
+                const [y, m] = k.split('-');
+                const mName = months[parseInt(m)-1];
+                const d = data[k];
+                if(d.mcq > 0 || d.swt > 0 || d.gt > 0) {
+                    html += `<tr><td>${mName} ${y}</td><td>${d.mcq}</td><td>${d.swt}</td><td>${d.gt}</td></tr>`;
+                }
+            });
             document.getElementById('monthlyGoalBody').innerHTML = html;
         }
 
