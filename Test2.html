@@ -165,7 +165,7 @@
         .month-display { font-family: 'Oswald', sans-serif; font-size: 14px; color: var(--accent); text-transform: uppercase; }
 
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
-        .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; overflow-y: auto; max-height: 80vh; color: var(--text); }
+        .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; overflow-y: auto; max-height: 80vh; color: var(--text); display: none;}
         
         .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(128,128,128,0.3); width: 100%; opacity: 0.9; }
         .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; width: 100%; }
@@ -227,19 +227,19 @@
             <input type="number" id="cycleMcqs" placeholder="0" style="width:100%;">
             <button class="btn" onclick="startBreak()" style="margin-top:15px; width:100%;">Record & Start Break</button>
         </div>
-        <div class="popup-card" id="break-popup" style="display:none;">
+        <div class="popup-card" id="break-popup">
             <h3>Break Finished!</h3>
             <button class="btn" onclick="continueNextCycle()" style="background:#2ecc71; width:100%;">Start Next Cycle</button>
             <button class="btn" onclick="stopEntireSession()" style="background:#ef5350; margin-top:10px; width:100%;">End Session</button>
         </div>
-        <div class="popup-card" id="restore-popup" style="display:none;">
+        <div class="popup-card" id="restore-popup">
             <h3>Restore Data</h3>
             <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Paste the code from your Saved Messages:</p>
             <textarea id="restoreInput" style="width:100%; height:80px; background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
             <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
-            <button class="btn" onclick="closeRestore()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
+            <button class="btn" onclick="closePopup()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
         </div>
-        <div class="popup-card" id="gt-breakdown-popup" style="display:none; width: 95%; max-width: 400px;">
+        <div class="popup-card" id="gt-breakdown-popup" style="width: 95%; max-width: 400px;">
             <h3>GT Subject Breakdown</h3>
             <p style="font-size: 10px; color: #888;">Enter Correct/Incorrect/Unattempted per subject</p>
             <div class="subject-breakdown-row subject-breakdown-header">
@@ -247,7 +247,7 @@
             </div>
             <div id="gt-subject-inputs" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
             <button class="btn" onclick="finalizeGTSave()" style="background:#2ecc71; width:100%;">Finalize & Save</button>
-            <button class="btn" onclick="closeGTBreakdown()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
+            <button class="btn" onclick="closePopup()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
         </div>
     </div>
 
@@ -609,6 +609,22 @@
             header.classList.toggle('active');
         }
 
+        /* POPUP MASTER CONTROLLER */
+        function openPopup(popupId) {
+            // 1. Hide every card inside the overlay
+            document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
+            // 2. Show the specific one requested
+            document.getElementById(popupId).style.display = 'block';
+            // 3. Show the background overlay
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('popup-overlay').style.display = 'none';
+            document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
+            stopAlarm(); // Safety stop for alarms
+        }
+
         /* TOUGH SUBJECTS LOGIC */
         function renderToughSubjectsSelector() {
             const saved = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "{}");
@@ -734,10 +750,42 @@
             }, 1000); 
         }
 
-        function handleTransition() { clearInterval(timerInterval); startAlarm(mode==="study"?880:440); document.getElementById('popup-overlay').style.display='flex'; document.getElementById('mcq-popup').style.display=mode==="study"?'block':'none'; document.getElementById('break-popup').style.display=mode==="study"?'none':'block'; }
-        function startBreak() { stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); document.getElementById('cycleMcqs').value=''; document.getElementById('popup-overlay').style.display='none'; mode="break"; isPaused=false; timeLeft=parseInt(document.getElementById('breakTime').value)*60; runTimer(); }
-        function continueNextCycle() { stopAlarm(); document.getElementById('popup-overlay').style.display = 'none'; startStudyTimer(); }
-        function stopEntireSession() { stopAlarm(); clearInterval(timerInterval); if (wakeLock) { wakeLock.release(); wakeLock=null; } document.getElementById('popup-overlay').style.display='none'; document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('startBtn').style.display='block'; document.getElementById('timer-controls').style.display='none'; mode="idle"; updateUI(); }
+        function handleTransition() { 
+            clearInterval(timerInterval); 
+            startAlarm(mode==="study"?880:440); 
+            if(mode === "study") openPopup('mcq-popup'); 
+            else openPopup('break-popup');
+        }
+
+        function startBreak() { 
+            stopAlarm(); 
+            const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
+            saveStudyLog(activeSub, m, (parseInt(document.getElementById('studyHr').value)*60)+parseInt(document.getElementById('studyMin').value), activePhase); 
+            document.getElementById('cycleMcqs').value=''; 
+            closePopup();
+            mode="break"; 
+            isPaused=false; 
+            timeLeft=parseInt(document.getElementById('breakTime').value)*60; 
+            runTimer(); 
+        }
+
+        function continueNextCycle() { 
+            stopAlarm(); 
+            closePopup(); 
+            startStudyTimer(); 
+        }
+
+        function stopEntireSession() { 
+            stopAlarm(); 
+            clearInterval(timerInterval); 
+            if (wakeLock) { wakeLock.release(); wakeLock=null; } 
+            closePopup();
+            document.getElementById('timer-display').innerText="00:00:00"; 
+            document.getElementById('startBtn').style.display='block'; 
+            document.getElementById('timer-controls').style.display='none'; 
+            mode="idle"; 
+            updateUI(); 
+        }
 
         function saveStudyLog(s, m, d, ph) { 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
@@ -1041,8 +1089,7 @@
         }
 
         function exportData() { const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const code = btoa(JSON.stringify(b)); navigator.clipboard.writeText(code).then(() => alert("Code Copied!")); }
-        function openRestore() { document.getElementById('popup-overlay').style.display='flex'; document.getElementById('restore-popup').style.display='block'; }
-        function closeRestore() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('restore-popup').style.display='none'; }
+        function openRestore() { openPopup('restore-popup'); }
         function processRestore() { try { const d = JSON.parse(atob(document.getElementById('restoreInput').value)); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
         
@@ -1101,9 +1148,8 @@
             SUBJECTS_19.forEach(s => {
                 container.innerHTML += `<div class="subject-breakdown-row"><span>${s}</span><input type="number" class="sb-input" id="sb_c_${s}" placeholder="C"><input type="number" class="sb-input" id="sb_w_${s}" placeholder="I"><input type="number" class="sb-input" id="sb_u_${s}" placeholder="U"></div>`;
             });
-            document.getElementById('popup-overlay').style.display='flex'; document.getElementById('gt-breakdown-popup').style.display='block';
+            openPopup('gt-breakdown-popup');
         }
-        function closeGTBreakdown() { document.getElementById('popup-overlay').style.display='none'; document.getElementById('gt-breakdown-popup').style.display='none'; }
         
         function finalizeGTSave() {
             const d=document.getElementById('gtDate').value, c=parseInt(document.getElementById('gtCorrect').value), u=parseInt(document.getElementById('gtUnat').value), ph=document.getElementById('gtPhase').value, plat=document.getElementById('gtPlatform').value || "Unknown";
@@ -1114,7 +1160,8 @@
             data.push({ id: Date.now(), date: d, platform: plat, score, correct: c, unat: u, wrong: w, phase: ph, breakdown }); 
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
             localStorage.setItem(currentGTMode==='NEET'?KEYS.NEET:KEYS.INI, JSON.stringify(data)); 
-            closeGTBreakdown(); updateUI(); 
+            closePopup(); 
+            updateUI(); 
         }
 
         function populateGTHistory() {
