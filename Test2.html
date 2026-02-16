@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.23</title>
+    <title>Scalpel Master Pro V6.24</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,16 +49,17 @@
             min-height: 100vh;
         }
         
-        /* Landscape Mode Logic */
+        /* Landscape Mode Logic - ENHANCED FOR FONTS */
         .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: max-width 0.3s ease; }
         
         @media (orientation: landscape) {
             .container { max-width: 95%; } 
             .card { width: 100%; }
             .chart-container { height: 280px; } 
-            .matrix-table th, .matrix-table td { white-space: normal; }
-            /* FIX: Ensure long forms don't get cut off */
-            body { height: auto; }
+            .matrix-table th, .matrix-table td { white-space: normal; font-size: 11px; }
+            body { height: auto; font-size: 16px; } /* Increased base font */
+            .btn { font-size: 16px; padding: 16px; }
+            input, select { font-size: 15px; padding: 12px; }
         }
 
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
@@ -66,7 +67,6 @@
         .user-badge span { display: block; }
         .user-id-tag { opacity: 0.7; font-size: 9px; font-family: monospace; }
         
-        /* NEW STATUS DOT CSS */
         .status-dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .status-online { background-color: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
         .status-offline { background-color: #f39c12; box-shadow: 0 0 5px #f39c12; }
@@ -74,7 +74,7 @@
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
-        .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        .exam-dashboard { background: rgba(82, 136, 193, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; margin-top: 15px; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .exam-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(82, 136, 193, 0.3); transition: all 0.3s ease; }
         [data-theme="light"] .exam-item { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); }
@@ -86,94 +86,117 @@
         
         .exam-label { font-size: 8px; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px; margin-top: 2px; display: block; }
 
-        .streak-section { margin-bottom: 10px; }
-        .streak-text { font-size: 18px; font-weight: bold; color: #f39c12; }
-        .streak-icons-div { font-size: 24px; margin: 5px 0; }
-        .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 11px; text-transform: uppercase; margin: 10px 0; line-height: 1.2; }
+        /* MODIFIED STREAK SECTION */
+        .streak-section { margin-bottom: 15px; text-align: center; width: 100%; }
+        .streak-text { font-size: 24px; font-weight: 900; color: #f39c12; letter-spacing: 1px; } /* Increased size and weight */
+        .streak-icons-div { font-size: 28px; margin: 5px 0; }
+        .quote { font-family: 'Oswald', sans-serif; color: #ef5350; font-weight: 700; font-size: 16px; text-transform: uppercase; margin: 10px 0; line-height: 1.4; text-align: center; width: 100%; } /* Increased size */
 
-        .nav-tabs { display: flex; width: 100%; background: var(--card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; align-items: center; }
-        .tab-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; background: none; color: var(--text); opacity: 0.5; text-align: center; }
-        .tab-btn.active { opacity: 1; background: var(--accent); color: white; }
-        .tab-content { width: 100%; display: none; }
-        .tab-content.active { display: block; }
+        /* MODIFIED NAVIGATION TABS - ROUNDED SQUARES & BLUE */
+        .nav-tabs { display: flex; width: 100%; gap: 8px; background: transparent; border: none; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+        .tab-btn { 
+            flex: 1; 
+            min-width: 70px; /* Ensure square-ish shape */
+            padding: 12px 5px; 
+            font-size: 12px; /* Increased font */
+            font-weight: 900; /* Bold */
+            cursor: pointer; 
+            border: none; 
+            background: var(--accent); /* Permanent Blue */
+            color: white; 
+            opacity: 0.8; 
+            text-align: center; 
+            border-radius: 12px; /* Rounded Squares */
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .tab-btn:active { transform: scale(0.95); } /* Pop effect */
+        .tab-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px var(--accent); z-index: 2; border: 2px solid #fff; }
         
-        .theme-toggle-tab { flex: 0.6; border-right: 1px solid var(--border); color: var(--accent) !important; opacity: 1 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;}
+        /* Theme toggle specific style within the new grid */
+        .theme-toggle-tab { 
+            background: var(--card) !important; 
+            color: var(--accent) !important; 
+            border: 2px solid var(--accent);
+            opacity: 1 !important;
+            flex: 0.5;
+        }
 
-        .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
+        .card { background: var(--card); padding: 15px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
         
-        /* ACCORDION STYLES - NOW BLUE */
-        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 5px 0; }
-        .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--accent) !important; }
-        .arrow { transition: transform 0.3s ease; font-size: 12px; opacity: 0.7; }
+        /* ACCORDION STYLES */
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 8px 0; }
+        .accordion-header h3 { margin: 0; font-size: 18px; font-weight: bold; text-transform: uppercase; color: var(--accent) !important; }
+        .arrow { transition: transform 0.3s ease; font-size: 14px; opacity: 0.7; }
         .accordion-content { display: none; margin-top: 15px; animation: slideDown 0.3s ease-out; }
         .accordion-content.open { display: block; }
         .accordion-header.active .arrow { transform: rotate(180deg); }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .setting-label { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 2px 0; display: block; font-weight: bold; text-align: left; }
-        .sub-label { font-size: 8px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
+        .setting-label { font-size: 11px; color: #888; text-transform: uppercase; margin: 8px 0 4px 0; display: block; font-weight: 800; text-align: left; }
+        .sub-label { font-size: 10px; color: #5288c1; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
         
-        /* FIX: Added better touch handling for inputs */
-        input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 13px; box-sizing: border-box; appearance: none; -webkit-appearance: none; }
+        /* TOUGH DASHBOARD TITLE */
+        .tough-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #ef5350; margin-bottom: 10px; display: block; letter-spacing: 1px; }
+
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); text-align: center; font-size: 14px; font-weight: bold; box-sizing: border-box; appearance: none; -webkit-appearance: none; }
         input[type="date"] { color-scheme: dark; }
         [data-theme="light"] input[type="date"] { color-scheme: light; }
-        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); -webkit-appearance: checkbox; appearance: checkbox; }
+        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent); -webkit-appearance: checkbox; appearance: checkbox; }
 
-        #timer-display { font-size: 52px; font-weight: bold; margin: 5px 0; font-variant-numeric: tabular-nums; }
-        .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; }
-        .sm-btn { padding: 6px 12px; font-size: 10px; border-radius: 6px; }
+        #timer-display { font-size: 60px; font-weight: bold; margin: 10px 0; font-variant-numeric: tabular-nums; }
+        .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .sm-btn { padding: 8px 12px; font-size: 11px; border-radius: 8px; }
 
-        .log-table { width: 100%; font-size: 10px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        .log-table { width: 100%; font-size: 11px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         .log-table th, .log-table td { padding: 8px 4px; border-bottom: 1px solid rgba(128,128,128,0.2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
 
-        .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .goal-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(128,128,128,0.1); font-size: 14px; font-weight: bold; }
         .phase-block { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); transition: all 0.3s; }
         [data-theme="light"] .phase-block { background: rgba(0,0,0,0.05); }
         .phase-block.completed { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
         .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .phase-title { font-size: 13px; font-weight: bold; color: var(--accent); }
-        .phase-badge { font-size: 24px; filter: grayscale(100%); opacity: 0.3; transition: all 0.5s; }
+        .phase-title { font-size: 14px; font-weight: bold; color: var(--accent); }
+        .phase-badge { font-size: 26px; filter: grayscale(100%); opacity: 0.3; transition: all 0.5s; }
         .phase-badge.unlocked { filter: grayscale(0%); opacity: 1; transform: scale(1.3); text-shadow: 0 0 10px gold; }
         
         .sub-grid-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 5px; }
         [data-theme="light"] .sub-grid-container { background: rgba(0,0,0,0.05); }
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
-        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #aaa; }
-
+        .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #aaa; font-weight: bold; }
         .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-top: 15px; }
-        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; }
+        .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 10px 14px; font-size: 11px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; font-weight: bold; }
         [data-theme="light"] .pyq-tab { background: rgba(0,0,0,0.05); }
         .pyq-tab.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: bold; }
         .pyq-tab-cup { display: none; position: absolute; top: -12px; right: -5px; font-size: 18px; text-shadow: 0 0 10px gold; z-index: 100; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .pyq-tab-cup.show { display: block; }
         .pyq-panel { display: none; animation: fadeIn 0.3s; }
         .pyq-panel.active { display: block; }
-        .pyq-list-row { display: flex; align-items: center; justify-content: space-between; background: rgba(128,128,128,0.1); margin-bottom: 5px; padding: 8px; border-radius: 6px; }
+        .pyq-list-row { display: flex; align-items: center; justify-content: space-between; background: rgba(128,128,128,0.1); margin-bottom: 5px; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
         .pyq-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .pyq-col-header { font-size: 10px; color: #5288c1; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed rgba(128,128,128,0.3); padding-bottom: 4px; }
+        .pyq-col-header { font-size: 11px; color: #5288c1; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed rgba(128,128,128,0.3); padding-bottom: 4px; }
         
-        .matrix-table { width: 100%; font-size: 9px; border-collapse: collapse; margin-top: 15px; }
-        .matrix-table th, .matrix-table td { border: 1px solid rgba(128,128,128,0.2); padding: 4px; text-align: center; }
-        .matrix-table th { background: rgba(82, 136, 193, 0.2); color: var(--text); }
+        .matrix-table { width: 100%; font-size: 10px; border-collapse: collapse; margin-top: 15px; }
+        .matrix-table th, .matrix-table td { border: 1px solid rgba(128,128,128,0.2); padding: 6px; text-align: center; }
+        .matrix-table th { background: rgba(82, 136, 193, 0.2); color: var(--text); font-weight: bold; }
         .matrix-row-head { text-align: left !important; font-weight: bold; background: rgba(0,0,0,0.2); }
         [data-theme="light"] .matrix-row-head { background: rgba(0,0,0,0.05); }
         .matrix-total { font-weight: bold; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
 
-        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 8px; border-radius: 10px; margin-top: 8px; font-size: 11px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; }
-        .chart-container { width: 100%; height: 160px; margin: 10px 0; position: relative; }
+        .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 10px; border-radius: 10px; margin-top: 8px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; font-weight: bold; }
+        .chart-container { width: 100%; height: 180px; margin: 10px 0; position: relative; }
         
-        /* MONTH NAV STYLES */
-        .month-navigator { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; padding: 5px 10px; background: rgba(82, 136, 193, 0.1); border-radius: 10px; border: 1px solid var(--border); box-sizing: border-box;}
-        .month-nav-btn { background: var(--accent); color: white; border: none; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .month-display { font-family: 'Oswald', sans-serif; font-size: 14px; color: var(--accent); text-transform: uppercase; }
+        .month-navigator { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; padding: 8px 10px; background: rgba(82, 136, 193, 0.1); border-radius: 10px; border: 1px solid var(--border); box-sizing: border-box;}
+        .month-nav-btn { background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .month-display { font-family: 'Oswald', sans-serif; font-size: 16px; color: var(--accent); text-transform: uppercase; }
 
         #popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:2000; justify-content:center; align-items:center; flex-direction: column;}
         .popup-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 85%; max-width: 320px; text-align: center; overflow-y: auto; max-height: 80vh; color: var(--text); display: none;}
         
         .danger-zone { margin-top: 30px; padding: 15px; border-top: 1px dashed rgba(128,128,128,0.3); width: 100%; opacity: 0.9; }
-        .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 8px; border-radius: 8px; font-size: 10px; cursor: pointer; width: 100%; }
+        .clear-btn { background: none; border: 1px solid #ef5350; color: #ef5350; padding: 10px; border-radius: 8px; font-size: 11px; cursor: pointer; width: 100%; font-weight: bold; }
         .backup-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; width: 100%; font-weight: bold; margin-bottom: 8px; cursor: pointer;}
         .restore-btn { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; width: 100%; font-weight: bold; cursor: pointer;}
 
@@ -182,40 +205,40 @@
         .performance-label { font-family: 'Oswald', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;}
         .stat-strong { color: #2ecc71; } .stat-weak { color: #ef5350; }
         
-        .usage-box { margin-top: 15px; padding: 12px; border-radius: 10px; text-align: left; font-size: 11px; line-height: 1.4; border: 1px solid; margin-bottom: 10px; }
-        .caution-box { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; color: #f39c12; }
+        .usage-box { margin-top: 15px; padding: 12px; border-radius: 10px; text-align: left; font-size: 12px; line-height: 1.4; border: 1px solid; margin-bottom: 10px; }
+        .caution-box { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; color: #f39c12; font-weight: bold; }
         .freq-box { background: rgba(255, 255, 255, 0.05); border-color: var(--border); color: var(--text); }
         [data-theme="light"] .freq-box { background: rgba(0,0,0,0.05); }
-        .usage-title { font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; opacity: 0.9; font-size: 10px; }
+        .usage-title { font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; opacity: 0.9; font-size: 11px; }
         
-        .gt-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; text-align: left; font-size: 10px; }
+        .gt-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; text-align: left; font-size: 11px; }
         .gt-stat-box { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
         [data-theme="light"] .gt-stat-box { background: rgba(0,0,0,0.05); }
-        .gt-stat-header { opacity: 0.7; margin-bottom: 4px; display: block; text-transform: uppercase; font-size: 9px; }
-        .gt-stat-val { font-weight: bold; font-size: 12px; }
+        .gt-stat-header { opacity: 0.7; margin-bottom: 4px; display: block; text-transform: uppercase; font-size: 10px; font-weight: bold; }
+        .gt-stat-val { font-weight: bold; font-size: 13px; }
         .val-high { color: #2ecc71; } .val-low { color: #ef5350; }
-        .phase-stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(128,128,128,0.2); padding: 3px 0; }
+        .phase-stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(128,128,128,0.2); padding: 4px 0; font-weight: bold; }
 
         .goal-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
         .goal-input-box { background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px; text-align: center; position: relative; }
         [data-theme="light"] .goal-input-box { background: rgba(0,0,0,0.05); }
-        .goal-input-box input { width: 70%; padding: 4px; font-size: 11px; margin-top: 2px; display: inline-block; }
+        .goal-input-box input { width: 70%; padding: 4px; font-size: 12px; margin-top: 2px; display: inline-block; font-weight: bold; }
         .goal-display-box { background: rgba(0,0,0,0.3); padding: 6px; border-radius: 6px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
         [data-theme="light"] .goal-display-box { background: rgba(0,0,0,0.05); }
-        .goal-val { font-weight: bold; font-size: 14px; color: var(--accent); }
+        .goal-val { font-weight: bold; font-size: 15px; color: var(--accent); }
         .mini-lock-btn { background: none; border: 1px solid var(--border); color: #888; border-radius: 4px; cursor: pointer; padding: 2px 5px; font-size: 10px; position: absolute; right: 4px; top: 18px; }
         .mini-lock-btn.locked { border-color: #2ecc71; color: #2ecc71; pointer-events: none; }
-        .save-sub-btn { background: #27ae60; color: white; border: none; padding: 10px; width: 100%; margin-top: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .save-sub-btn { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; margin-top: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
-        .subject-breakdown-row { display: grid; grid-template-columns: 1fr 50px 50px 50px; gap: 5px; align-items: center; margin-bottom: 5px; font-size: 9px; }
+        .subject-breakdown-row { display: grid; grid-template-columns: 1fr 50px 50px 50px; gap: 5px; align-items: center; margin-bottom: 5px; font-size: 11px; }
         .subject-breakdown-header { font-weight: bold; color: var(--accent); margin-bottom: 8px; }
-        .sb-input { padding: 4px !important; font-size: 10px !important; }
+        .sb-input { padding: 6px !important; font-size: 11px !important; }
 
-        .instruction-box { background: var(--instruction-bg); padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 10px; color: #888; text-align: left; line-height: 1.4; border-left: 2px solid var(--accent); }
+        .instruction-box { background: var(--instruction-bg); padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 11px; color: #888; text-align: left; line-height: 1.4; border-left: 3px solid var(--accent); }
 
         /* TOUGH SUBJECT ALERT STYLES */
-        .alert-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; margin-bottom: 5px; border-radius: 8px; font-size: 11px; font-weight: bold; border: 1px solid transparent; }
-        .alert-item span.days { opacity: 0.8; font-size: 10px; }
+        .alert-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; margin-bottom: 5px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid transparent; }
+        .alert-item span.days { opacity: 0.9; font-size: 11px; }
         .alert-safe { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border-color: #2ecc71; }
         .alert-yellow { background: rgba(241, 196, 15, 0.1); color: #f1c40f; border-color: #f1c40f; }
         .alert-orange { background: rgba(230, 126, 34, 0.1); color: #e67e22; border-color: #e67e22; }
@@ -240,13 +263,13 @@
         <div class="popup-card" id="restore-popup">
             <h3>Restore Data</h3>
             <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Paste the code from your Saved Messages:</p>
-            <textarea id="restoreInput" style="width:100%; height:80px; background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:5px; font-size:10px;"></textarea>
+            <textarea id="restoreInput" style="width:100%; height:80px; background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:5px; font-size:12px;"></textarea>
             <button class="btn" onclick="processRestore()" style="background:#2ecc71; margin-top:10px; width:100%;">Import Data</button>
             <button class="btn" onclick="closePopup()" style="background:transparent; border:1px solid #888; color:#888; margin-top:5px; width:100%;">Cancel</button>
         </div>
         <div class="popup-card" id="gt-breakdown-popup" style="width: 95%; max-width: 400px;">
             <h3>GT Subject Breakdown</h3>
-            <p style="font-size: 10px; color: #888;">Enter Correct/Incorrect/Unattempted per subject</p>
+            <p style="font-size: 11px; color: #888;">Enter Correct/Incorrect/Unattempted per subject</p>
             <div class="subject-breakdown-row subject-breakdown-header">
                 <span>Subject</span><span>C</span><span>I</span><span>U</span>
             </div>
@@ -269,6 +292,13 @@
         
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
+        
+        <div class="streak-section">
+            <div id="streakText" class="streak-text">Consistency: 0 Days</div>
+            <div id="streakIcons" class="streak-icons-div"></div>
+            <div style="font-size:10px; color:#888; font-weight:bold;">🔥 per 25 days | 🥇 per 75 days</div>
+        </div>
+        <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
 
         <div class="exam-dashboard">
             <div class="exam-grid">
@@ -279,24 +309,16 @@
             </div>
         </div>
 
-        <div class="streak-section">
-            <div id="streakText" class="streak-text">Consistency: 0 Days</div>
-            <div id="streakIcons" class="streak-icons-div"></div>
-            <div style="font-size:9px; color:#888;">🔥 per 25 days | 🥇 per 75 days</div>
-        </div>
-        <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
-
         <div class="nav-tabs">
             <button class="tab-btn theme-toggle-tab" onclick="toggleTheme()">
-                <span style="font-size:14px; display:block; margin-bottom:2px;">🌗</span>
-                <span style="font-size:7px; opacity:0.8;">THEME</span>
+                <span style="font-size:16px; display:block; margin-bottom:2px;">🌗</span>
+                <span style="font-size:9px; font-weight:bold;">THEME</span>
             </button>
-            <div class="tab-btn" onclick="switchTab('tab-goal', this)">Goal</div>
-            <div class="tab-btn active" onclick="switchTab('tab-daily', this)">Daily Analytics</div>
-            <div class="tab-btn" onclick="switchTab('tab-swt', this)">SWT Analysis</div>
-            <div class="tab-btn" onclick="switchTab('tab-gt', this)">GT Analysis</div>
+            <button class="tab-btn" onclick="switchTab('tab-goal', this)">Goal</button>
+            <button class="tab-btn active" onclick="switchTab('tab-daily', this)">Daily Analytics</button>
+            <button class="tab-btn" onclick="switchTab('tab-swt', this)">SWT Analysis</button>
+            <button class="tab-btn" onclick="switchTab('tab-gt', this)">GT Analysis</button>
         </div>
-
         <div id="tab-goal" class="tab-content">
             <div class="card">
                 <div class="accordion-header" onclick="toggleAccordion('acc_exams', this)">
@@ -308,7 +330,7 @@
                     <div class="goal-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
                     <div class="goal-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
                     <div class="goal-row"><span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()"></div>
-                    <button class="btn sm-btn" style="width:100%; margin-top:10px; background:var(--accent); font-weight:bold; font-size:12px; padding:12px;" onclick="lockExamGoals()">Lock & Let's Go!</button>
+                    <button class="btn sm-btn" style="width:100%; margin-top:10px; background:var(--accent); font-weight:bold; font-size:14px; padding:12px;" onclick="lockExamGoals()">Lock & Let's Go!</button>
                 </div>
             </div>
             
@@ -318,7 +340,7 @@
                     <span class="arrow">▼</span>
                 </div>
                 <div id="acc_tough" class="accordion-content">
-                    <div style="font-size:10px; color:#888; margin-bottom:10px;">Select subjects you want to monitor closely:</div>
+                    <div style="font-size:12px; color:#888; margin-bottom:10px; font-weight:bold;">Select subjects you want to monitor closely:</div>
                     <div id="tough-subject-selector" class="sub-grid">
                         </div>
                 </div>
@@ -373,8 +395,9 @@
                 </div>
             </div>
         </div>
+
         <div id="tab-daily" class="tab-content active">
-            <div id="tough-dashboard" style="width:100%; margin-bottom:15px;">
+            <div id="tough-dashboard" style="width:100%; margin-bottom:15px; margin-top: 5px;">
                 </div>
 
             <div class="card">
@@ -441,7 +464,6 @@
                 <div style="overflow-x:auto;"><table class="matrix-table"><thead><tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead><tbody id="mcqMatrixBody"></tbody></table></div>
             </div>
         </div>
-
         <div id="tab-swt" class="tab-content">
             <div class="card">
                 <h3>SWT Analysis</h3>
@@ -495,7 +517,7 @@
         <div id="tab-gt" class="tab-content">
             <div class="card">
                 <h3>GT Intelligence</h3>
-                <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:10px; text-align:center; background:var(--border); font-size:10px; cursor:pointer;" onclick="switchGT('NEET')">NEET PG (+4/-1)</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:10px; text-align:center; background:rgba(0,0,0,0.2); font-size:10px; cursor:pointer;" onclick="switchGT('INICET')">INICET (+1/-0.33)</div></div>
+                <div style="display:flex; margin-bottom:10px; gap: 5px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:12px; text-align:center; background:var(--border); font-size:12px; cursor:pointer; font-weight:bold; border-radius:8px;" onclick="switchGT('NEET')">NEET PG</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:12px; text-align:center; background:rgba(0,0,0,0.2); font-size:12px; cursor:pointer; font-weight:bold; border-radius:8px;" onclick="switchGT('INICET')">INICET</div></div>
                 
                 <span class="setting-label">Reading Phase</span>
                 <select id="gtPhase">
@@ -558,7 +580,7 @@
         <div class="danger-zone">
             <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
             <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
-            <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 10px;">
+            <ul style="text-align: left; font-size: 11px; opacity: 0.8; padding-left: 15px; margin-bottom: 10px;">
                 <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
                 <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
                 <li><strong>Step 3:</strong> To restore later, copy that code, click "Restore Data", and paste it.</li>
@@ -575,7 +597,6 @@
         document.getElementById('uFullName').innerText = fullName || "Guest User";
         document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
         
-        // Status Indicator Logic
         const statusDot = document.getElementById('statusDot');
         if (tgUser.id === "OFFLINE") {
             statusDot.classList.add('status-offline');
@@ -626,18 +647,15 @@
 
         /* POPUP MASTER CONTROLLER */
         function openPopup(popupId) {
-            // 1. Hide every card inside the overlay
             document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
-            // 2. Show the specific one requested
             document.getElementById(popupId).style.display = 'block';
-            // 3. Show the background overlay
             document.getElementById('popup-overlay').style.display = 'flex';
         }
 
         function closePopup() {
             document.getElementById('popup-overlay').style.display = 'none';
             document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
-            stopAlarm(); // Safety stop for alarms
+            stopAlarm(); 
         }
 
         /* TOUGH SUBJECTS LOGIC */
@@ -662,7 +680,7 @@
                 if (el && el.checked) selection[s] = true;
             });
             localStorage.setItem(KEYS.TOUGH, JSON.stringify(selection));
-            renderToughDashboard(); // Update dashboard immediately
+            renderToughDashboard(); 
         }
 
         function renderToughDashboard() {
@@ -676,7 +694,8 @@
             }
 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
-            let html = `<div style="font-size:10px; opacity:0.7; margin-bottom:5px; text-transform:uppercase;">🚨 TOUGH SUBJECT MONITOR</div>`;
+            // UPDATED: Using the new class for the title as requested
+            let html = `<div class="tough-title">🚨 Tough Subject Monitor</div>`;
             
             const now = new Date();
             now.setHours(0,0,0,0);
@@ -716,14 +735,12 @@
 
             container.innerHTML = html;
         }
-
-        /* ================= ORIGINAL BASE CODE TIMER LOGIC (UPDATED) ================= */
+        /* ================= TIMER LOGIC ================= */
         let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false, currentGTMode = "NEET";
-        let initialDuration = 0; // NEW: To track full intended time
-        let elapsedDuration = 0; // NEW: To track exact time spent
-        let isStudySkipped = false; // NEW: To mark if cycle should be counted or not
+        let initialDuration = 0; 
+        let elapsedDuration = 0; 
+        let isStudySkipped = false; 
         
-        // FIXED: Robust Wake Lock with Re-acquisition
         const requestWakeLock = async () => { 
             if ('wakeLock' in navigator) {
                 try { 
@@ -732,7 +749,6 @@
             }
         };
 
-        // Re-acquire lock if page becomes visible again (e.g. user switched tabs)
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 await requestWakeLock();
@@ -787,19 +803,15 @@
             startAlarm(mode==="study"?880:440); 
             
             if (mode === "study") {
-                // Calculate Exact Time Spent
                 elapsedDuration = initialDuration - timeLeft;
-                // If they skipped with more than 5 seconds remaining, mark as skipped cycle
                 if (timeLeft > 5) {
                     isStudySkipped = true;
                 } else {
-                    // Natural finish
                     elapsedDuration = initialDuration; 
                     isStudySkipped = false;
                 }
                 openPopup('mcq-popup'); 
             } else {
-                // Break Finished - Even if skipped, cycle counts
                 openPopup('break-popup');
             }
         }
@@ -807,10 +819,7 @@
         function startBreak() { 
             stopAlarm(); 
             const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
-            
-            // USE DYNAMIC TIME: Calculate minutes from actual seconds spent
             let actualMinutes = Math.floor(elapsedDuration / 60);
-            
             saveStudyLog(activeSub, m, actualMinutes, activePhase, isStudySkipped); 
             document.getElementById('cycleMcqs').value=''; 
             closePopup();
@@ -846,16 +855,13 @@
                 mcqs: m, 
                 duration: d, 
                 phase: ph,
-                skipped: skipped || false // Mark if this cycle was skipped
+                skipped: skipped || false 
             }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
         }
-        /* ================= END BASE TIMER LOGIC ================= */
 
         let hChart, mChart, gNeetChart, gIniChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
         let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg;
-
-        /* NEW MONTH NAVIGATOR LOGIC */
         let currentViewDate = new Date();
 
         function changeViewMonth(offset) {
@@ -865,20 +871,16 @@
 
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            
-            // Get Month and Year from currentViewDate
             const viewMonth = currentViewDate.getMonth();
             const viewYear = currentViewDate.getFullYear();
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('currentViewMonthDisplay').innerText = `${monthNames[viewMonth]} ${viewYear}`;
 
-            // Calculate number of days in that month
             const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
             const labels = [];
             const hoursData = Array(daysInMonth).fill(0);
             const mcqsData = Array(daysInMonth).fill(0);
             
-            // Filter Logs and populate daily slots
             const tableLogs = [];
             logs.forEach(l => {
                 const [d, m, y] = l.date.split('/');
@@ -893,38 +895,29 @@
             });
 
             for (let i = 1; i <= daysInMonth; i++) labels.push(i);
-
             const textColor = getThemeColor('text');
             const gridColor = getThemeColor('grid');
 
-            // HOURS CHART
             if(hChart) hChart.destroy(); 
             hChart = new Chart(document.getElementById('hoursChart'), { 
                 type:'line', data:{labels:labels, datasets:[{label:'Hours', data:hoursData, borderColor:'#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', fill: true, tension:0.3}]}, 
                 options:{maintainAspectRatio:false, scales:{y:{min:0, max:16, ticks:{stepSize:2, color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor}}}, plugins:{legend:{display:false}}}
             });
 
-            // MCQ CHART
             if(mChart) mChart.destroy(); 
             mChart = new Chart(document.getElementById('mcqChart'), { 
                 type:'line', data:{labels:labels, datasets:[{label:'MCQs', data:mcqsData, borderColor:'#5288c1', backgroundColor: 'rgba(82, 136, 193, 0.1)', fill: true, tension:0.3}]}, 
                 options:{maintainAspectRatio:false, scales:{y:{beginAtZero:true, ticks:{color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor}}}, plugins:{legend:{display:false}}}
             });
 
-            // LOG TABLE
             let html = ""; 
-            // Group the table logs by date again for display
             const groupedTable = {};
             tableLogs.forEach(l => {
                 if(!groupedTable[l.date]) groupedTable[l.date] = {h:0, m:0, subs:new Set(), cyc:0};
                 groupedTable[l.date].h += l.duration/60;
                 groupedTable[l.date].m += l.mcqs;
                 groupedTable[l.date].subs.add(l.subject);
-                
-                // NEW LOGIC: Only count cycle if NOT SKIPPED
-                if (!l.skipped) {
-                    groupedTable[l.date].cyc++;
-                }
+                if (!l.skipped) groupedTable[l.date].cyc++;
             });
 
             Object.keys(groupedTable).reverse().forEach(d => { 
@@ -1122,7 +1115,7 @@
                     subjectsHtml += `<label class="sub-check-item" style="${labelStyle}"><input type="checkbox" id="chk_${idx}_${si}" ${isChecked ? 'checked' : ''} ${disabledAttr} onchange="saveGoals()"><span>${s}</span></label>`;
                 });
                 subjectsHtml += `</div>`;
-                container.innerHTML += `<div class="phase-block ${championClass}" id="pb_${idx}"><div class="phase-header"><span>${p.name}</span><span id="badge_${idx}" class="phase-badge">${championBadge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" value="${pData.f||''}" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" value="${pData.t||''}" onchange="saveGoals()"></div></div><div class="goal-stats-grid"><div class="goal-input-box"><span class="setting-label">SWT Goal</span><input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" placeholder="0" ${swtDisabled}><button class="mini-lock-btn ${lockSwtBtn}" onclick="lockTarget(${idx}, 'swt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual SWT</span><span class="goal-val">${swtDisplay}</span></div><div class="goal-input-box"><span class="setting-label">GT Goal</span><input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" placeholder="0" ${gtDisabled}><button class="mini-lock-btn ${lockGtBtn}" onclick="lockTarget(${idx}, 'gt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual GT</span><span class="goal-val">${gtDisplay}</span></div></div><div style="text-align:center; background:rgba(255,255,255,0.05); padding:5px; border-radius:6px; margin-bottom:8px;"><span class="setting-label" style="display:inline;">Highest GT Score: </span><strong style="color:#f39c12;">${maxGT.toFixed(2)}</strong></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects ▼</button><div id="sg_${idx}" class="sub-grid-container">${subjectsHtml}<button class="save-sub-btn" onclick="saveSubjectProgress(${idx})">Save & Lock Progress</button></div></div>`;
+                container.innerHTML += `<div class="phase-block ${championClass}" id="pb_${idx}"><div class="phase-header"><span class="phase-title">${p.name}</span><span id="badge_${idx}" class="phase-badge">${championBadge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" value="${pData.f||''}" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" value="${pData.t||''}" onchange="saveGoals()"></div></div><div class="goal-stats-grid"><div class="goal-input-box"><span class="setting-label">SWT Goal</span><input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" placeholder="0" ${swtDisabled}><button class="mini-lock-btn ${lockSwtBtn}" onclick="lockTarget(${idx}, 'swt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual SWT</span><span class="goal-val">${swtDisplay}</span></div><div class="goal-input-box"><span class="setting-label">GT Goal</span><input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" placeholder="0" ${gtDisabled}><button class="mini-lock-btn ${lockGtBtn}" onclick="lockTarget(${idx}, 'gt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual GT</span><span class="goal-val">${gtDisplay}</span></div></div><div style="text-align:center; background:rgba(255,255,255,0.05); padding:5px; border-radius:6px; margin-bottom:8px;"><span class="setting-label" style="display:inline;">Highest GT Score: </span><strong style="color:#f39c12;">${maxGT.toFixed(2)}</strong></div><button class="btn sm-btn" style="margin-top:8px;background:rgba(255,255,255,0.1);width:100%" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects ▼</button><div id="sg_${idx}" class="sub-grid-container">${subjectsHtml}<button class="save-sub-btn" onclick="saveSubjectProgress(${idx})">Save & Lock Progress</button></div></div>`;
             }); 
         }
 
@@ -1151,19 +1144,11 @@
         }
 
         function exportData() { 
-            // Save current time as backup time
             localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString());
             renderBackupStatus(); 
-
             const b = {}; 
             Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k]));
-            
-            // SECURITY ADDITION: Stamp with current User ID
-            const payload = {
-                owner: tgUser.id,
-                data: b
-            };
-            
+            const payload = { owner: tgUser.id, data: b };
             const code = btoa(JSON.stringify(payload)); 
             navigator.clipboard.writeText(code).then(() => alert(`Code Copied!\n\n🔐 LOCKED TO USER ID: ${tgUser.id}\n(Only this ID can restore this file)`)); 
         }
@@ -1174,11 +1159,8 @@
             try { 
                 const rawInput = document.getElementById('restoreInput').value;
                 if(!rawInput) return;
-                
                 const raw = JSON.parse(atob(rawInput));
                 let dataToRestore = raw;
-
-                // SECURITY CHECK
                 if (raw.owner) {
                     if (String(raw.owner) !== String(tgUser.id)) {
                         alert(`⛔ ACCESS DENIED\n\nThis backup file is locked to User ID: ${raw.owner}\nYou are currently logged in as: ${tgUser.id}\n\nYou cannot restore another user's data.`);
@@ -1186,28 +1168,21 @@
                     }
                     dataToRestore = raw.data;
                 }
-
                 Object.keys(dataToRestore).forEach(k => localStorage.setItem(k, dataToRestore[k])); 
-                // Reset backup status on restore as data is fresh
                 localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString());
                 alert("✅ Data Restored Successfully!"); 
                 location.reload(); 
-            } catch(e) { 
-                console.error(e);
-                alert("❌ Invalid Code or Corrupted Data"); 
-            } 
+            } catch(e) { console.error(e); alert("❌ Invalid Code or Corrupted Data"); } 
         }
 
         function switchTab(id, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); updateUI(); }
         
         function updateCountdowns() { 
-            // Current Time in IST
             const now = new Date();
             const istOffset = 5.5 * 60 * 60 * 1000;
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
             const istDate = new Date(utc + istOffset);
 
-            // Target Dates (ISO format ensures specific date handling)
             const targets = {
                 iniJuly: new Date("2026-05-17T00:00:00+05:30"),
                 upsc:    new Date("2026-08-02T00:00:00+05:30"),
@@ -1228,7 +1203,6 @@
                 }
             });
             
-            // IST Date Max for inputs
             const istStr = istDate.toISOString().split('T')[0];
             if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
             if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
@@ -1247,7 +1221,6 @@
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); updateUI(); 
         }
         
-        /* NEW: GT BREAKDOWN LOGIC */
         function openGTBreakdown() {
             const ph = document.getElementById('gtPhase').value;
             if(!confirm(`⚠️ CONFIRMATION\n\nPhase: ${ph}\nMode: ${currentGTMode}\n\nProceed to enter subject-wise marks?`)) return;
@@ -1339,41 +1312,35 @@
             let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
-        /* NEW BACKUP STATUS LOGIC */
         function renderBackupStatus() {
             const el = document.getElementById('backup-reminder');
             if(!el) return;
             const last = localStorage.getItem('SSS_LAST_BACKUP');
-            
             if(!last) {
                 el.innerText = "⚠️ DANGER: NEVER BACKED UP";
-                el.style.color = "#ef5350"; // Red
+                el.style.color = "#ef5350"; 
                 return;
             }
-
             const diff = Math.floor((new Date() - new Date(last)) / (1000 * 60 * 60 * 24));
-            
             if(diff === 0) {
                 el.innerText = "✅ BACKUP SECURE (TODAY)";
-                el.style.color = "#2ecc71"; // Green
+                el.style.color = "#2ecc71"; 
             } else if (diff <= 10) {
                 el.innerText = `⚠️ DAYS SINCE BACKUP: ${diff}`;
-                el.style.color = "#f1c40f"; // Yellow
+                el.style.color = "#f1c40f"; 
             } else if (diff <= 20) {
                 el.innerText = `⚠️ DAYS SINCE BACKUP: ${diff}`;
-                el.style.color = "#e67e22"; // Orange
+                el.style.color = "#e67e22"; 
             } else {
                 el.innerText = `🚨 CRITICAL: ${diff} DAYS NO BACKUP`;
-                el.style.color = "#ef5350"; // Red
+                el.style.color = "#ef5350"; 
             }
         }
 
         function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); }
         
-        // Dynamic Interval for Countdown
         updateUI();
-        setInterval(updateCountdowns, 60000); // Check every minute
+        setInterval(updateCountdowns, 60000); 
     </script>
 </body>
 </html>
-
