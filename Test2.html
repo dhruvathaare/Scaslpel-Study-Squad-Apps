@@ -141,7 +141,6 @@
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #aaa; }
-
         .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-top: 15px; }
         .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 8px 12px; font-size: 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; }
         [data-theme="light"] .pyq-tab { background: rgba(0,0,0,0.05); }
@@ -373,7 +372,6 @@
                 </div>
             </div>
         </div>
-
         <div id="tab-daily" class="tab-content active">
             <div id="tough-dashboard" style="width:100%; margin-bottom:15px;">
                 </div>
@@ -493,7 +491,7 @@
             </div>
         </div>
 
-        <div id="tab-gt" class="tab-content">
+         <div id="tab-gt" class="tab-content">
             <div class="card">
                 <h3>GT Intelligence</h3>
                 <div style="display:flex; margin-bottom:10px;"><div class="gt-tab-btn active" id="tabNeet" style="flex:1; padding:10px; text-align:center; background:var(--border); font-size:10px; cursor:pointer;" onclick="switchGT('NEET')">NEET PG (+4/-1)</div><div class="gt-tab-btn" id="tabInicet" style="flex:1; padding:10px; text-align:center; background:rgba(0,0,0,0.2); font-size:10px; cursor:pointer;" onclick="switchGT('INICET')">INICET (+1/-0.33)</div></div>
@@ -558,6 +556,7 @@
 
         <div class="danger-zone">
             <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
+            <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
             <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 10px;">
                 <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
                 <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
@@ -640,7 +639,6 @@
             document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
             stopAlarm(); // Safety stop for alarms
         }
-
         /* TOUGH SUBJECTS LOGIC */
         function renderToughSubjectsSelector() {
             const saved = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "{}");
@@ -886,7 +884,6 @@
             });
             document.getElementById('dailyLogBody').innerHTML = html || '<tr><td colspan="5">No data for this month</td></tr>';
         }
-
         function renderMonthlyTable() {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const data = Array(12).fill().map(() => ({mcq:0, swt:0, gt:0}));
@@ -1105,6 +1102,10 @@
         }
 
         function exportData() { 
+            // Save current time as backup time
+            localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString());
+            renderBackupStatus(); 
+
             const b = {}; 
             Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k]));
             
@@ -1135,15 +1136,11 @@
                         return;
                     }
                     dataToRestore = raw.data;
-                } else {
-                    // Legacy support could go here, but prompt asked for strictness.
-                    // We assume new backups will always have owner.
-                    // If it's undefined, it's an old backup which technically has no owner,
-                    // so we allow it (or you could block it if you want absolute strictness).
-                    // For now, we proceed to allow self-restore of old data.
                 }
 
                 Object.keys(dataToRestore).forEach(k => localStorage.setItem(k, dataToRestore[k])); 
+                // Reset backup status on restore as data is fresh
+                localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString());
                 alert("✅ Data Restored Successfully!"); 
                 location.reload(); 
             } catch(e) { 
@@ -1189,7 +1186,7 @@
         }
 
         function updateConsistency() { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); const u = new Set(logs.map(l => l.date)).size; document.getElementById('streakText').innerText = `Consistency: ${u} Days`; document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(u/75)) + "🔥".repeat(Math.floor((u%75)/25)); }
-        function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
+        function clearData() { if(confirm("Delete everything?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); localStorage.removeItem('SSS_LAST_BACKUP'); location.reload(); } }
         function calcSWT() { const t=parseInt(document.getElementById('swtTotal').value)||0, c=parseInt(document.getElementById('swtCorrect').value)||0, u=parseInt(document.getElementById('swtUnat').value)||0; document.getElementById('swtW').innerText=Math.max(0, t-c-u); document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; }
         function calcGT() { const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0, w=Math.max(0, (currentGTMode==='NEET'?200:200)-c-u); const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); document.getElementById('gtW').innerText=w; document.getElementById('gtS').innerText=s.toFixed(2); }
 
@@ -1293,7 +1290,36 @@
             let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
         }
 
-        function updateUI() { renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); }
+        /* NEW BACKUP STATUS LOGIC */
+        function renderBackupStatus() {
+            const el = document.getElementById('backup-reminder');
+            if(!el) return;
+            const last = localStorage.getItem('SSS_LAST_BACKUP');
+            
+            if(!last) {
+                el.innerText = "⚠️ DANGER: NEVER BACKED UP";
+                el.style.color = "#ef5350"; // Red
+                return;
+            }
+
+            const diff = Math.floor((new Date() - new Date(last)) / (1000 * 60 * 60 * 24));
+            
+            if(diff === 0) {
+                el.innerText = "✅ BACKUP SECURE (TODAY)";
+                el.style.color = "#2ecc71"; // Green
+            } else if (diff <= 10) {
+                el.innerText = `⚠️ DAYS SINCE BACKUP: ${diff}`;
+                el.style.color = "#f1c40f"; // Yellow
+            } else if (diff <= 20) {
+                el.innerText = `⚠️ DAYS SINCE BACKUP: ${diff}`;
+                el.style.color = "#e67e22"; // Orange
+            } else {
+                el.innerText = `🚨 CRITICAL: ${diff} DAYS NO BACKUP`;
+                el.style.color = "#ef5350"; // Red
+            }
+        }
+
+        function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); }
         
         // Dynamic Interval for Countdown
         updateUI();
@@ -1301,4 +1327,3 @@
     </script>
 </body>
 </html>
-
