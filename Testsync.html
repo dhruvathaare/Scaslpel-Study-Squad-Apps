@@ -28,12 +28,12 @@
         // Expose DB functions to global scope for the main app logic
         window.startCloudSync = async (userId, keysMap) => {
             if (!userId || userId === "OFFLINE") {
-                document.getElementById('sync-overlay').style.display = 'none';
+                // If offline, just hide loader immediately
                 return;
             }
             
             const statusEl = document.getElementById('cloudStatus');
-            statusEl.classList.add('syncing'); // Start blinking
+            statusEl.classList.add('syncing'); 
             
             const docRef = doc(db, "users", String(userId));
             try {
@@ -44,17 +44,17 @@
                     Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
                     console.log("☁️ Data Pulled from Cloud");
                 } else {
-                    // New user or new database? Upload Local -> Cloud to init
+                    // New user? Upload Local -> Cloud to init
                     await window.pushToCloudAll(userId, keysMap);
                 }
             } catch (e) {
                 console.error("Cloud Load Error:", e);
-                alert("Offline Mode: Could not sync with cloud.");
             }
             
             statusEl.classList.remove('syncing');
-            document.getElementById('sync-overlay').style.display = 'none';
-            window.updateUI(); // Refresh UI with new data
+            // We do NOT hide loader here anymore; the safety valve in main script handles it
+            // ensuring UI updates first.
+            window.updateUI(); 
         };
 
         window.pushToCloud = async (userId, key, value) => {
@@ -179,7 +179,7 @@
         @keyframes blink { 50% { opacity: 0.3; } }
 
         /* LOADING OVERLAY */
-        #sync-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: 'Oswald', sans-serif; }
+        #sync-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: 'Oswald', sans-serif; transition: opacity 0.5s; }
         .loader { border: 4px solid rgba(82, 136, 193, 0.2); border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -1427,19 +1427,54 @@
             el.innerText = diff === 0 ? "✅ BACKED UP TODAY" : `⚠️ LAST BACKUP: ${diff} DAYS AGO`;
             el.style.color = diff > 7 ? "#ef5350" : (diff > 0 ? "#f1c40f" : "#2ecc71");
         }
-        function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         
-        // --- INIT CLOUD ---
+        // Ensure updateUI is defined globally before calling it
+        function updateUI() { 
+            renderBackupStatus(); renderData(); renderSWT(); renderGT(); 
+            updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); 
+            updateCountdowns(); renderMonthlyTable(); populateGTHistory(); 
+            renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); 
+        }
+
+        // 1. Define a function to safely remove the loader
+        function hideLoader() {
+            const loader = document.getElementById('sync-overlay');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500); // Smooth fade out
+            }
+        }
+
+        // 2. Updated Initialization Logic with Safety Valve
         window.addEventListener('DOMContentLoaded', () => {
+            // Load local data immediately so user sees something
             updateUI(); 
             setInterval(updateCountdowns, 60000);
             
-            // Start Cloud Sync after a brief delay to ensure Firebase loaded
+            // Set a "Safety Timer" - If cloud sync hangs for 4 seconds, force open the app
+            const safetyTimer = setTimeout(() => {
+                console.warn("⚠️ Cloud sync taking too long. Opening app in offline mode.");
+                hideLoader();
+                const statusEl = document.getElementById('cloudStatus');
+                if(statusEl) statusEl.style.color = '#f39c12'; // Turn cloud icon yellow (slow connection)
+            }, 4000);
+
+            // Attempt Cloud Sync
             setTimeout(() => {
                 if(window.startCloudSync && tgUser.id !== "OFFLINE") {
-                    window.startCloudSync(tgUser.id, KEYS);
+                    window.startCloudSync(tgUser.id, KEYS)
+                        .then(() => {
+                            clearTimeout(safetyTimer); // Cancel safety timer if sync finishes fast
+                            hideLoader();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            clearTimeout(safetyTimer);
+                            hideLoader();
+                        });
                 } else {
-                    document.getElementById('sync-overlay').style.display = 'none';
+                    clearTimeout(safetyTimer);
+                    hideLoader();
                 }
             }, 500);
         });
