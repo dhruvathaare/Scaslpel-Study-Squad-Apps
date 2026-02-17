@@ -42,8 +42,18 @@
 
           if (userId !== "OFFLINE") {
               set(ref(db, 'users/' + userId), dataToSync)
-              .then(() => console.log("Cloud Sync Successful"))
-              .catch((error) => console.error("Cloud Sync Failed", error));
+              .then(() => {
+                  console.log("Cloud Sync Successful");
+                  // Update the UI timestamp
+                  const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const statusEl = document.getElementById('cloud-sync-status');
+                  if(statusEl) statusEl.innerText = "Cloud Synced: " + now;
+              })
+              .catch((error) => {
+                  console.error("Cloud Sync Failed", error);
+                  const statusEl = document.getElementById('cloud-sync-status');
+                  if(statusEl) statusEl.innerText = "Sync Failed (Offline)";
+              });
           }
       };
 
@@ -68,7 +78,6 @@
       // Auto-pull on load
       window.pullFromCloud();
     </script>
-
     <style>
         /* CSS VARIABLES */
         :root { 
@@ -189,7 +198,6 @@
         .tab-content { width: 100%; display: none; }
         .tab-content.active { display: block; }
         .theme-toggle-tab { flex: 0.7; color: white !important; }
-
         .card { background: var(--card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-bottom: 15px; position: relative; }
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 5px 0; }
         .accordion-header h3 { margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--accent) !important; }
@@ -351,6 +359,7 @@
         <div class="header-ui">
             <div class="user-badge">
                 <span id="uFullName">...</span>
+                <span id="cloud-sync-status" style="font-size: 8px; display: block; opacity: 0.8; color: #2ecc71;">Cloud: Initializing...</span>
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                     <span id="statusDot" class="status-dot"></span>
                     <span id="uID" class="user-id-tag">ID: 0</span>
@@ -397,7 +406,6 @@
                 <span style="font-size:16px; display:block;">📈</span>GT Intelligence
             </div>
         </div>
-
         <div id="tab-goal" class="tab-content">
             <div class="card">
                 <div class="accordion-header" onclick="toggleAccordion('acc_exams', this)">
@@ -543,7 +551,6 @@
                 <div style="overflow-x:auto;"><table class="matrix-table"><thead><tr><th style="text-align:left;">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead><tbody id="mcqMatrixBody"></tbody></table></div>
             </div>
         </div>
-
         <div id="tab-swt" class="tab-content">
             <div class="card">
                 <h3>SWT Analytics</h3>
@@ -665,18 +672,50 @@
                 <div id="neet-area">
                     <h4 style="color:#f39c12; margin-top:25px; font-size:13px;">NEET PG General Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="neetScrollInner"><canvas id="gtNeetChart"></canvas></div></div>
+                    
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
+                    <div class="chart-container"><canvas id="gtNeetPhaseCountChart"></canvas></div>
+
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
+                    <div class="chart-container"><canvas id="gtNeetPhaseAvgChart"></canvas></div>
+
                     <div id="gtNeetStats" style="margin-top:10px;"></div>
                 </div>
 
                 <div id="inicet-area" style="display:none;">
                     <h4 style="color:#2ecc71; margin-top:25px; font-size:13px;">INICET General Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="iniScrollInner"><canvas id="gtInicetChart"></canvas></div></div>
+                    
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
+                    <div class="chart-container"><canvas id="gtIniPhaseCountChart"></canvas></div>
+
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
+                    <div class="chart-container"><canvas id="gtIniPhaseAvgChart"></canvas></div>
+
                     <div id="gtIniStats" style="margin-top:10px;"></div>
                 </div>
 
                 <div id="fmge-area" style="display:none;">
                     <h4 style="color:#e67e22; margin-top:25px; font-size:13px;">FMGE Total Score Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="fmgeScrollInner"><canvas id="gtFmgeChart"></canvas></div></div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:15px; margin-top:15px;">
+                        <div>
+                            <h4 style="font-size:10px; color:#3498db; text-align:center;">Paper 1 Progress</h4>
+                            <div class="chart-scroller" style="height:150px;"><div class="chart-scroll-content" style="height:150px;" id="fmgeP1ScrollInner"><canvas id="gtFmgeP1Chart"></canvas></div></div>
+                        </div>
+                        <div>
+                            <h4 style="font-size:10px; color:#9b59b6; text-align:center;">Paper 2 Progress</h4>
+                            <div class="chart-scroller" style="height:150px;"><div class="chart-scroll-content" style="height:150px;" id="fmgeP2ScrollInner"><canvas id="gtFmgeP2Chart"></canvas></div></div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
+                    <div class="chart-container"><canvas id="gtFmgePhaseCountChart"></canvas></div>
+                    
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
+                    <div class="chart-container"><canvas id="gtFmgePhaseAvgChart"></canvas></div>
+
                     <div id="gtFmgeStats" style="margin-top:10px;"></div>
                 </div>
             </div>
@@ -685,12 +724,16 @@
         <div class="danger-zone">
             <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
             <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
+            <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 10px;">
+                <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
+                <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
+                <li><strong>Step 3:</strong> To restore later, copy that code, click "Restore Data", and paste it.</li>
+            </ul>
             <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
             <button class="restore-btn" onclick="openRestore()">Restore Data</button>
             <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
         </div>
     </div>
-
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
         const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Local", last_name: "User" };
@@ -872,7 +915,6 @@
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
             if(typeof window.syncToCloud === 'function') window.syncToCloud();
         }
-
         let hChart, mChart, gNeetChart, gIniChart, gFmgeChart, gFmgeP1Chart, gFmgeP2Chart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
         let currentViewDate = new Date();
 
