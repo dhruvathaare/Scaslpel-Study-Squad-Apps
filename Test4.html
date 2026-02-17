@@ -328,13 +328,13 @@
                 <span style="font-size:16px; display:block;">🎯</span>Goal
             </div>
             <div class="tab-btn active" onclick="switchTab('tab-daily', this)">
-                <span style="font-size:16px; display:block;">📊</span>Daily
+                <span style="font-size:16px; display:block;">📊</span>Daily Analytics
             </div>
             <div class="tab-btn" onclick="switchTab('tab-swt', this)">
-                <span style="font-size:16px; display:block;">🧠</span>SWT
+                <span style="font-size:16px; display:block;">🧠</span>SWT Analytics
             </div>
             <div class="tab-btn" onclick="switchTab('tab-gt', this)">
-                <span style="font-size:16px; display:block;">📈</span>GT
+                <span style="font-size:16px; display:block;">📈</span>GT Intelligence
             </div>
         </div>
 
@@ -486,7 +486,7 @@
 
         <div id="tab-swt" class="tab-content">
             <div class="card">
-                <h3>SWT Analysis</h3>
+                <h3>SWT Analytics</h3>
                 <span class="setting-label">Reading Phase</span>
                 <select id="swtPhase">
                     <option value="First Reading">First Reading</option>
@@ -499,7 +499,7 @@
                 <select id="swtSubject" onchange="renderSWT()">
                     <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option><option>Mixed Bag</option><option>Integrated Systems</option>
                 </select>
-                <div style="display:flex; gap:5px; margin-top:8px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="swtDate"></div><div style="flex:1;"><span class="setting-label">Total Qs</span><input type="number" id="swtTotal" oninput="calcSWT()"></div></div>
+                <div style="display:flex; gap:5px; margin-top:8px;"><div style="flex:1.5;"><span class="setting-label">Date</span><input type="date" id="swtDate"><span style="font-size:9px; color:#888;">(Today or Past)</span></div><div style="flex:1;"><span class="setting-label">Total Qs</span><input type="number" id="swtTotal" oninput="calcSWT()"></div></div>
                 <div style="display:flex; gap:5px; margin-top:5px;"><div style="flex:1;"><span class="setting-label">Correct</span><input type="number" id="swtCorrect" oninput="calcSWT()"></div><div style="flex:1;"><span class="setting-label">Unattempted</span><input type="number" id="swtUnat" oninput="calcSWT()"></div></div>
                 <div class="calc-preview"><span>Wrong: <b id="swtW">0</b></span><span>Accuracy: <b id="swtP">0%</b></span></div>
                 <button class="btn" onclick="saveSWT()" style="background:var(--accent); margin-top:10px; width:100%;">Save Result</button>
@@ -559,6 +559,7 @@
                 <div style="margin-bottom: 8px;">
                    <span class="setting-label">Date</span>
                    <input type="date" id="gtDate">
+                   <span style="font-size:9px; color:#888;">(Today or Past)</span>
                 </div>
 
                 <div id="gt-inputs-std">
@@ -631,7 +632,7 @@
                     <h4 style="color:#e67e22; margin-top:25px; font-size:13px;">FMGE Total Score Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="fmgeScrollInner"><canvas id="gtFmgeChart"></canvas></div></div>
                     
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
+                    <div style="display:flex; flex-direction:column; gap:15px; margin-top:15px;">
                         <div>
                             <h4 style="font-size:10px; color:#3498db; text-align:center;">Paper 1 Progress</h4>
                             <div class="chart-scroller" style="height:150px;"><div class="chart-scroll-content" style="height:150px;" id="fmgeP1ScrollInner"><canvas id="gtFmgeP1Chart"></canvas></div></div>
@@ -645,6 +646,9 @@
                     <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
                     <div class="chart-container"><canvas id="gtFmgePhaseCountChart"></canvas></div>
                     
+                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
+                    <div class="chart-container"><canvas id="gtFmgePhaseAvgChart"></canvas></div>
+
                     <div id="gtFmgeStats" style="margin-top:10px;"></div>
                 </div>
             </div>
@@ -840,7 +844,7 @@
         function saveStudyLog(s, m, d, ph, skipped) { const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph, skipped: skipped || false }); localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); }
 
         let hChart, mChart, gNeetChart, gIniChart, gFmgeChart, gFmgeP1Chart, gFmgeP2Chart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
-        let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg, gFmgePhCount;
+        let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg, gFmgePhCount, gFmgePhAvg;
         let currentViewDate = new Date();
 
         function changeViewMonth(offset) { currentViewDate.setMonth(currentViewDate.getMonth() + offset); updateUI(); }
@@ -1065,6 +1069,8 @@
         }
 
         function finalizeGTSave() { 
+            if(!confirm("Confirm Save?")) return;
+
             const d=document.getElementById('gtDate').value, ph=document.getElementById('gtPhase').value, plat=document.getElementById('gtPlatform').value || "Unknown";
             let score, c, u, w, details = {};
             
@@ -1098,17 +1104,19 @@
             data.push({ id: Date.now(), date: d, platform: plat, score, correct: c, unat: u, wrong: w, phase: ph, breakdown, ...details }); 
             data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
             localStorage.setItem(storeKey, JSON.stringify(data)); 
-            closePopup(); updateUI(); 
+            closePopup(); updateUI();
+            alert("Saved! Go to 'Review Past GT Breakdown' to see detailed analytics.");
         }
 
         function populateGTHistory() { 
-            let storeKey = KEYS.NEET;
-            if(currentGTMode === 'INICET') storeKey = KEYS.INI;
-            if(currentGTMode === 'FMGE') storeKey = KEYS.FMGE;
+            let storeKey = KEYS.NEET, prefix = "NEET PG GT";
+            if(currentGTMode === 'INICET') { storeKey = KEYS.INI; prefix = "INICET GT"; }
+            if(currentGTMode === 'FMGE') { storeKey = KEYS.FMGE; prefix = "FMGE GT"; }
+            
             const data = JSON.parse(localStorage.getItem(storeKey)||"[]"); 
             const select = document.getElementById('gtHistorySelect'); 
             select.innerHTML = '<option value="">Select a GT</option>'; 
-            data.reverse().forEach((g, idx) => { select.innerHTML += `<option value="${g.id}">GT ${data.length - idx} (${g.date})</option>`; }); 
+            data.reverse().forEach((g, idx) => { select.innerHTML += `<option value="${g.id}">${prefix} ${data.length - idx} (${g.date})</option>`; }); 
         }
 
         function renderGTBreakdownGraph() { 
@@ -1258,7 +1266,22 @@
 
             const fData = processPhaseData(fd);
             if(gFmgePhCount) gFmgePhCount.destroy(); gFmgePhCount = new Chart(document.getElementById('gtFmgePhaseCountChart'), { type: 'bar', data: { labels: fData.phases, datasets: [{ label: 'GTs Taken', data: fData.phases.map(p=>fData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc, stepSize:1}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-             let fStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${fData.overallMax.toFixed(0)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Qualified GTs</span><span class="gt-stat-val val-high">${fd.filter(x=>x.score>=150).length}</span></div></div>`; document.getElementById('gtFmgeStats').innerHTML = fData.overallMax > 0 ? fStatsHtml : "";
+            if(gFmgePhAvg) gFmgePhAvg.destroy(); gFmgePhAvg = new Chart(document.getElementById('gtFmgePhaseAvgChart'), { type: 'bar', data: { labels: fData.phases, datasets: [{ label: 'Avg Score', data: fData.phases.map(p=>fData.stats[p].n>0?(fData.stats[p].s/fData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
+            
+            let fStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${fData.overallMax.toFixed(0)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Qualified GTs</span><span class="gt-stat-val val-high">${fd.filter(x=>x.score>=150).length}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; 
+            fData.phases.forEach(p => { 
+                const s = fData.stats[p]; 
+                // Calculate qualified count for this phase
+                const qual = fd.filter(x => {
+                    let xp = x.phase || "First Reading"; 
+                    if(xp === "Extra Bonus") xp = "Extra Bonus Reading"; 
+                    return xp === p && x.score >= 150;
+                }).length;
+
+                if(s.n > 0) fStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b> | Qual: <b style="color:#2ecc71;">${qual}</b></span></div>`; 
+            }); 
+            fStatsHtml += `</div>`;
+            document.getElementById('gtFmgeStats').innerHTML = fData.overallMax > 0 ? fStatsHtml : "";
         }
 
         function renderBackupStatus() {
