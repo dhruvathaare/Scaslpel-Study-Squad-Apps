@@ -3,82 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V6.50</title>
+    <title>Scalpel Master Pro V7.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
-            authDomain: "scalpel-pro.firebaseapp.com",
-            projectId: "scalpel-pro",
-            storageBucket: "scalpel-pro.firebasestorage.app",
-            messagingSenderId: "244026009766",
-            appId: "1:244026009766:web:3299c2dfa37cf378d1ac67"
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
+        authDomain: "scalpel-pro.firebaseapp.com",
+        projectId: "scalpel-pro",
+        storageBucket: "scalpel-pro.firebasestorage.app",
+        messagingSenderId: "244026009766",
+        appId: "1:244026009766:web:3299c2dfa37cf378d1ac67"
+      };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        // Expose DB functions to global scope for the main app logic
-        window.startCloudSync = async (userId, keysMap) => {
-            if (!userId || userId === "OFFLINE") {
-                // If offline, just hide loader immediately
-                return;
-            }
-            
-            const statusEl = document.getElementById('cloudStatus');
-            statusEl.classList.add('syncing'); 
-            
-            const docRef = doc(db, "users", String(userId));
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    // Pull Cloud -> Local
-                    const data = docSnap.data();
-                    Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
-                    console.log("☁️ Data Pulled from Cloud");
-                } else {
-                    // New user? Upload Local -> Cloud to init
-                    await window.pushToCloudAll(userId, keysMap);
-                }
-            } catch (e) {
-                console.error("Cloud Load Error:", e);
-            }
-            
-            statusEl.classList.remove('syncing');
-            // We do NOT hide loader here anymore; the safety valve in main script handles it
-            // ensuring UI updates first.
-            window.updateUI(); 
-        };
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
 
-        window.pushToCloud = async (userId, key, value) => {
-            if (!userId || userId === "OFFLINE") return;
-            const statusEl = document.getElementById('cloudStatus');
-            statusEl.classList.add('syncing');
-            try {
-                await setDoc(doc(db, "users", String(userId)), { [key]: value }, { merge: true });
-                console.log(`☁️ Saved ${key}`);
-            } catch (e) { console.error("Cloud Save Error:", e); }
-            statusEl.classList.remove('syncing');
-        };
+      // We use the Telegram ID as the unique patient ID (Key)
+      const tgUser = window.Telegram.WebApp.initDataUnsafe?.user || { id: "OFFLINE" };
+      const userId = tgUser.id;
 
-        window.pushToCloudAll = async (userId, keysMap) => {
-            if (!userId || userId === "OFFLINE") return;
-            const data = {};
-            Object.values(keysMap).forEach(k => {
-                const val = localStorage.getItem(k);
-                if (val) data[k] = val;
-            });
-            if (Object.keys(data).length > 0) {
-                await setDoc(doc(db, "users", String(userId)), data, { merge: true });
-            }
-        };
+      // Global function to sync everything to the cloud
+      window.syncToCloud = function() {
+          const dataToSync = {};
+          const keysToBackup = ['LOGS', 'NEET', 'INI', 'FMGE', 'SWT', 'GOALS', 'PYQ', 'TOUGH'];
+          
+          keysToBackup.forEach(key => {
+              const prefix = `SSS_PRO_V3_${userId}_`;
+              const localVal = localStorage.getItem(prefix + key);
+              if (localVal) dataToSync[key] = JSON.parse(localVal);
+          });
+
+          if (userId !== "OFFLINE") {
+              set(ref(db, 'users/' + userId), dataToSync)
+              .then(() => console.log("Cloud Sync Successful"))
+              .catch((error) => console.error("Cloud Sync Failed", error));
+          }
+      };
+
+      // Function to pull data from cloud on startup
+      window.pullFromCloud = function() {
+          if (userId === "OFFLINE") return;
+          const dbRef = ref(db);
+          get(child(dbRef, `users/${userId}`)).then((snapshot) => {
+              if (snapshot.exists()) {
+                  const cloudData = snapshot.val();
+                  const prefix = `SSS_PRO_V3_${userId}_`;
+                  Object.keys(cloudData).forEach(key => {
+                      localStorage.setItem(prefix + key, JSON.stringify(cloudData[key]));
+                  });
+                  console.log("Data Restored from Cloud");
+                  // Trigger UI update once after pulling
+                  if(typeof updateUI === 'function') updateUI();
+              }
+          }).catch((error) => console.error(error));
+      };
+
+      // Auto-pull on load
+      window.pullFromCloud();
     </script>
 
     <style>
@@ -173,16 +161,6 @@
         .status-online { background-color: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
         .status-offline { background-color: #f39c12; box-shadow: 0 0 5px #f39c12; }
 
-        /* CLOUD STATUS ICON */
-        .cloud-icon { font-size: 14px; margin-left: 5px; opacity: 0.5; transition: opacity 0.3s; }
-        .cloud-icon.syncing { animation: blink 1s infinite; opacity: 1; color: #3498db; }
-        @keyframes blink { 50% { opacity: 0.3; } }
-
-        /* LOADING OVERLAY */
-        #sync-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: 'Oswald', sans-serif; transition: opacity 0.5s; }
-        .loader { border: 4px solid rgba(82, 136, 193, 0.2); border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         .logo { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 10px; box-shadow: 0 0 15px rgba(82,136,193,0.3); transition: all 0.3s; }
         h1 { color: var(--accent); font-size: 22px; margin: 5px 0; font-weight: bold; text-transform: uppercase; }
         
@@ -197,7 +175,6 @@
         @media (orientation: landscape) { .exam-days { font-size: 20px; } }
         .exam-item.target-locked .exam-days { color: #2ecc71; } 
         
-        /* INCREASED FONT AND BOLD FOR EXAM NAMES */
         .exam-label { font-size: 11px; font-weight: 900; text-transform: uppercase; opacity: 1; letter-spacing: 0.5px; margin-top: 2px; display: block; color: var(--text); }
 
         .streak-section { margin-bottom: 15px; width: 100%; text-align: center; padding: 5px; }
@@ -252,7 +229,6 @@
         [data-theme="light"] .sub-grid-container { background: rgba(0,0,0,0.05); }
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
-        /* CHANGED: Use var(--text) for better visibility in light mode */
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text); opacity: 0.8; padding: 5px; }
 
         .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-top: 15px; }
@@ -340,8 +316,6 @@
     </style>
 </head>
 <body data-active-tab="tab-daily">
-    <div id="sync-overlay"><div class="loader"></div><div>SYNCHRONIZING DATA...</div></div>
-
     <div id="popup-overlay">
         <div class="popup-card" id="mcq-popup">
             <h3>Cycle Complete</h3>
@@ -380,7 +354,6 @@
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                     <span id="statusDot" class="status-dot"></span>
                     <span id="uID" class="user-id-tag">ID: 0</span>
-                    <span id="cloudStatus" class="cloud-icon">☁️</span>
                 </div>
             </div>
         </div>
@@ -692,50 +665,18 @@
                 <div id="neet-area">
                     <h4 style="color:#f39c12; margin-top:25px; font-size:13px;">NEET PG General Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="neetScrollInner"><canvas id="gtNeetChart"></canvas></div></div>
-                    
-                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
-                    <div class="chart-container"><canvas id="gtNeetPhaseCountChart"></canvas></div>
-
-                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
-                    <div class="chart-container"><canvas id="gtNeetPhaseAvgChart"></canvas></div>
-
                     <div id="gtNeetStats" style="margin-top:10px;"></div>
                 </div>
 
                 <div id="inicet-area" style="display:none;">
                     <h4 style="color:#2ecc71; margin-top:25px; font-size:13px;">INICET General Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="iniScrollInner"><canvas id="gtInicetChart"></canvas></div></div>
-                    
-                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
-                    <div class="chart-container"><canvas id="gtIniPhaseCountChart"></canvas></div>
-
-                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
-                    <div class="chart-container"><canvas id="gtIniPhaseAvgChart"></canvas></div>
-
                     <div id="gtIniStats" style="margin-top:10px;"></div>
                 </div>
 
                 <div id="fmge-area" style="display:none;">
                     <h4 style="color:#e67e22; margin-top:25px; font-size:13px;">FMGE Total Score Progress</h4>
                     <div class="chart-scroller"><div class="chart-scroll-content" id="fmgeScrollInner"><canvas id="gtFmgeChart"></canvas></div></div>
-                    
-                    <div style="display:flex; flex-direction:column; gap:15px; margin-top:15px;">
-                        <div>
-                            <h4 style="font-size:10px; color:#3498db; text-align:center;">Paper 1 Progress</h4>
-                            <div class="chart-scroller" style="height:150px;"><div class="chart-scroll-content" style="height:150px;" id="fmgeP1ScrollInner"><canvas id="gtFmgeP1Chart"></canvas></div></div>
-                        </div>
-                        <div>
-                            <h4 style="font-size:10px; color:#9b59b6; text-align:center;">Paper 2 Progress</h4>
-                            <div class="chart-scroller" style="height:150px;"><div class="chart-scroll-content" style="height:150px;" id="fmgeP2ScrollInner"><canvas id="gtFmgeP2Chart"></canvas></div></div>
-                        </div>
-                    </div>
-
-                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #3498db; text-transform: uppercase;">GTs Attempted per Phase</h4>
-                    <div class="chart-container"><canvas id="gtFmgePhaseCountChart"></canvas></div>
-                    
-                    <h4 style="margin: 15px 0 5px 0; font-size: 11px; color: #9b59b6; text-transform: uppercase;">Average Score per Phase</h4>
-                    <div class="chart-container"><canvas id="gtFmgePhaseAvgChart"></canvas></div>
-
                     <div id="gtFmgeStats" style="margin-top:10px;"></div>
                 </div>
             </div>
@@ -744,11 +685,6 @@
         <div class="danger-zone">
             <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
             <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
-            <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 10px;">
-                <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
-                <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
-                <li><strong>Step 3:</strong> To restore later, copy that code, click "Restore Data", and paste it.</li>
-            </ul>
             <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
             <button class="restore-btn" onclick="openRestore()">Restore Data</button>
             <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
@@ -837,8 +773,7 @@
                 if (el && el.checked) selection[s] = true;
             });
             localStorage.setItem(KEYS.TOUGH, JSON.stringify(selection));
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.TOUGH, JSON.stringify(selection));
+            if(typeof window.syncToCloud === 'function') window.syncToCloud();
             renderToughDashboard();
         }
 
@@ -934,14 +869,11 @@
         function saveStudyLog(s, m, d, ph, skipped) { 
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph, skipped: skipped || false }); 
-            const jsonLogs = JSON.stringify(logs);
-            localStorage.setItem(KEYS.LOGS, jsonLogs); 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.LOGS, jsonLogs);
+            localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
+            if(typeof window.syncToCloud === 'function') window.syncToCloud();
         }
 
         let hChart, mChart, gNeetChart, gIniChart, gFmgeChart, gFmgeP1Chart, gFmgeP2Chart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
-        let gNeetPhCount, gNeetPhAvg, gIniPhCount, gIniPhAvg, gFmgePhCount, gFmgePhAvg;
         let currentViewDate = new Date();
 
         function changeViewMonth(offset) { currentViewDate.setMonth(currentViewDate.getMonth() + offset); updateUI(); }
@@ -955,7 +887,9 @@
             const labels = [], hoursData = Array(daysInMonth).fill(0), mcqsData = Array(daysInMonth).fill(0);
             const tableLogs = [];
             logs.forEach(l => {
-                const [d, m, y] = l.date.split('/'); const logDate = new Date(y, m - 1, d);
+                const parts = l.date.split('/'); if(parts.length !== 3) return;
+                const d = parts[0], m = parts[1], y = parts[2];
+                const logDate = new Date(y, m - 1, d);
                 if (logDate.getMonth() === viewMonth && logDate.getFullYear() === viewYear) { const dayIdx = parseInt(d) - 1; hoursData[dayIdx] += l.duration / 60; mcqsData[dayIdx] += l.mcqs; tableLogs.push(l); }
             });
             for (let i = 1; i <= daysInMonth; i++) labels.push(i);
@@ -971,46 +905,34 @@
         function renderMonthlyTable() {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const data = {}; 
-
             const init = (k) => { if(!data[k]) data[k] = {mcq:0, swt:0, gt:0}; };
-
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             logs.forEach(l => {
-                const parts = l.date.split('/'); 
-                if(parts.length === 3) {
+                const parts = l.date.split('/'); if(parts.length === 3) {
                     const k = `${parts[2]}-${parts[1].padStart(2,'0')}`;
-                    init(k);
-                    data[k].mcq += (parseInt(l.mcqs)||0);
+                    init(k); data[k].mcq += (parseInt(l.mcqs)||0);
                 }
             });
-
             const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
             swts.forEach(s => {
-                const parts = s.date.split('-');
-                if(parts.length === 3) {
+                const parts = s.date.split('-'); if(parts.length === 3) {
                     const k = `${parts[0]}-${parts[1]}`;
-                    init(k);
-                    data[k].swt++;
+                    init(k); data[k].swt++;
                 }
             });
-
             const neet = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
             const ini = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
             const fmge = JSON.parse(localStorage.getItem(KEYS.FMGE)||"[]");
             [...neet, ...ini, ...fmge].forEach(g => {
-                const parts = g.date.split('-');
-                if(parts.length === 3) {
+                const parts = g.date.split('-'); if(parts.length === 3) {
                     const k = `${parts[0]}-${parts[1]}`;
-                    init(k);
-                    data[k].gt++;
+                    init(k); data[k].gt++;
                 }
             });
-
             const keys = Object.keys(data).sort().reverse();
             let html = "";
             keys.forEach(k => {
-                const [y, m] = k.split('-');
-                const mName = months[parseInt(m)-1];
+                const [y, m] = k.split('-'); const mName = months[parseInt(m)-1];
                 const d = data[k];
                 if(d.mcq > 0 || d.swt > 0 || d.gt > 0) {
                     html += `<tr><td>${mName} ${y}</td><td>${d.mcq}</td><td>${d.swt}</td><td>${d.gt}</td></tr>`;
@@ -1041,20 +963,22 @@
         }
 
         function switchPyq(id, btn) { document.querySelectorAll('.pyq-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.pyq-panel').forEach(p => p.classList.remove('active')); document.getElementById(`pyq_panel_${id}`).classList.add('active'); }
-        function saveLockPYQ(catId) { const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}, catConfig = PYQ_CATS.find(c => c.id === catId); data[catId] = {}; let allChecked = true; if(catConfig.type === 'list') { for(let y=catConfig.start; y>=catConfig.end; y--) { const isChecked = document.getElementById(`pyq_${catId}_${y}`).checked; data[catId][y] = isChecked; if(!isChecked) allChecked = false; } } else { for(let y=catConfig.start; y>=catConfig.end; y--) { const c1 = document.getElementById(`pyq_${catId}_y_${catConfig.col1}_1`).checked, c2 = document.getElementById(`pyq_${catId}_y_${catConfig.col2}_2`).checked; data[catId][`${y}_1`] = c1; data[catId][`${y}_2`] = c2; if(!c1 || !c2) allChecked = false; } } localStorage.setItem(KEYS.PYQ, JSON.stringify(data)); const cup = document.getElementById(`cup_${catId}`); if(allChecked) { cup.classList.add('show'); alert(`🏆 All ${catConfig.label} PYQs Completed!`); } else { cup.classList.remove('show'); alert("Progress Saved."); } 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.PYQ, JSON.stringify(data));
+        function saveLockPYQ(catId) { 
+            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}, catConfig = PYQ_CATS.find(c => c.id === catId); 
+            data[catId] = {}; let allChecked = true; 
+            if(catConfig.type === 'list') { for(let y=catConfig.start; y>=catConfig.end; y--) { const isChecked = document.getElementById(`pyq_${catId}_${y}`).checked; data[catId][y] = isChecked; if(!isChecked) allChecked = false; } } 
+            else { for(let y=catConfig.start; y>=catConfig.end; y--) { const c1 = document.getElementById(`pyq_${catId}_y_${catConfig.col1}_1`).checked, c2 = document.getElementById(`pyq_${catId}_y_${catConfig.col2}_2`).checked; data[catId][`${y}_1`] = c1; data[catId][`${y}_2`] = c2; if(!c1 || !c2) allChecked = false; } } 
+            localStorage.setItem(KEYS.PYQ, JSON.stringify(data)); 
+            if(typeof window.syncToCloud === 'function') window.syncToCloud();
+            const cup = document.getElementById(`cup_${catId}`); 
+            if(allChecked) { cup.classList.add('show'); alert(`🏆 All ${catConfig.label} PYQs Completed!`); } 
+            else { cup.classList.remove('show'); alert("Progress Saved."); } 
         }
+
         function loadPYQ() { const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}; PYQ_CATS.forEach(cat => { if(!data[cat.id]) return; let allChecked = true; if(cat.type === 'list') { for(let y=cat.start; y>=cat.end; y--) { const el = document.getElementById(`pyq_${cat.id}_${y}`); if(el) { el.checked = data[cat.id][y] || false; if(!el.checked) allChecked = false; } } } else { for(let y=cat.start; y>=cat.end; y--) { const el1 = document.getElementById(`pyq_${cat.id}_y_${cat.col1}_1`), el2 = document.getElementById(`pyq_${cat.id}_y_${cat.col2}_2`); if(el1) { el1.checked = data[cat.id][`${y}_1`] || false; if(!el1.checked) allChecked = false; } if(el2) { el2.checked = data[cat.id][`${y}_2`] || false; if(!el2.checked) allChecked = false; } } } if(allChecked) document.getElementById(`cup_${cat.id}`).classList.add('show'); }); }
         
-        function lockTarget(phaseIdx, type) { if(!confirm("Lock goal?")) return; const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }; if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {}; if(type === 'swt') { g.phases[phaseIdx].tgt_swt = document.getElementById(`tgt_swt_${phaseIdx}`).value; g.phases[phaseIdx].locked_swt = true; } else { g.phases[phaseIdx].tgt_gt = document.getElementById(`tgt_gt_${phaseIdx}`).value; g.phases[phaseIdx].locked_gt = true; } localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); renderGoalHTML(); 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.GOALS, JSON.stringify(g));
-        }
-        function saveSubjectProgress(phaseIdx) { if(!confirm(`Lock subject progress?`)) return; const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }; if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {s:{}, s_locked:{}}; if(!g.phases[phaseIdx].s_locked) g.phases[phaseIdx].s_locked = {}; SUBJECTS_19.forEach((s, si) => { const el = document.getElementById(`chk_${phaseIdx}_${si}`); if(el && el.checked) { g.phases[phaseIdx].s[si] = true; g.phases[phaseIdx].s_locked[si] = true; } }); localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); renderGoalHTML(); 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.GOALS, JSON.stringify(g));
-        }
+        function lockTarget(phaseIdx, type) { if(!confirm("Lock goal?")) return; const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }; if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {}; if(type === 'swt') { g.phases[phaseIdx].tgt_swt = document.getElementById(`tgt_swt_${phaseIdx}`).value; g.phases[phaseIdx].locked_swt = true; } else { g.phases[phaseIdx].tgt_gt = document.getElementById(`tgt_gt_${phaseIdx}`).value; g.phases[phaseIdx].locked_gt = true; } localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); if(typeof window.syncToCloud === 'function') window.syncToCloud(); renderGoalHTML(); }
+        function saveSubjectProgress(phaseIdx) { if(!confirm(`Lock subject progress?`)) return; const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }; if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {s:{}, s_locked:{}}; if(!g.phases[phaseIdx].s_locked) g.phases[phaseIdx].s_locked = {}; SUBJECTS_19.forEach((s, si) => { const el = document.getElementById(`chk_${phaseIdx}_${si}`); if(el && el.checked) { g.phases[phaseIdx].s[si] = true; g.phases[phaseIdx].s_locked[si] = true; } }); localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); if(typeof window.syncToCloud === 'function') window.syncToCloud(); renderGoalHTML(); }
 
         function renderGoalHTML() {
             const container = document.getElementById('goal-phases-container'); container.innerHTML = "";
@@ -1085,40 +1009,24 @@
             };
             const phases = PHASES_CONFIG.map((_, idx) => { const ex = g.phases[idx] || {}, s = ex.s || {}; SUBJECTS_19.forEach((_, si) => { const el = document.getElementById(`chk_${idx}_${si}`); if(el && !el.disabled) s[si] = el.checked; }); return { ...ex, f: document.getElementById(`d_${idx}_f`).value, t: document.getElementById(`d_${idx}_t`).value, s: s }; });
             localStorage.setItem(KEYS.GOALS, JSON.stringify({ exams, phases })); 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.GOALS, JSON.stringify({ exams, phases }));
+            if(typeof window.syncToCloud === 'function') window.syncToCloud();
         }
 
         function lockExamGoals() { saveGoals(); const g = JSON.parse(localStorage.getItem(KEYS.GOALS)), m = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan', 'f_jun': 'dash_fmge_jun', 'f_dec': 'dash_fmge_dec' }; Object.keys(m).forEach(k => { const el = document.getElementById(m[k]); if (g.exams[k]) el.classList.add('target-locked'); else el.classList.remove('target-locked'); }); alert("Locked! 🚀"); }
         function loadGoalsToUI() { 
             const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; 
-            document.getElementById('goal_ini_jul').checked = g.exams?.i_j; 
-            document.getElementById('goal_upsc').checked = g.exams?.u; 
-            document.getElementById('goal_neet').checked = g.exams?.n; 
-            document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
-            document.getElementById('goal_fmge_jun').checked = g.exams?.f_jun;
-            document.getElementById('goal_fmge_dec').checked = g.exams?.f_dec;
+            if(document.getElementById('goal_ini_jul')) document.getElementById('goal_ini_jul').checked = g.exams?.i_j; 
+            if(document.getElementById('goal_upsc')) document.getElementById('goal_upsc').checked = g.exams?.u; 
+            if(document.getElementById('goal_neet')) document.getElementById('goal_neet').checked = g.exams?.n; 
+            if(document.getElementById('goal_ini_jan')) document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
+            if(document.getElementById('goal_fmge_jun')) document.getElementById('goal_fmge_jun').checked = g.exams?.f_jun;
+            if(document.getElementById('goal_fmge_dec')) document.getElementById('goal_fmge_dec').checked = g.exams?.f_dec;
 
-            if(g.exams) { const m = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan', 'f_jun': 'dash_fmge_jun', 'f_dec': 'dash_fmge_dec' }; Object.keys(m).forEach(k => { if (g.exams[k]) document.getElementById(m[k]).classList.add('target-locked'); }); } renderGoalHTML(); 
+            if(g.exams) { const m = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan', 'f_jun': 'dash_fmge_jun', 'f_dec': 'dash_fmge_dec' }; Object.keys(m).forEach(k => { const el = document.getElementById(m[k]); if (el && g.exams[k]) el.classList.add('target-locked'); }); } renderGoalHTML(); 
         }
         function exportData() { localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString()); renderBackupStatus(); const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const payload = { owner: tgUser.id, data: b }; const code = btoa(JSON.stringify(payload)); navigator.clipboard.writeText(code).then(() => alert(`Code Copied! Locked to ID: ${tgUser.id}`)); }
         function openRestore() { openPopup('restore-popup'); }
-        function processRestore() { 
-            try { 
-                const raw = JSON.parse(atob(document.getElementById('restoreInput').value)); 
-                let d = raw; 
-                if (raw.owner) { 
-                    if (String(raw.owner) !== String(tgUser.id)) { alert(`Access Denied!`); return; } 
-                    d = raw.data; 
-                } 
-                Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); 
-                localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString()); 
-                // CLOUD PUSH ALL
-                if(window.pushToCloudAll) window.pushToCloudAll(tgUser.id, KEYS);
-                alert("Restored!"); 
-                location.reload(); 
-            } catch(e) { alert("Invalid Code!"); } 
-        }
+        function processRestore() { try { const raw = JSON.parse(atob(document.getElementById('restoreInput').value)); let d = raw; if (raw.owner) { if (String(raw.owner) !== String(tgUser.id)) { alert(`Access Denied!`); return; } d = raw.data; } Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString()); if(typeof window.syncToCloud === 'function') window.syncToCloud(); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
         
         function switchTab(id, btn) { 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
@@ -1130,31 +1038,9 @@
         }
         
         function updateCountdowns() { 
-            const now = new Date();
-            const istOffset = 5.5 * 60 * 60 * 1000;
-            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const istDate = new Date(utc + istOffset);
-
-            const targets = { 
-                iniJuly: new Date("2026-05-17T00:00:00+05:30"), 
-                upsc: new Date("2026-08-02T00:00:00+05:30"), 
-                neet: new Date("2026-08-30T00:00:00+05:30"), 
-                iniJan: new Date("2026-11-01T00:00:00+05:30"),
-                fmgeJun: new Date("2026-06-28T00:00:00+05:30"),
-                fmgeDec: new Date("2026-12-20T00:00:00+05:30") 
-            };
-            Object.keys(targets).forEach(k => { 
-                const diff = Math.ceil((targets[k] - istDate) / (1000 * 60 * 60 * 24)); 
-                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); 
-                if(el) {
-                    if (k === 'fmgeDec') {
-                         el.innerText = "TBA";
-                    } else {
-                         el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE");
-                    }
-                }
-            });
-            const istStr = istDate.toISOString().split('T')[0];
+            const now = new Date(); const targets = { iniJuly: new Date("2026-05-17T00:00:00+05:30"), upsc: new Date("2026-08-02T00:00:00+05:30"), neet: new Date("2026-08-30T00:00:00+05:30"), iniJan: new Date("2026-11-01T00:00:00+05:30"), fmgeJun: new Date("2026-06-28T00:00:00+05:30"), fmgeDec: new Date("2026-12-20T00:00:00+05:30") };
+            Object.keys(targets).forEach(k => { const diff = Math.ceil((targets[k] - now) / (1000 * 60 * 60 * 24)); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE"); });
+            const istStr = new Date(now.getTime() + (330 * 60000)).toISOString().split('T')[0];
             if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
             if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
         }
@@ -1167,11 +1053,9 @@
                 const c1=parseInt(document.getElementById('gtP1C').value)||0, u1=parseInt(document.getElementById('gtP1U').value)||0;
                 const c2=parseInt(document.getElementById('gtP2C').value)||0, u2=parseInt(document.getElementById('gtP2U').value)||0;
                 const s1 = c1; const s2 = c2; const tot = s1 + s2;
-                document.getElementById('gtS1').innerText = s1;
-                document.getElementById('gtS2').innerText = s2;
+                document.getElementById('gtS1').innerText = s1; document.getElementById('gtS2').innerText = s2;
                 document.getElementById('gtTotalFmge').innerText = tot;
-                const status = tot >= 150 ? "Qualified" : "Not Qualified";
-                document.getElementById('gtStatusFmge').innerText = status;
+                document.getElementById('gtStatusFmge').innerText = tot >= 150 ? "Qualified" : "Not Qualified";
                 document.getElementById('gtStatusFmge').style.color = tot >= 150 ? "#2ecc71" : "#ef5350";
             } else {
                 const c=parseInt(document.getElementById('gtCorrect').value)||0, u=parseInt(document.getElementById('gtUnat').value)||0, w=Math.max(0, 200-c-u); 
@@ -1181,148 +1065,73 @@
         }
 
         function saveSWT() { 
-            const sub=document.getElementById('swtSubject').value, ph=document.getElementById('swtPhase').value, d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value); 
-            if(!d || isNaN(t)) return; 
+            const sub=document.getElementById('swtSubject').value, ph=document.getElementById('swtPhase').value, d=document.getElementById('swtDate').value, t=parseInt(document.getElementById('swtTotal').value); if(!d || isNaN(t)) return; 
             const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); 
             data.push({ date: d, total: t, correct: parseInt(document.getElementById('swtCorrect').value), unat: parseInt(document.getElementById('swtUnat').value), wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), subject: sub, phase: ph }); 
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
-            localStorage.setItem(KEYS.SWT, JSON.stringify(data)); 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, KEYS.SWT, JSON.stringify(data));
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(KEYS.SWT, JSON.stringify(data)); 
+            if(typeof window.syncToCloud === 'function') window.syncToCloud();
             updateUI(); 
         }
         
         function openGTBreakdown() { 
             const container = document.getElementById('gt-subject-inputs'); 
             container.innerHTML = ""; 
-            SUBJECTS_19.forEach(s => { 
-                container.innerHTML += `<div class="subject-breakdown-row"><span>${s}</span><input type="number" class="sb-input" id="sb_total_${s}" placeholder="T"><input type="number" class="sb-input" id="sb_c_${s}" placeholder="C"><input type="number" class="sb-input" id="sb_u_${s}" placeholder="U"></div>`; 
-            }); 
+            SUBJECTS_19.forEach(s => { container.innerHTML += `<div class="subject-breakdown-row"><span>${s}</span><input type="number" class="sb-input" id="sb_total_${s}" placeholder="T"><input type="number" class="sb-input" id="sb_c_${s}" placeholder="C"><input type="number" class="sb-input" id="sb_u_${s}" placeholder="U"></div>`; }); 
             openPopup('gt-breakdown-popup'); 
         }
 
         function finalizeGTSave() { 
             if(!confirm("Confirm Save?")) return;
-
             const d=document.getElementById('gtDate').value, ph=document.getElementById('gtPhase').value, plat=document.getElementById('gtPlatform').value || "Unknown";
             let score, c, u, w, details = {};
-            
             if (currentGTMode === 'FMGE') {
-                const c1=parseInt(document.getElementById('gtP1C').value)||0, u1=parseInt(document.getElementById('gtP1U').value)||0, w1=Math.max(0, 150-c1-u1);
-                const c2=parseInt(document.getElementById('gtP2C').value)||0, u2=parseInt(document.getElementById('gtP2U').value)||0, w2=Math.max(0, 150-c2-u2);
-                score = c1 + c2; c = c1+c2; u = u1+u2; w = w1+w2;
-                details = { p1: {c:c1, u:u1, w:w1, s:c1}, p2: {c:c2, u:u2, w:w2, s:c2}, status: score>=150?"Qualified":"Not Qualified" };
+                const c1=parseInt(document.getElementById('gtP1C').value)||0, u1=parseInt(document.getElementById('gtP1U').value)||0;
+                const c2=parseInt(document.getElementById('gtP2C').value)||0, u2=parseInt(document.getElementById('gtP2U').value)||0;
+                score = c1 + c2; c = c1+c2; u = u1+u2; w = Math.max(0, 300-c-u);
+                details = { p1: {c:c1, u:u1, s:c1}, p2: {c:c2, u:u2, s:c2}, status: score>=150?"Qualified":"Not Qualified" };
             } else {
-                c=parseInt(document.getElementById('gtCorrect').value); 
-                u=parseInt(document.getElementById('gtUnat').value);
-                w=Math.max(0,200-c-u);
+                c=parseInt(document.getElementById('gtCorrect').value); u=parseInt(document.getElementById('gtUnat').value); w=Math.max(0,200-c-u);
                 score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333));
             }
-
-            const breakdown = {}; 
-            SUBJECTS_19.forEach(s => { 
-                const tot = parseInt(document.getElementById(`sb_total_${s}`).value)||0;
-                const corr = parseInt(document.getElementById(`sb_c_${s}`).value)||0;
-                const unat = parseInt(document.getElementById(`sb_u_${s}`).value)||0;
-                const wrg = Math.max(0, tot - corr - unat);
-                const pct = tot > 0 ? ((corr/tot)*100).toFixed(1) : 0;
-                breakdown[s] = { total: tot, c: corr, u: unat, w: wrg, percent: pct }; 
+            const breakdown = {}; SUBJECTS_19.forEach(s => { 
+                const tot = parseInt(document.getElementById(`sb_total_${s}`).value)||0, corr = parseInt(document.getElementById(`sb_c_${s}`).value)||0, unat = parseInt(document.getElementById(`sb_u_${s}`).value)||0;
+                breakdown[s] = { total: tot, c: corr, u: unat, w: Math.max(0, tot-corr-unat), percent: tot > 0 ? ((corr/tot)*100).toFixed(1) : 0 }; 
             }); 
-
-            let storeKey = KEYS.NEET;
-            if(currentGTMode === 'INICET') storeKey = KEYS.INI;
-            if(currentGTMode === 'FMGE') storeKey = KEYS.FMGE;
-
+            let storeKey = (currentGTMode === 'INICET') ? KEYS.INI : (currentGTMode === 'FMGE' ? KEYS.FMGE : KEYS.NEET);
             const data = JSON.parse(localStorage.getItem(storeKey)||"[]"); 
             data.push({ id: Date.now(), date: d, platform: plat, score, correct: c, unat: u, wrong: w, phase: ph, breakdown, ...details }); 
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
-            localStorage.setItem(storeKey, JSON.stringify(data)); 
-            // CLOUD PUSH
-            if(window.pushToCloud) window.pushToCloud(tgUser.id, storeKey, JSON.stringify(data));
-
+            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); localStorage.setItem(storeKey, JSON.stringify(data)); 
+            if(typeof window.syncToCloud === 'function') window.syncToCloud();
             closePopup(); updateUI();
-            alert("Saved! Go to 'Review Past GT Breakdown' to see detailed analytics.");
         }
 
         function populateGTHistory() { 
-            let storeKey = KEYS.NEET, prefix = "NEET PG GT";
-            if(currentGTMode === 'INICET') { storeKey = KEYS.INI; prefix = "INICET GT"; }
-            if(currentGTMode === 'FMGE') { storeKey = KEYS.FMGE; prefix = "FMGE GT"; }
-            
+            let storeKey = (currentGTMode === 'INICET') ? KEYS.INI : (currentGTMode === 'FMGE' ? KEYS.FMGE : KEYS.NEET);
+            let prefixStr = currentGTMode + " GT";
             const data = JSON.parse(localStorage.getItem(storeKey)||"[]"); 
             const select = document.getElementById('gtHistorySelect'); 
             select.innerHTML = '<option value="">Select a GT</option>'; 
-            data.reverse().forEach((g, idx) => { select.innerHTML += `<option value="${g.id}">${prefix} ${data.length - idx} (${g.date})</option>`; }); 
+            data.reverse().forEach((g, idx) => { select.innerHTML += `<option value="${g.id}">${prefixStr} ${data.length - idx} (${g.date})</option>`; }); 
         }
 
         function renderGTBreakdownGraph() { 
-            const id = document.getElementById('gtHistorySelect').value; 
-            const metaDiv = document.getElementById('gtReviewMeta');
-            if(!id) { 
-                document.getElementById('gtBreakdownChartContainer').style.display='none'; 
-                metaDiv.style.display='none';
-                return; 
-            } 
-            
-            let storeKey = KEYS.NEET;
-            if(currentGTMode === 'INICET') storeKey = KEYS.INI;
-            if(currentGTMode === 'FMGE') storeKey = KEYS.FMGE;
-
-            const data = JSON.parse(localStorage.getItem(storeKey)||"[]"), g = data.find(x => x.id == id); 
-            if(!g || !g.breakdown) return; 
-            
-            metaDiv.style.display='block';
-            let metaHtml = `<span>${g.platform} | ${g.date} | Score: ${parseFloat(g.score).toFixed(2)}</span>`;
-            if (currentGTMode === 'FMGE') metaHtml += `<br><span style="color:${g.status==='Qualified'?'#2ecc71':'#ef5350'}">${g.status}</span>`;
-            metaDiv.innerHTML = metaHtml;
-
+            const id = document.getElementById('gtHistorySelect').value; if(!id) { document.getElementById('gtBreakdownChartContainer').style.display='none'; document.getElementById('gtReviewMeta').style.display='none'; return; } 
+            let storeKey = (currentGTMode === 'INICET') ? KEYS.INI : (currentGTMode === 'FMGE' ? KEYS.FMGE : KEYS.NEET);
+            const data = JSON.parse(localStorage.getItem(storeKey)||"[]"), g = data.find(x => x.id == id); if(!g || !g.breakdown) return; 
+            document.getElementById('gtReviewMeta').style.display='block'; document.getElementById('gtReviewMeta').innerHTML = `<span>${g.platform} | ${g.date} | Score: ${parseFloat(g.score).toFixed(2)}</span>`;
             document.getElementById('gtBreakdownChartContainer').style.display='block'; 
-            
-            const yData = SUBJECTS_19.map(s => g.breakdown[s] ? g.breakdown[s].percent : 0); 
-            const tc = getThemeColor('text'), gc = getThemeColor('grid'); 
-            
-            // Scroll Logic
-            const minWidth = SUBJECTS_19.length * 30; // 30px per subject
-            document.getElementById('gtBreakdownScrollInner').style.width = Math.max(window.innerWidth, minWidth) + "px";
-
+            const yData = SUBJECTS_19.map(s => g.breakdown[s] ? g.breakdown[s].percent : 0); const tc = getThemeColor('text'), gc = getThemeColor('grid'); 
+            document.getElementById('gtBreakdownScrollInner').style.width = Math.max(window.innerWidth, SUBJECTS_19.length * 30) + "px";
             if(gtBreakdownChart) gtBreakdownChart.destroy(); 
-            gtBreakdownChart = new Chart(document.getElementById('gtBreakdownChart'), { 
-                type:'bar', 
-                data:{ labels:SUBJECTS_19, datasets:[{ label:'Correct %', data:yData, backgroundColor:'#2ecc71', borderRadius:4 }] }, 
-                options:{ 
-                    responsive: true,
-                    maintainAspectRatio:false, 
-                    scales:{ 
-                        y:{ min:0, max:100, ticks:{color:tc}, grid:{color:gc} }, 
-                        x:{ ticks:{color:tc, font:{size:10}, autoSkip:false, maxRotation:90}, grid:{color:gc} } 
-                    }, 
-                    plugins:{legend:{display:false}} 
-                } 
-            }); 
+            gtBreakdownChart = new Chart(document.getElementById('gtBreakdownChart'), { type:'bar', data:{ labels:SUBJECTS_19, datasets:[{ label:'Correct %', data:yData, backgroundColor:'#2ecc71', borderRadius:4 }] }, options:{ responsive: true, maintainAspectRatio:false, scales:{ y:{ min:0, max:100, ticks:{color:tc}, grid:{color:gc} }, x:{ ticks:{color:tc, font:{size:10}, autoSkip:false, maxRotation:90}, grid:{color:gc} } }, plugins:{legend:{display:false}} } }); 
         }
 
         function switchGT(m) { 
-            currentGTMode=m; 
-            document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); 
-            if(m==='NEET') document.getElementById('tabNeet').style.background='var(--border)';
-            if(m==='INICET') document.getElementById('tabInicet').style.background='var(--border)';
-            if(m==='FMGE') document.getElementById('tabFmge').style.background='var(--border)';
-
-            document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; 
-            document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; 
-            document.getElementById('fmge-area').style.display=m==='FMGE'?'block':'none';
-            
-            if(m==='FMGE') {
-                document.getElementById('gt-inputs-std').style.display='none';
-                document.getElementById('gt-inputs-fmge').style.display='block';
-            } else {
-                document.getElementById('gt-inputs-std').style.display='block';
-                document.getElementById('gt-inputs-fmge').style.display='none';
-            }
-
-            calcGT(); 
-            populateGTHistory(); 
-            renderGT(); 
+            currentGTMode=m; document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); 
+            if(m==='NEET') document.getElementById('tabNeet').style.background='var(--border)'; else if(m==='INICET') document.getElementById('tabInicet').style.background='var(--border)'; else document.getElementById('tabFmge').style.background='var(--border)';
+            document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; document.getElementById('fmge-area').style.display=m==='FMGE'?'block':'none';
+            document.getElementById('gt-inputs-std').style.display=m==='FMGE'?'none':'block'; document.getElementById('gt-inputs-fmge').style.display=m==='FMGE'?'block':'none';
+            calcGT(); populateGTHistory(); renderGT(); 
         }
         
         function renderSWT() {
@@ -1340,84 +1149,25 @@
         }
 
         function createScrollableChart(canvasId, scrollId, type, labels, datasets, yMax) {
-            const ctx = document.getElementById(canvasId);
-            const scrollInner = document.getElementById(scrollId);
+            const ctx = document.getElementById(canvasId); const scrollInner = document.getElementById(scrollId);
             const tc = getThemeColor('text'), gc = getThemeColor('grid');
-            
-            // Calc dynamic width: approx 40px per data point, minimum 100% of container
-            const neededWidth = Math.max(window.innerWidth - 60, labels.length * 40);
-            scrollInner.style.width = neededWidth + "px";
-
-            return new Chart(ctx, { 
-                type: type, 
-                data: { labels: labels, datasets: datasets }, 
-                options: { 
-                    responsive: true,
-                    maintainAspectRatio: false, 
-                    scales: { 
-                        y: { min: 0, max: yMax, ticks: { color: tc }, grid: { color: gc } }, 
-                        x: { ticks: { color: tc }, grid: { color: gc } } 
-                    } 
-                } 
-            });
+            scrollInner.style.width = Math.max(window.innerWidth - 60, labels.length * 40) + "px";
+            return new Chart(ctx, { type: type, data: { labels: labels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: yMax, ticks: { color: tc }, grid: { color: gc } }, x: { ticks: { color: tc }, grid: { color: gc } } } } });
         }
 
         function renderGT() {
             const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]"), fd = JSON.parse(localStorage.getItem(KEYS.FMGE)||"[]"), tc = getThemeColor('text'), gc = getThemeColor('grid');
-            
-            // NEET
-            if(gNeetChart) gNeetChart.destroy(); 
-            if(nd.length>0) gNeetChart = createScrollableChart('gtNeetChart', 'neetScrollInner', 'line', nd.map(x=>x.date), [{data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.2}], 800);
-            
-            // INICET
-            if(gIniChart) gIniChart.destroy(); 
-            if(id.length>0) gIniChart = createScrollableChart('gtInicetChart', 'iniScrollInner', 'line', id.map(x=>x.date), [{data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.2}], 200);
-
-            // FMGE
-            if(gFmgeChart) gFmgeChart.destroy();
-            if(fd.length>0) gFmgeChart = createScrollableChart('gtFmgeChart', 'fmgeScrollInner', 'line', fd.map(x=>x.date), [{data:fd.map(x=>x.score), borderColor:'#e67e22', tension:0.2, label:'Total'}], 300);
-
-            if(gFmgeP1Chart) gFmgeP1Chart.destroy();
-            if(fd.length>0) gFmgeP1Chart = createScrollableChart('gtFmgeP1Chart', 'fmgeP1ScrollInner', 'line', fd.map(x=>x.date), [{data:fd.map(x=>x.p1?x.p1.s:0), borderColor:'#3498db', tension:0.2, label:'P1'}], 150);
-
-            if(gFmgeP2Chart) gFmgeP2Chart.destroy();
-            if(fd.length>0) gFmgeP2Chart = createScrollableChart('gtFmgeP2Chart', 'fmgeP2ScrollInner', 'line', fd.map(x=>x.date), [{data:fd.map(x=>x.p2?x.p2.s:0), borderColor:'#9b59b6', tension:0.2, label:'P2'}], 150);
-
-
+            if(gNeetChart) gNeetChart.destroy(); if(nd.length>0) gNeetChart = createScrollableChart('gtNeetChart', 'neetScrollInner', 'line', nd.map(x=>x.date), [{data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.2}], 800);
+            if(gIniChart) gIniChart.destroy(); if(id.length>0) gIniChart = createScrollableChart('gtInicetChart', 'iniScrollInner', 'line', id.map(x=>x.date), [{data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.2}], 200);
+            if(gFmgeChart) gFmgeChart.destroy(); if(fd.length>0) gFmgeChart = createScrollableChart('gtFmgeChart', 'fmgeScrollInner', 'line', fd.map(x=>x.date), [{data:fd.map(x=>x.score), borderColor:'#e67e22', tension:0.2}], 300);
             const processPhaseData = (dataList) => {
-                const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"], stats = { "First Reading":{n:0, s:0, min:9999, max:-9999}, "Second Reading":{n:0, s:0, min:9999, max:-9999}, "Third Reading":{n:0, s:0, min:9999, max:-9999}, "Extra Bonus Reading":{n:0, s:0, min:9999, max:-9999} }; let overallMax = -9999, overallMin = 9999;
+                const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"], stats = { "First Reading":{n:0, s:0, min:9999, max:-9999}, "Second Reading":{n:0, s:0, min:9999, max:-9999}, "Third Reading":{n:0, s:0, min:9999, max:-9999}, "Extra Bonus Reading":{n:0, s:0, min:9999, max:-9999} }; let overallMax = 0, overallMin = 9999;
                 dataList.forEach(x => { let p = x.phase || "First Reading"; if(p === "Extra Bonus") p = "Extra Bonus Reading"; if(stats[p]) { stats[p].n++; stats[p].s += x.score; if(x.score > stats[p].max) stats[p].max = x.score; if(x.score < stats[p].min) stats[p].min = x.score; } if(x.score > overallMax) overallMax = x.score; if(x.score < overallMin) overallMin = x.score; });
-                return { phases, stats, overallMax: dataList.length?overallMax:0, overallMin: dataList.length?overallMin:0 };
+                return { phases, stats, overallMax, overallMin: dataList.length?overallMin:0 };
             };
-
-            const nData = processPhaseData(nd); 
-            if(gNeetPhCount) gNeetPhCount.destroy(); gNeetPhCount = new Chart(document.getElementById('gtNeetPhaseCountChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'GTs Taken', data: nData.phases.map(p=>nData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc, stepSize:1}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-            if(gNeetPhAvg) gNeetPhAvg.destroy(); gNeetPhAvg = new Chart(document.getElementById('gtNeetPhaseAvgChart'), { type: 'bar', data: { labels: nData.phases, datasets: [{ label: 'Avg Score', data: nData.phases.map(p=>nData.stats[p].n>0?(nData.stats[p].s/nData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-            let nStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; nData.phases.forEach(p => { const s = nData.stats[p]; if(s.n > 0) nStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); nStatsHtml += `</div>`; document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
-            
-            const iData = processPhaseData(id); 
-            if(gIniPhCount) gIniPhCount.destroy(); gIniPhCount = new Chart(document.getElementById('gtIniPhaseCountChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'GTs Taken', data: iData.phases.map(p=>iData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc, stepSize:1}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-            if(gIniPhAvg) gIniPhAvg.destroy(); gIniPhAvg = new Chart(document.getElementById('gtIniPhaseAvgChart'), { type: 'bar', data: { labels: iData.phases, datasets: [{ label: 'Avg Score', data: iData.phases.map(p=>iData.stats[p].n>0?(iData.stats[p].s/iData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-            let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; iData.phases.forEach(p => { const s = iData.stats[p]; if(s.n > 0) iStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b></span></div>`; }); iStatsHtml += `</div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
-
-            const fData = processPhaseData(fd);
-            if(gFmgePhCount) gFmgePhCount.destroy(); gFmgePhCount = new Chart(document.getElementById('gtFmgePhaseCountChart'), { type: 'bar', data: { labels: fData.phases, datasets: [{ label: 'GTs Taken', data: fData.phases.map(p=>fData.stats[p].n), backgroundColor: '#3498db', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc}, stepSize:1}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-            if(gFmgePhAvg) gFmgePhAvg.destroy(); gFmgePhAvg = new Chart(document.getElementById('gtFmgePhaseAvgChart'), { type: 'bar', data: { labels: fData.phases, datasets: [{ label: 'Avg Score', data: fData.phases.map(p=>fData.stats[p].n>0?(fData.stats[p].s/fData.stats[p].n).toFixed(0):0), backgroundColor: '#9b59b6', borderRadius:4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks:{color:tc}, grid:{color:gc} }, x: { ticks:{color:tc, font:{size:9}}, grid:{color:gc} } }, plugins:{legend:{display:false}} } });
-            
-            let fStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${fData.overallMax.toFixed(0)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Qualified GTs</span><span class="gt-stat-val val-high">${fd.filter(x=>x.score>=150).length}</span></div></div><div style="margin-top:10px; font-size:10px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">`; 
-            fData.phases.forEach(p => { 
-                const s = fData.stats[p]; 
-                // Calculate qualified count for this phase
-                const qual = fd.filter(x => {
-                    let xp = x.phase || "First Reading"; 
-                    if(xp === "Extra Bonus") xp = "Extra Bonus Reading"; 
-                    return xp === p && x.score >= 150;
-                }).length;
-
-                if(s.n > 0) fStatsHtml += `<div class="phase-stat-row"><span>${p}</span><span>High: <b class="val-high">${s.max.toFixed(0)}</b> | Low: <b class="val-low">${s.min.toFixed(0)}</b> | Qual: <b style="color:#2ecc71;">${qual}</b></span></div>`; 
-            }); 
-            fStatsHtml += `</div>`;
-            document.getElementById('gtFmgeStats').innerHTML = fData.overallMax > 0 ? fStatsHtml : "";
+            const nData = processPhaseData(nd); let nStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div></div>`; document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
+            const iData = processPhaseData(id); let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div>`; document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
+            const fData = processPhaseData(fd); let fStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${fData.overallMax.toFixed(0)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Qualified GTs</span><span class="gt-stat-val val-high">${fd.filter(x=>x.score>=150).length}</span></div></div>`; document.getElementById('gtFmgeStats').innerHTML = fData.overallMax > 0 ? fStatsHtml : "";
         }
 
         function renderBackupStatus() {
@@ -1427,57 +1177,8 @@
             el.innerText = diff === 0 ? "✅ BACKED UP TODAY" : `⚠️ LAST BACKUP: ${diff} DAYS AGO`;
             el.style.color = diff > 7 ? "#ef5350" : (diff > 0 ? "#f1c40f" : "#2ecc71");
         }
-        
-        // Ensure updateUI is defined globally before calling it
-        function updateUI() { 
-            renderBackupStatus(); renderData(); renderSWT(); renderGT(); 
-            updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); 
-            updateCountdowns(); renderMonthlyTable(); populateGTHistory(); 
-            renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); 
-        }
-
-        // 1. Define a function to safely remove the loader
-        function hideLoader() {
-            const loader = document.getElementById('sync-overlay');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500); // Smooth fade out
-            }
-        }
-
-        // 2. Updated Initialization Logic with Safety Valve
-        window.addEventListener('DOMContentLoaded', () => {
-            // Load local data immediately so user sees something
-            updateUI(); 
-            setInterval(updateCountdowns, 60000);
-            
-            // Set a "Safety Timer" - If cloud sync hangs for 4 seconds, force open the app
-            const safetyTimer = setTimeout(() => {
-                console.warn("⚠️ Cloud sync taking too long. Opening app in offline mode.");
-                hideLoader();
-                const statusEl = document.getElementById('cloudStatus');
-                if(statusEl) statusEl.style.color = '#f39c12'; // Turn cloud icon yellow (slow connection)
-            }, 4000);
-
-            // Attempt Cloud Sync
-            setTimeout(() => {
-                if(window.startCloudSync && tgUser.id !== "OFFLINE") {
-                    window.startCloudSync(tgUser.id, KEYS)
-                        .then(() => {
-                            clearTimeout(safetyTimer); // Cancel safety timer if sync finishes fast
-                            hideLoader();
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            clearTimeout(safetyTimer);
-                            hideLoader();
-                        });
-                } else {
-                    clearTimeout(safetyTimer);
-                    hideLoader();
-                }
-            }, 500);
-        });
+        function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
+        updateUI(); setInterval(updateCountdowns, 60000);
     </script>
 </body>
 </html>
