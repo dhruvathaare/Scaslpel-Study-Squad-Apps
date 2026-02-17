@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V7.0</title>
+    <title>Scalpel Master Pro V7.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,11 +25,10 @@
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
 
-      // We use the Telegram ID as the unique patient ID (Key)
       const tgUser = window.Telegram.WebApp.initDataUnsafe?.user || { id: "OFFLINE" };
       const userId = tgUser.id;
 
-      // Global function to sync everything to the cloud
+      // --- SYNC FUNCTION ---
       window.syncToCloud = function() {
           const dataToSync = {};
           const keysToBackup = ['LOGS', 'NEET', 'INI', 'FMGE', 'SWT', 'GOALS', 'PYQ', 'TOUGH'];
@@ -41,23 +40,30 @@
           });
 
           if (userId !== "OFFLINE") {
+              const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              // Visual indicator that sync is trying
+              const statusEl = document.getElementById('cloud-sync-status');
+              if(statusEl) statusEl.innerText = "Syncing...";
+
               set(ref(db, 'users/' + userId), dataToSync)
               .then(() => {
-                  console.log("Cloud Sync Successful");
-                  // Update the UI timestamp
-                  const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                  const statusEl = document.getElementById('cloud-sync-status');
-                  if(statusEl) statusEl.innerText = "Cloud Synced: " + now;
+                  console.log("Auto-Sync Successful: " + now);
+                  if(statusEl) {
+                      statusEl.innerText = "Cloud: Online " + now + " ✅";
+                      statusEl.style.color = "#2ecc71";
+                  }
               })
               .catch((error) => {
                   console.error("Cloud Sync Failed", error);
-                  const statusEl = document.getElementById('cloud-sync-status');
-                  if(statusEl) statusEl.innerText = "Sync Failed (Offline)";
+                  if(statusEl) {
+                      statusEl.innerText = "Sync Failed (Offline)";
+                      statusEl.style.color = "#ef5350";
+                  }
               });
           }
       };
 
-      // Function to pull data from cloud on startup
+      // --- PULL FUNCTION ---
       window.pullFromCloud = function() {
           if (userId === "OFFLINE") return;
           const dbRef = ref(db);
@@ -69,14 +75,21 @@
                       localStorage.setItem(prefix + key, JSON.stringify(cloudData[key]));
                   });
                   console.log("Data Restored from Cloud");
-                  // Trigger UI update once after pulling
                   if(typeof updateUI === 'function') updateUI();
               }
           }).catch((error) => console.error(error));
       };
 
-      // Auto-pull on load
+      // 1. Pull data immediately on load
       window.pullFromCloud();
+
+      // 2. Trigger an immediate sync to update status text
+      setTimeout(() => { window.syncToCloud(); }, 3000); 
+
+      // 3. Set Heartbeat: Sync every 10 minutes (600,000 ms)
+      setInterval(() => {
+          window.syncToCloud();
+      }, 600000);
     </script>
     <style>
         /* CSS VARIABLES */
@@ -359,7 +372,7 @@
         <div class="header-ui">
             <div class="user-badge">
                 <span id="uFullName">...</span>
-                <span id="cloud-sync-status" style="font-size: 8px; display: block; opacity: 0.8; color: #2ecc71;">Cloud: Initializing...</span>
+                <span id="cloud-sync-status" style="font-size: 8px; display: block; opacity: 0.8; color: #f39c12;">Cloud: Initializing...</span>
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                     <span id="statusDot" class="status-dot"></span>
                     <span id="uID" class="user-id-tag">ID: 0</span>
@@ -816,6 +829,7 @@
                 if (el && el.checked) selection[s] = true;
             });
             localStorage.setItem(KEYS.TOUGH, JSON.stringify(selection));
+            // SYNC TRIGGER
             if(typeof window.syncToCloud === 'function') window.syncToCloud();
             renderToughDashboard();
         }
@@ -913,6 +927,7 @@
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"); 
             logs.unshift({ date: new Date().toLocaleDateString('en-GB'), subject: s, mcqs: m, duration: d, phase: ph, skipped: skipped || false }); 
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
+            // SYNC TRIGGER
             if(typeof window.syncToCloud === 'function') window.syncToCloud();
         }
         let hChart, mChart, gNeetChart, gIniChart, gFmgeChart, gFmgeP1Chart, gFmgeP2Chart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
@@ -1080,8 +1095,19 @@
         }
         
         function updateCountdowns() { 
-            const now = new Date(); const targets = { iniJuly: new Date("2026-05-17T00:00:00+05:30"), upsc: new Date("2026-08-02T00:00:00+05:30"), neet: new Date("2026-08-30T00:00:00+05:30"), iniJan: new Date("2026-11-01T00:00:00+05:30"), fmgeJun: new Date("2026-06-28T00:00:00+05:30"), fmgeDec: new Date("2026-12-20T00:00:00+05:30") };
-            Object.keys(targets).forEach(k => { const diff = Math.ceil((targets[k] - now) / (1000 * 60 * 60 * 24)); const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); if(el) el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE"); });
+            const now = new Date(); 
+            const targets = { iniJuly: new Date("2026-05-17T00:00:00+05:30"), upsc: new Date("2026-08-02T00:00:00+05:30"), neet: new Date("2026-08-30T00:00:00+05:30"), iniJan: new Date("2026-11-01T00:00:00+05:30"), fmgeJun: new Date("2026-06-28T00:00:00+05:30"), fmgeDec: new Date("2026-12-20T00:00:00+05:30") };
+            Object.keys(targets).forEach(k => { 
+                const diff = Math.ceil((targets[k] - now) / (1000 * 60 * 60 * 24)); 
+                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); 
+                if(el) {
+                    if (k === 'fmgeDec') {
+                         el.innerText = "TBA";
+                    } else {
+                         el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE");
+                    }
+                }
+            });
             const istStr = new Date(now.getTime() + (330 * 60000)).toISOString().split('T')[0];
             if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
             if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
@@ -1178,7 +1204,7 @@
         
         function renderSWT() {
             const all = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"), sub = document.getElementById('swtSubject').value, f = all.filter(x => x.subject === sub), tc = getThemeColor('text'), gc = getThemeColor('grid');
-            if(sChart) sChart.destroy(); if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:'%', data:f.map(x=>x.percent), borderColor:'#5288c1'}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:tc}, grid:{color:gc}}, x:{ticks:{color:tc}, grid:{color:gc}}}}});
+            if(sChart) sChart.destroy(); if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:'%', data:f.map(x=>x.percent), borderColor:'#5288c1'}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:tc}, grid:{color:gc}}, x:{ticks:{color:tc, font:{size:7}, maxRotation:90}, grid:{color:gc}} }, plugins:{legend:{display:false}}}});
             const perf = {}; ALL_SWT_SUBS.forEach(s => perf[s] = {sum:0, count:0, totalQs:0}); all.forEach(l => { if(perf[l.subject]) { perf[l.subject].sum += parseFloat(l.percent); perf[l.subject].count++; perf[l.subject].totalQs += parseInt(l.total); } });
             if(scuChart) scuChart.destroy(); scuChart = new Chart(document.getElementById('swtCumulativeChart'), { type: 'line', data: { labels: ALL_SWT_SUBS, datasets: [{ data: ALL_SWT_SUBS.map(s => perf[s].count > 0 ? (perf[s].sum / perf[s].count).toFixed(1) : null), borderColor: '#f39c12' }] }, options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks:{color:tc}, grid:{color:gc} }, x:{ticks:{color:tc, font:{size:7}, maxRotation:90}, grid:{color:gc}} }, plugins:{legend:{display:false}} } });
             if(sqChart) sqChart.destroy(); sqChart = new Chart(document.getElementById('swtQuestionsChart'), { type: 'line', data: { labels: ALL_SWT_SUBS, datasets: [{ label: 'Questions Solved', data: ALL_SWT_SUBS.map(s => perf[s].totalQs), borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.1)', fill: true, tension: 0.4, spanGaps: true }] }, options: { maintainAspectRatio: false, scales: { y: { ticks: { color: tc, font: { size: 9 } }, beginAtZero: true, grid:{color:gc} }, x: { ticks: { color: tc, font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 }, grid:{color:gc} } }, plugins: { legend: { display: false } } } });
