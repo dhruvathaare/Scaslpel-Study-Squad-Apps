@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V8.0 - Ultimate Edition</title>
+    <title>Scalpel Master Pro - Dream Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
@@ -14,7 +14,6 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
       import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-      // Expose to window for global access
       window.firebaseModules = { initializeApp, getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue };
     </script>
 
@@ -43,10 +42,7 @@
             --info: #3498db;
             
             /* Feature Specifics */
-            --circadian-glow: rgba(241, 196, 15, 0.15);
-            --blackbox-bg: #1a1a1a;
-            --blackbox-border: #333;
-            --engram-card: #2c3e50;
+            --dream-glow: rgba(82, 136, 193, 0.25);
         }
         
         [data-theme="light"] {
@@ -62,36 +58,76 @@
             --tab-active: #007aff;
             --tab-inactive: #5ac8fa;
             
-            --circadian-glow: rgba(255, 215, 0, 0.1);
-            --blackbox-bg: #f9f9f9;
-            --blackbox-border: #ddd;
-            --engram-card: #ffffff;
+            --dream-glow: rgba(0, 122, 255, 0.15);
         }
 
-        /* GLOBAL RESET & LAYOUT */
+        /* GLOBAL RESET */
         html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
         
         body { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            font-family: 'Inter', sans-serif; 
             padding: 10px; 
             box-sizing: border-box; 
             overflow-y: auto !important; 
             -webkit-overflow-scrolling: touch;
             min-height: 100vh;
         }
-
-        /* Responsive Container */
+        /* RESPONSIVE CONTAINER */
         .container { 
             width: 100%; 
-            max-width: 450px; /* Slightly wider for new charts */
+            max-width: 450px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             text-align: center; 
-            padding-bottom: 80px; /* Space for footer */
+            padding-bottom: 80px; 
+        }
+
+        /* --- NEW: DREAM HEADER STYLES --- */
+        .header-ui { 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            gap: 10px;
+        }
+        
+        /* The Dream Box (Clickable Identity) */
+        .dream-target-box {
+            background: rgba(82, 136, 193, 0.15);
+            border: 1px dashed var(--accent);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--accent);
+            text-align: left;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .dream-target-box:hover { background: rgba(82, 136, 193, 0.25); transform: translateY(-1px); }
+        .dream-icon { font-size: 16px; }
+
+        /* User Badge (Top Right) */
+        .user-badge { 
+            background: rgba(0,0,0,0.2); 
+            border: 1px solid var(--border); 
+            padding: 6px 10px; 
+            border-radius: 12px; 
+            font-size: 10px; 
+            color: var(--subtext); 
+            text-align: right; 
+            line-height: 1.2; 
+            min-width: 80px;
         }
 
         /* UTILITY CLASSES */
@@ -101,40 +137,12 @@
         .text-center { text-align: center; }
         .text-bold { font-weight: 800; }
         .text-small { font-size: 11px; opacity: 0.8; }
-        
-        /* HEADER & IDENTITY */
-        .header-ui { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        
-        .dream-target-box {
-            background: rgba(82, 136, 193, 0.15);
-            border: 1px dashed var(--accent);
-            padding: 6px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--accent);
-            text-align: left;
-            flex: 1;
-            margin-right: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .dream-target-box:hover { background: rgba(82, 136, 193, 0.25); }
-        .dream-icon { font-size: 14px; }
 
-        .user-badge { 
-            background: rgba(0,0,0,0.2); 
-            border: 1px solid var(--border); 
-            padding: 6px 12px; 
-            border-radius: 15px; 
-            font-size: 10px; 
-            color: var(--subtext); 
-            text-align: right; 
-            line-height: 1.2; 
-        }
+        /* TYPOGRAPHY */
+        h1 { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 24px; margin: 5px 0; color: var(--accent); letter-spacing: 1px; }
+        h2 { font-size: 18px; color: var(--text); margin: 0 0 10px 0; font-weight: 800; }
+        h3 { font-size: 14px; color: var(--subtext); text-transform: uppercase; margin: 0; font-weight: 700; letter-spacing: 0.5px; }
+
         /* BUTTONS */
         .btn { 
             background: var(--accent); 
@@ -145,17 +153,14 @@
             font-weight: 700; 
             width: 100%; 
             cursor: pointer; 
-            font-size: 14px; 
+            font-size: 13px; 
             transition: transform 0.1s, opacity 0.2s; 
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--subtext); }
         .btn-danger { background: var(--danger); }
-        .btn-success { background: var(--success); }
         .btn-sm { padding: 8px 12px; font-size: 11px; width: auto; }
-
         /* CARDS & CONTAINERS */
         .card { 
             background: var(--card); 
@@ -178,7 +183,26 @@
             padding-bottom: 8px; 
         }
 
-        /* NAVIGATION TABS (5 ITEMS) */
+        /* FORM ELEMENTS */
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border); 
+            background: var(--input-bg); 
+            color: var(--text); 
+            font-size: 13px; 
+            font-weight: 600; 
+            box-sizing: border-box; 
+            appearance: none; 
+            -webkit-appearance: none; 
+            margin-bottom: 6px; 
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
+
+        /* NAVIGATION TABS */
         .nav-tabs { 
             display: flex; 
             width: 100%; 
@@ -226,120 +250,7 @@
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .status-online { background-color: var(--success); box-shadow: 0 0 6px var(--success); }
         .status-offline { background-color: var(--warning); }
-        .cloud-text { font-size: 9px; opacity: 0.7; font-family: monospace; display: block; margin-top: 2px;}
 
-        /* ACCORDION UTILS */
-        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .accordion-content { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
-        .accordion-content.open { display: block; animation: slideDown 0.3s; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        /* TYPOGRAPHY & HEADINGS */
-        h1 { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 24px; margin: 5px 0; color: var(--accent); letter-spacing: 1px; }
-        h2 { font-size: 18px; color: var(--text); margin: 0 0 10px 0; font-weight: 800; }
-        h3 { font-size: 15px; color: var(--subtext); text-transform: uppercase; margin: 0; font-weight: 700; letter-spacing: 0.5px; }
-        
-        .quote-box {
-            font-family: 'Oswald', sans-serif;
-            font-size: 14px;
-            color: var(--subtext);
-            text-transform: uppercase;
-            text-align: center;
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 15px;
-            line-height: 1.4;
-            opacity: 0.9;
-            transition: color 0.3s;
-        }
-        
-        /* FORM ELEMENTS */
-        input, select, textarea { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: 1px solid var(--border); 
-            background: var(--input-bg); 
-            color: var(--text); 
-            font-size: 13px; 
-            font-weight: 600; 
-            box-sizing: border-box; 
-            appearance: none; 
-            -webkit-appearance: none; 
-            margin-bottom: 6px; 
-            font-family: inherit;
-        }
-        
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
-        
-        .checkbox-row { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.1); margin-bottom: 4px; }
-        input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--accent); }
-
-        /* LEADERBOARD STYLES (TOP 50) */
-        .rank-list-container {
-            max-height: 600px;
-            overflow-y: auto;
-            border-radius: 12px;
-            background: rgba(0,0,0,0.2);
-            padding: 5px;
-        }
-        
-        .rank-item {
-            display: grid;
-            grid-template-columns: 35px 1fr auto;
-            align-items: center;
-            background: var(--card);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 6px;
-            border: 1px solid transparent;
-            font-size: 12px;
-        }
-        
-        .rank-pos { font-family: 'Oswald', sans-serif; font-size: 16px; text-align: center; color: var(--subtext); }
-        .rank-name { font-weight: 700; color: var(--text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-right: 10px; }
-        .rank-score { font-weight: 800; color: var(--accent); text-align: right; font-family: monospace; font-size: 13px; }
-        .rank-meta { display: block; font-size: 9px; opacity: 0.6; font-weight: normal; }
-
-        /* RANKING TIERS */
-        .rank-gold { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
-        .rank-gold .rank-pos { color: var(--gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); font-size: 20px; }
-        
-        .rank-silver { border-color: var(--silver); background: rgba(192, 192, 192, 0.05); }
-        .rank-silver .rank-pos { color: var(--silver); font-size: 18px; }
-        
-        .rank-bronze { border-color: var(--bronze); background: rgba(205, 127, 50, 0.05); }
-        .rank-bronze .rank-pos { color: var(--bronze); font-size: 18px; }
-        
-        .rank-elite { border-left: 3px solid var(--info); } 
-        .rank-elite .rank-name::after { content: "ELITE"; background: var(--info); color: white; font-size: 7px; padding: 2px 4px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
-
-        /* ANALYTICS CHARTS SCROLLER */
-        .chart-scroller { 
-            width: 100%; 
-            overflow-x: auto; 
-            margin-bottom: 15px; 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            background: rgba(0,0,0,0.1); 
-            padding: 5px;
-        }
-        .chart-scroll-inner { height: 220px; position: relative; min-width: 100%; }
-
-        /* PACE-MAKER WIDGET */
-        .pacemaker-box {
-            background: linear-gradient(90deg, #2c3e50 0%, #000000 100%);
-            color: white;
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            text-align: left;
-            border-left: 4px solid var(--danger);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .pace-val { font-size: 18px; font-weight: 800; color: var(--danger); font-family: 'Oswald', sans-serif; }
-        
         /* POPUP OVERLAY */
         #popup-overlay {
             display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
@@ -351,99 +262,22 @@
             background: var(--card); padding: 25px; border-radius: 20px; 
             border: 1px solid var(--border); width: 85%; max-width: 320px; 
             text-align: center; color: var(--text); box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            max-height: 85vh; overflow-y: auto;
         }
     </style>
 </head>
-        /* BLACKBOX (MISTAKE TRACKER) */
-        .blackbox-item {
-            background: var(--blackbox-bg);
-            border: 1px solid var(--blackbox-border);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            font-size: 11px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid var(--accent);
-        }
-        .blackbox-tag { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 9px; font-family: monospace; }
-        
-        /* MEMORY ENGRAMS (FLASHCARDS) */
-        .engram-card-display {
-            background: var(--engram-card);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
-        }
-        .engram-front { font-size: 16px; font-weight: bold; }
-        .engram-back { font-size: 14px; color: #ccc; margin-top: 10px; display: none; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.2); width: 100%; }
-        
-        /* STREAK FREEZE & LIVE LIB */
-        .streak-freeze-badge {
-            background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 0 10px rgba(0, 198, 251, 0.4);
-        }
-        
-        .live-lib-pill {
-            background: rgba(46, 204, 113, 0.15);
-            color: #2ecc71;
-            border: 1px solid #2ecc71;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 9px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            animation: pulse-green 2s infinite;
-        }
-        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); } 70% { box-shadow: 0 0 0 4px rgba(46, 204, 113, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); } }
-
-        /* HIT LIST (CHECKBOXES) */
-        .hit-list-item {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .hit-list-item.checked {
-            opacity: 0.5;
-            text-decoration: line-through;
-            background: rgba(0,0,0,0.2);
-        }
-    </style>
-</head>
-
 <body data-active-tab="tab-daily">
     
     <div id="popup-overlay">
         
+        <div class="popup-card" id="dream-popup">
+            <h2>🏥 Your Identity</h2>
+            <p class="text-small">Define your future self.</p>
+            <input type="text" id="dreamSpecialty" placeholder="Dream Specialty (e.g. Neuro)">
+            <input type="text" id="dreamCollege" placeholder="Dream College (e.g. AIIMS)">
+            <button class="btn" onclick="saveDream()">Update Identity</button>
+            <button class="btn btn-outline" onclick="closePopup()" style="margin-top:5px;">Cancel</button>
+        </div>
+
         <div class="popup-card" id="mcq-popup">
             <h2 style="color:var(--accent);">Cycle Complete</h2>
             <p style="font-size:12px; opacity:0.8;">Enter MCQs solved in this session:</p>
@@ -458,58 +292,14 @@
             <button class="btn btn-danger" onclick="stopEntireSession()" style="margin-top:10px;">End Session</button>
         </div>
 
-        <div class="popup-card" id="hit-list-popup">
-            <h2>☀️ Morning Briefing</h2>
-            <p style="font-size:11px; opacity:0.7;">Lock in 3 targets for today.</p>
-            <input type="text" id="hl_1" placeholder="Target 1 (e.g. 50 Surgery Qs)">
-            <input type="text" id="hl_2" placeholder="Target 2 (e.g. Read Glaucoma)">
-            <input type="text" id="hl_3" placeholder="Target 3 (e.g. 1 GT)">
-            <button class="btn" onclick="saveHitList()">Lock Targets 🔒</button>
-        </div>
-
-        <div class="popup-card" id="dream-popup">
-            <h2>🏥 Your Identity</h2>
-            <input type="text" id="dreamSpecialty" placeholder="Dream Specialty (e.g. Neuro)">
-            <input type="text" id="dreamCollege" placeholder="Dream College (e.g. AIIMS)">
-            <button class="btn" onclick="saveDream()">Update Identity</button>
-            <button class="btn btn-outline" onclick="closePopup()" style="margin-top:5px;">Cancel</button>
-        </div>
-
-        <div class="popup-card" id="blackbox-popup">
-            <h2 style="color:#ef5350;">Blackbox Log</h2>
-            <p style="font-size:11px;">Why did we fail this topic?</p>
-            <input type="text" id="bb_topic" placeholder="Topic Name (e.g. Gout)">
-            <select id="bb_reason">
-                <option value="Concept Gap">Concept Gap</option>
-                <option value="Silly Mistake">Silly Mistake</option>
-                <option value="Fact Forgot">Fact Forgot</option>
-                <option value="Misread Q">Misread Question</option>
-            </select>
-            <button class="btn btn-danger" onclick="saveBlackboxItem()">Log Error</button>
-            <button class="btn btn-outline" onclick="closePopup()" style="margin-top:5px;">Cancel</button>
-        </div>
-
-        <div class="popup-card" id="engram-popup">
-            <h2 style="color:var(--warning);">New Memory Engram</h2>
-            <input type="text" id="engram_q" placeholder="Front (The Question/Fact)">
-            <textarea id="engram_a" rows="3" placeholder="Back (The Answer/Value)"></textarea>
-            <button class="btn" style="background:var(--warning); color:black;" onclick="saveEngram()">Create Engram</button>
-            <button class="btn btn-outline" onclick="closePopup()" style="margin-top:5px;">Cancel</button>
-        </div>
-
         <div class="popup-card" id="restore-popup">
             <h2>Restore Data</h2>
             <textarea id="restoreInput" placeholder="Paste your backup code here..." rows="4"></textarea>
             <button class="btn btn-success" onclick="processRestore()" style="margin-top:10px;">Import</button>
             <button class="btn btn-outline" onclick="closePopup()" style="margin-top:5px;">Cancel</button>
         </div>
-        
-        <div class="popup-card" id="gt-breakdown-popup" style="max-width:380px;">
-            <h3>Subject Breakdown</h3>
-            <div id="gt-subject-inputs" style="max-height:300px; overflow-y:auto; margin-bottom:10px;"></div>
-            <button class="btn btn-success" onclick="finalizeGTSave()">Save GT Data</button>
-        </div>
     </div>
+
     <div class="container">
         
         <div class="header-ui">
@@ -520,7 +310,6 @@
             <div class="user-badge">
                 <div class="flex-row" style="justify-content: flex-end; margin-bottom: 2px;">
                     <span id="uFullName" class="text-bold">Doctor</span>
-                    <span class="live-lib-pill" id="liveLibBadge">🟢 1 Online</span>
                 </div>
                 <div class="flex-row" style="justify-content: flex-end; gap: 4px;">
                     <span id="statusDot" class="status-dot"></span>
@@ -528,47 +317,14 @@
                 </div>
             </div>
         </div>
-
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" 
              style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent); box-shadow: 0 0 20px rgba(82,136,193,0.3); margin-bottom: 5px;">
         
         <h1>Scalpel Master Pro <span style="font-size: 12px; color: var(--success); vertical-align: super;">V8.0</span></h1>
         
-        <div id="smartQuote" class="quote-box">
-            "INITIALIZING SURGICAL PROTOCOLS..."
-        </div>
-
-        <div class="card" style="padding: 10px; background: rgba(0,0,0,0.2); border: none; display: flex; justify-content: space-between; align-items: center;">
-            <div class="text-center" style="flex: 1;">
-                <div id="streakCount" style="font-size: 24px; font-weight: 800; color: var(--warning);">0</div>
-                <div class="text-small">DAY STREAK</div>
-            </div>
-            <div style="width: 1px; height: 30px; background: var(--border);"></div>
-            <div class="text-center" style="flex: 1;">
-                <div id="freezeCount" style="font-size: 24px; font-weight: 800; color: #00c6fb;">0 🧊</div>
-                <div class="text-small">FREEZES LEFT</div>
-            </div>
-            <div style="width: 1px; height: 30px; background: var(--border);"></div>
-            <div class="text-center" style="flex: 1;">
-                <div id="mcqTodayCount" style="font-size: 24px; font-weight: 800; color: var(--success);">0</div>
-                <div class="text-small">MCQs TODAY</div>
-            </div>
-        </div>
-
-        <div class="card" style="padding: 10px;">
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
-                <div class="text-center" style="background: rgba(82, 136, 193, 0.1); padding: 5px; border-radius: 8px;">
-                    <div id="daysNeet" class="text-bold" style="color: var(--accent); font-size: 16px;">--</div>
-                    <div class="text-small">NEET PG</div>
-                </div>
-                <div class="text-center" style="background: rgba(46, 204, 113, 0.1); padding: 5px; border-radius: 8px;">
-                    <div id="daysIniJuly" class="text-bold" style="color: var(--success); font-size: 16px;">--</div>
-                    <div class="text-small">INICET</div>
-                </div>
-                <div class="text-center" style="background: rgba(243, 156, 18, 0.1); padding: 5px; border-radius: 8px;">
-                    <div id="daysFmgeJun" class="text-bold" style="color: var(--warning); font-size: 16px;">--</div>
-                    <div class="text-small">FMGE</div>
-                </div>
+        <div class="card" style="padding: 10px; background: rgba(0,0,0,0.2); border: none; margin-bottom: 15px;">
+            <div style="font-family: 'Oswald', sans-serif; font-size: 14px; color: var(--subtext); text-transform: uppercase;">
+                "Discipline is the bridge between goals and accomplishment."
             </div>
         </div>
 
@@ -582,42 +338,17 @@
             <div class="tab-btn" onclick="switchTab('tab-swt', this)">
                 <span class="tab-icon">🧠</span>SWT
             </div>
-            <div class="tab-btn" onclick="switchTab('tab-gt', this)">
-                <span class="tab-icon">📈</span>GT
-            </div>
             <div class="tab-btn" onclick="switchTab('tab-rank', this)">
                 <span class="tab-icon">🏆</span>Rank
             </div>
         </div>
+
         <div id="tab-daily" class="tab-content active">
             
-            <div class="pacemaker-box" onclick="recalcPace()">
-                <div>
-                    <div style="font-size: 10px; opacity: 0.8; text-transform: uppercase;">REQUIRED PACE</div>
-                    <div style="font-size: 11px;">To finish by NEET PG:</div>
-                </div>
-                <div class="text-right">
-                    <div id="paceDisplay" class="pace-val">-- Days</div>
-                    <div style="font-size: 9px;">PER SUBJECT</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>☀️ Today's Hit List</h3>
-                    <button class="btn btn-sm btn-outline" onclick="openHitList()">Edit</button>
-                </div>
-                <div id="hitListContainer" class="flex-col">
-                    <div style="text-align:center; opacity:0.6; font-size:11px; padding:10px;">
-                        No targets set. Click Edit.
-                    </div>
-                </div>
-            </div>
-
             <div class="card" id="study-timer-card">
                 <div class="card-header">
                     <h3>⏱️ Surgical Timer</h3>
-                    <span id="circadianBadge" style="font-size:10px; color:var(--warning); display:none;">☀️ GOLDEN HOUR</span>
+                    <div class="text-small" style="opacity: 0.7;">Focus Mode</div>
                 </div>
 
                 <div class="flex-col" style="margin-bottom: 10px;">
@@ -654,7 +385,6 @@
                         <input type="number" id="breakTime" value="10" min="1" max="60">
                     </div>
                 </div>
-
                 <div id="timer-display" style="font-size: 60px; font-weight: 800; font-family: monospace; text-align: center; margin: 10px 0; letter-spacing: 2px;">00:00:00</div>
                 
                 <button id="startBtn" class="btn" onclick="startStudyTimer()">Start Session</button>
@@ -667,10 +397,11 @@
                     <button class="btn btn-danger" onclick="stopEntireSession()">End Session</button>
                 </div>
             </div>
+
             <div class="card">
                 <div class="card-header">
                     <h3>📊 Performance Trends</h3>
-                    <div style="font-size: 10px; opacity: 0.7;">Last 30 Days</div>
+                    <div style="font-size: 10px; opacity: 0.7;">Last 7 Days</div>
                 </div>
 
                 <div style="font-size: 11px; color: var(--warning); margin-bottom: 5px;">Study Hours</div>
@@ -703,11 +434,10 @@
         </div> <div id="tab-goal" class="tab-content">
             
             <div class="card">
-                <div class="accordion-header" onclick="toggleAccordion('acc_exams', this)">
+                <div class="card-header">
                     <h3>🎯 Target Exams</h3>
-                    <span>▼</span>
                 </div>
-                <div id="acc_exams" class="accordion-content">
+                <div class="flex-col">
                     <div class="checkbox-row"><span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()"></div>
                     <div class="checkbox-row"><span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()"></div>
                     <div class="checkbox-row"><span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()"></div>
@@ -716,74 +446,8 @@
                     <div class="checkbox-row"><span>FMGE Dec</span><input type="checkbox" id="goal_fmge_dec" onchange="saveGoals()"></div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="accordion-header" onclick="toggleAccordion('acc_tough', this)">
-                    <h3>🌋 Tough Subjects</h3>
-                    <span>▼</span>
-                </div>
-                <div id="acc_tough" class="accordion-content">
-                    <p class="text-small">Select subjects to monitor closely:</p>
-                    <div id="tough-subject-selector" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;"></div>
-                    
-                    <div id="tough-dashboard" style="margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px;"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="accordion-header" onclick="toggleAccordion('acc_phases', this)">
-                    <h3>📚 Reading Phases</h3>
-                    <span>▼</span>
-                </div>
-                <div id="acc_phases" class="accordion-content">
-                    <div id="goal-phases-container"></div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="accordion-header" onclick="toggleAccordion('acc_monthly', this)">
-                    <h3>📅 Monthly Rounds</h3>
-                    <span>▼</span>
-                </div>
-                <div id="acc_monthly" class="accordion-content">
-                    <table style="width:100%; font-size:11px; text-align:center;">
-                        <thead><tr><th>Month</th><th>MCQs</th><th>Hours</th><th>Top Sub</th></tr></thead>
-                        <tbody id="monthlyReportBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div> ```
+        </div>
         <div id="tab-swt" class="tab-content">
-            <div class="card" style="border-color: var(--danger); background: rgba(239, 83, 80, 0.05);">
-                <div class="card-header">
-                    <h3 style="color: var(--danger);">📓 The Blackbox</h3>
-                    <button class="btn btn-sm btn-danger" onclick="openPopup('blackbox-popup')">+ Log Error</button>
-                </div>
-                <div id="blackbox-summary" class="text-small" style="margin-bottom:10px; color: var(--danger); font-weight: bold;">
-                    Analyzing failure patterns...
-                </div>
-                <div id="blackbox-list" style="max-height: 150px; overflow-y: auto;">
-                    </div>
-            </div>
-
-            <div class="card" style="border-color: var(--warning); background: rgba(243, 156, 18, 0.05);">
-                <div class="card-header">
-                    <h3 style="color: var(--warning);">⚡ Memory Engrams</h3>
-                    <button class="btn btn-sm" style="background: var(--warning); color: black;" onclick="openPopup('engram-popup')">+ New</button>
-                </div>
-                
-                <div id="engram-viewer" class="engram-card-display" onclick="flipEngram()">
-                    <div id="engram-content">
-                        <div class="text-small" style="opacity: 0.6;">No Engrams Found.</div>
-                        <div style="font-size: 14px; font-weight: bold; margin-top: 5px;">Click + to add volatile facts.</div>
-                    </div>
-                </div>
-                <div class="flex-row">
-                    <button class="btn btn-sm btn-outline" style="flex:1;" onclick="prevEngram()">◀</button>
-                    <button class="btn btn-sm btn-outline" style="flex:1;" onclick="nextEngram()">▶</button>
-                </div>
-            </div>
-
             <div class="card">
                 <h3>SWT Performance</h3>
                 <div class="flex-col" style="margin-top:10px;">
@@ -813,82 +477,11 @@
                     <canvas id="swtChart"></canvas>
                 </div>
             </div>
-        </div> ```
-        <div id="tab-gt" class="tab-content">
-            <div class="card" style="padding: 10px; background: rgba(0,0,0,0.1); border: none;">
-                <div class="nav-tabs" style="margin-bottom: 0;">
-                    <button class="gt-tab-btn" id="tabNeet" onclick="switchGT('NEET')" style="flex:1; padding:8px; font-size:10px; border-radius:8px 0 0 8px;">NEET PG</button>
-                    <button class="gt-tab-btn" id="tabInicet" onclick="switchGT('INICET')" style="flex:1; padding:8px; font-size:10px; border-radius:0;">INICET</button>
-                    <button class="gt-tab-btn" id="tabFmge" onclick="switchGT('FMGE')" style="flex:1; padding:8px; font-size:10px; border-radius:0 8px 8px 0;">FMGE</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="flex-col">
-                    <div class="flex-row">
-                        <input type="date" id="gtDate" style="flex:1.5;">
-                        <input type="text" id="gtPlatform" placeholder="Platform (e.g. Marrow)" style="flex:1;">
-                    </div>
-                    
-                    <div id="gt-inputs-std">
-                        <div class="flex-row">
-                            <input type="number" id="gtCorrect" placeholder="Correct" style="flex:1;" oninput="calcGT()">
-                            <input type="number" id="gtUnat" placeholder="Unattempted" style="flex:1;" oninput="calcGT()">
-                        </div>
-                    </div>
-
-                    <div id="gt-inputs-fmge" style="display:none;">
-                        <div class="flex-row"><span class="text-small">P1:</span><input type="number" id="gtP1C" placeholder="Corr" oninput="calcGT()"><input type="number" id="gtP1U" placeholder="Unat" oninput="calcGT()"></div>
-                        <div class="flex-row"><span class="text-small">P2:</span><input type="number" id="gtP2C" placeholder="Corr" oninput="calcGT()"><input type="number" id="gtP2U" placeholder="Unat" oninput="calcGT()"></div>
-                    </div>
-
-                    <div class="flex-row" style="background: rgba(0,0,0,0.2); padding:10px; border-radius:8px; justify-content: space-around; font-weight: 800; font-family: 'Oswald', sans-serif;">
-                        <span style="color:var(--danger);">W: <span id="gtW">0</span></span>
-                        <span style="color:var(--accent);">SCORE: <span id="gtS">0</span></span>
-                    </div>
-
-                    <button class="btn btn-warning" onclick="openGTBreakdown()" style="color:black; margin-top:5px;">Add Subject Breakdown</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div id="neet-area">
-                    <h3>NEET PG Progress</h3>
-                    <div id="gtNeetStats"></div>
-                    <div class="chart-scroller"><div id="neetScrollInner" class="chart-scroll-inner"><canvas id="gtNeetChart"></canvas></div></div>
-                </div>
-                <div id="inicet-area" style="display:none;">
-                    <h3>INICET Progress</h3>
-                    <div id="gtIniStats"></div>
-                    <div class="chart-scroller"><div id="iniScrollInner" class="chart-scroll-inner"><canvas id="gtInicetChart"></canvas></div></div>
-                </div>
-                <div id="fmge-area" style="display:none;">
-                    <h3>FMGE Progress</h3>
-                    <div id="gtFmgeStats"></div>
-                    <div class="chart-scroller"><div id="fmgeScrollInner" class="chart-scroll-inner"><canvas id="gtFmgeChart"></canvas></div></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><h3>Subject Analysis</h3></div>
-                <select id="gtHistorySelect" onchange="renderGTBreakdownGraph()"><option value="">Select GT History</option></select>
-                <div id="gtReviewMeta" class="text-small" style="margin: 5px 0; text-align: center; color: var(--accent);"></div>
-                <div id="gtBreakdownChartContainer" class="chart-scroller" style="display:none; margin-top:10px;">
-                    <div id="gtBreakdownScrollInner" class="chart-scroll-inner"><canvas id="gtBreakdownChart"></canvas></div>
-                </div>
-            </div>
-        </div>
-        <div id="tab-rank" class="tab-content">
+        </div> <div id="tab-rank" class="tab-content">
             <div class="card">
                 <div style="text-align:center; margin-bottom:15px;">
                     <h2 style="margin:0; color:var(--warning); font-family:'Oswald';">THE ARENA</h2>
                     <div id="liveCountArena" class="text-small" style="color:var(--success);">🔴 Synchronizing Live Ranks...</div>
-                </div>
-
-                <div class="flex-row" style="margin-bottom:15px; gap:4px;">
-                    <button class="tab-btn active" id="rankBtnStreak" onclick="switchRankMode('streak', this)" style="font-size:9px;">🔥 STREAKS</button>
-                    <button class="tab-btn" id="rankBtnSwt" onclick="switchRankMode('swt', this)" style="font-size:9px;">🧠 SUBJECTS</button>
-                    <button class="tab-btn" id="rankBtnGt" onclick="switchRankMode('gt', this)" style="font-size:9px;">🏛️ HALL OF FAME</button>
                 </div>
 
                 <div id="rank-filter-streak" class="flex-col">
@@ -896,26 +489,6 @@
                         <span style="color:var(--warning); font-weight:800;">THE MCQ MARATHON RULE:</span><br>
                         Min 50 MCQs/day to hold streak. Tie-breaker: Total MCQ Vol.
                     </div>
-                </div>
-
-                <div id="rank-filter-swt" class="flex-col hidden">
-                    <select id="rankSubjectSelect" onchange="loadLeaderboard('swt')">
-                        <option value="Anatomy">Anatomy</option><option value="Physiology">Physiology</option>
-                        <option value="Biochemistry">Biochemistry</option><option value="Pathology">Pathology</option>
-                        <option value="Microbiology">Microbiology</option><option value="Pharmacology">Pharmacology</option>
-                        <option value="FMT">FMT</option><option value="PSM">PSM</option><option value="Ophthalmology">Ophthalmology</option>
-                        <option value="ENT">ENT</option><option value="Medicine">Medicine</option><option value="Surgery">Surgery</option>
-                        <option value="OBG">OBG</option><option value="Pediatrics">Pediatrics</option>
-                    </select>
-                    <span class="text-small" style="text-align:center;">*Requires 300+ Qs logged in subject to qualify.</span>
-                </div>
-
-                <div id="rank-filter-gt" class="flex-col hidden">
-                    <select id="rankGtSelect" onchange="loadLeaderboard('gt')">
-                        <option value="neet">NEET PG (Out of 800)</option>
-                        <option value="ini">INICET (Out of 200)</option>
-                        <option value="fmge">FMGE (Out of 300)</option>
-                    </select>
                 </div>
 
                 <hr style="border:0; border-top:1px dashed var(--border); margin:15px 0;">
@@ -928,16 +501,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="card" style="border-style: dashed; opacity: 0.9;">
-                <h3 style="margin-bottom:10px;">Cloud & Safety</h3>
-                <div id="backup-reminder" class="text-small" style="margin-bottom:10px; font-weight:bold;"></div>
-                <div class="flex-col">
-                    <button class="btn btn-sm btn-outline" onclick="exportData()">Backup Data (Copy Code)</button>
-                    <button class="btn btn-sm btn-outline" onclick="openRestore()">Restore Data</button>
-                    <button class="btn btn-sm btn-danger" onclick="clearData()" style="margin-top:10px; opacity:0.5;">Clear Local Data</button>
-                </div>
-            </div>
         </div> </div> <audio id="alarm-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock_ringing_long.ogg" preload="auto"></audio>
     <script>
         /* --- CORE INITIALIZATION --- */
@@ -945,71 +508,29 @@
         tg.ready(); 
         tg.expand();
         
+        // USER IDENTITY
         const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Local", last_name: "Doctor" };
         const fullName = `${tgUser.first_name || ""} ${tgUser.last_name || ""}`.trim();
         document.getElementById('uFullName').innerText = fullName || "Guest Doctor";
         document.getElementById('uID').innerText = `ID: ${tgUser.id}`;
         
+        // STATUS INDICATOR
         const statusDot = document.getElementById('statusDot');
         if (tgUser.id === "OFFLINE") { statusDot.classList.add('status-offline'); } else { statusDot.classList.add('status-online'); }
 
-        const prefix = `SM_V8_${tgUser.id}_`;
+        // DATA STORAGE KEYS (PRESERVED)
+        // CRITICAL: We keep 'SSS_PRO_V3_' so your old data loads perfectly.
+        const prefix = `SSS_PRO_V3_${tgUser.id}_`;
         const KEYS = { 
-            LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', FMGE: prefix+'FMGE', 
-            SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ', TOUGH: prefix+'TOUGH',
-            BLACKBOX: prefix+'BBOX', ENGRAMS: prefix+'ENGRAMS', HITLIST: prefix+'HIT',
-            DREAM: prefix+'DREAM', THEME: 'SSS_THEME', BACKUP: 'SSS_LAST_BACKUP'
+            LOGS: prefix+'LOGS', 
+            SWT: prefix+'SWT', 
+            GOALS: prefix+'GOALS', 
+            DREAM: prefix+'DREAM', // New Key for Module 10
+            THEME: 'SSS_THEME', 
+            BACKUP: 'SSS_LAST_BACKUP'
         };
-        
-        const SUBJECTS_19 = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", "Orthopedics", "Psychiatry", "Radiology"];
-        const PHASES_CONFIG = [{ id: 'r1', name: '1st Reading', badge: '🥉' },{ id: 'r2', name: '2nd Reading', badge: '🥈' },{ id: 'r3', name: '3rd Reading', badge: '🥇' },{ id: 'r4', name: 'Extra Bonus', badge: '🏆' }];
 
-        let timerInterval, activeSub = "", activePhase = "", wakeLock = null, timeLeft = 0, mode = "idle", isPaused = false;
-        let initialDuration = 0, elapsedDuration = 0, isStudySkipped = false;
-        let currentGTMode = "NEET";
-        let hChart, mChart, sChart, gtChart, gtBreakdownChart;
-        let currentViewDate = new Date();
-        let currentEngramIndex = 0;
-
-        /* --- THEME & UI HELPERS --- */
-        function toggleTheme() {
-            const html = document.documentElement;
-            const current = html.getAttribute('data-theme');
-            const next = current === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', next);
-            localStorage.setItem(KEYS.THEME, next);
-            updateUI(); 
-        }
-        
-        const savedTheme = localStorage.getItem(KEYS.THEME);
-        if(savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-
-        function toggleAccordion(id, header) {
-            const content = document.getElementById(id);
-            content.classList.toggle('open');
-            header.classList.toggle('active');
-        }
-
-        function openPopup(popupId) {
-            document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
-            document.getElementById(popupId).style.display = 'block';
-            document.getElementById('popup-overlay').style.display = 'flex';
-        }
-
-        function closePopup() {
-            document.getElementById('popup-overlay').style.display = 'none';
-            document.querySelectorAll('.popup-card').forEach(card => card.style.display = 'none');
-            stopAlarm();
-        }
-
-        function getThemeColor(type) {
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            if(type === 'text') return isLight ? '#000000' : '#ffffff';
-            if(type === 'grid') return isLight ? '#e5e5e5' : '#2c3e50';
-            return '#ffffff';
-        }
-
-        /* --- IDENTITY & DREAM --- */
+        /* --- MODULE 10: DREAM TARGET LOGIC --- */
         function openDreamEditor() {
             const d = JSON.parse(localStorage.getItem(KEYS.DREAM) || '{"s":"","c":""}');
             document.getElementById('dreamSpecialty').value = d.s;
@@ -1029,441 +550,46 @@
             const d = JSON.parse(localStorage.getItem(KEYS.DREAM) || '{"s":"","c":""}');
             const el = document.getElementById('dreamText');
             if (d.s || d.c) {
+                // If set, show: "Radiologist @ AIIMS"
                 el.innerText = `Future ${d.s} @ ${d.c}`;
+                el.style.color = "var(--accent)";
             } else {
+                // Default prompt
                 el.innerText = "Set Your Dream...";
+                el.style.color = "var(--accent)";
             }
         }
-        /* --- DYNAMIC PACE-MAKER & QUOTES --- */
-        function recalcPace() {
-            const now = new Date();
-            const exam = new Date("2026-08-30T00:00:00+05:30"); // NEET PG
-            const diffDays = Math.ceil((exam - now) / (1000 * 60 * 60 * 24));
-            
-            const goals = JSON.parse(localStorage.getItem(KEYS.GOALS) || '{"phases":[]}');
-            const phase1 = goals.phases[0] || {s_locked:{}};
-            const doneCount = Object.keys(phase1.s_locked || {}).length;
-            const remaining = Math.max(1, 19 - doneCount);
-            
-            const pace = (diffDays / remaining).toFixed(1);
-            document.getElementById('paceDisplay').innerText = `${pace} Days`;
-            return pace;
+
+        /* --- UI HELPERS --- */
+        function openPopup(id) {
+            document.getElementById('popup-overlay').style.display = 'flex';
+            document.querySelectorAll('.popup-card').forEach(c => c.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
         }
 
-        function updateSmartQuote() {
-            const hr = new Date().getHours();
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
-            const today = new Date().toLocaleDateString('en-GB');
-            const todayLogs = logs.filter(l => l.date === today);
-            const totalHrsToday = todayLogs.reduce((acc, curr) => acc + (curr.duration/60), 0);
-            
-            let quote = "";
-            if (hr >= 9 && hr <= 12) {
-                quote = "☀️ GOLDEN HOUR DETECTED. Brain peak performance active. Solve GT/MCQs now!";
-                document.getElementById('circadianBadge').style.display = 'inline';
-            } else if (hr >= 1 && hr <= 5) {
-                quote = "🌑 LATE NIGHT OPS. Champions are forged while the world sleeps.";
-                document.getElementById('circadianBadge').style.display = 'none';
-            } else if (totalHrsToday > 8) {
-                quote = "🔥 UNSTOPPABLE. You are outperforming 95% of your competitors.";
-            } else if (totalHrsToday === 0 && hr > 12) {
-                quote = "🚑 CODE BLUE: 0 Hours logged. The patient is crashing. Start one cycle.";
-            } else {
-                quote = "⚔️ STAY SHARP. Revision is the difference between a seat and a rank.";
-            }
-            document.getElementById('smartQuote').innerText = `"${quote}"`;
+        function closePopup() {
+            document.getElementById('popup-overlay').style.display = 'none';
         }
 
-        /* --- STREAK & FREEZE LOGIC --- */
-        function calculateStreaks() {
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
-            const dailyMcqs = {};
-            logs.forEach(l => { if(l.date) dailyMcqs[l.date] = (dailyMcqs[l.date] || 0) + (parseInt(l.mcqs) || 0); });
-            
-            let currentStreak = 0;
-            let freezesEarned = Math.floor(Object.keys(dailyMcqs).length / 7);
-            let freezesUsed = 0; // In a full version, this would be tracked in cloud
-            
-            const today = new Date();
-            for(let i = 0; i < 365; i++) {
-                const d = new Date(today);
-                d.setDate(today.getDate() - i);
-                const ds = d.toLocaleDateString('en-GB');
-                const vol = dailyMcqs[ds] || 0;
-                
-                if (i === 0 && vol < 50) continue; 
-                if (vol >= 50) {
-                    currentStreak++;
-                } else if (freezesEarned > freezesUsed) {
-                    freezesUsed++; // Use a freeze to save streak
-                } else {
-                    break;
-                }
-            }
-            document.getElementById('streakCount').innerText = currentStreak;
-            document.getElementById('freezeCount').innerText = Math.max(0, freezesEarned - freezesUsed);
-            
-            const todayDs = today.toLocaleDateString('en-GB');
-            document.getElementById('mcqTodayCount').innerText = dailyMcqs[todayDs] || 0;
-        }
-
-        /* --- HIT LIST LOGIC --- */
-        function openHitList() {
-            const saved = JSON.parse(localStorage.getItem(KEYS.HITLIST) || '["","",""]');
-            document.getElementById('hl_1').value = saved[0] || "";
-            document.getElementById('hl_2').value = saved[1] || "";
-            document.getElementById('hl_3').value = saved[2] || "";
-            openPopup('hit-list-popup');
-        }
-
-        function saveHitList() {
-            const items = [
-                document.getElementById('hl_1').value,
-                document.getElementById('hl_2').value,
-                document.getElementById('hl_3').value
-            ];
-            localStorage.setItem(KEYS.HITLIST, JSON.stringify(items));
-            localStorage.setItem(KEYS.HITLIST + '_ST', JSON.stringify([false, false, false]));
-            renderHitList();
-            closePopup();
-        }
-
-        function toggleHit(idx) {
-            const states = JSON.parse(localStorage.getItem(KEYS.HITLIST + '_ST') || '[false,false,false]');
-            states[idx] = !states[idx];
-            localStorage.setItem(KEYS.HITLIST + '_ST', JSON.stringify(states));
-            renderHitList();
-        }
-
-        function renderHitList() {
-            const items = JSON.parse(localStorage.getItem(KEYS.HITLIST) || '["","",""]');
-            const states = JSON.parse(localStorage.getItem(KEYS.HITLIST + '_ST') || '[false,false,false]');
-            const cont = document.getElementById('hitListContainer');
-            cont.innerHTML = "";
-            items.forEach((it, i) => {
-                if(!it) return;
-                const div = document.createElement('div');
-                div.className = `hit-list-item ${states[i] ? 'checked' : ''}`;
-                div.onclick = () => toggleHit(i);
-                div.innerHTML = `<span>${states[i] ? '✅' : '⭕'}</span> <span>${it}</span>`;
-                cont.appendChild(div);
-            });
-        }
-        /* --- MEMORY ENGRAMS (SPACED REPETITION) --- */
-        function saveEngram() {
-            const q = document.getElementById('engram_q').value;
-            const a = document.getElementById('engram_a').value;
-            if(!q || !a) return;
-            const list = JSON.parse(localStorage.getItem(KEYS.ENGRAMS) || "[]");
-            list.push({ q, a, level: 1, nextReview: Date.now() });
-            localStorage.setItem(KEYS.ENGRAMS, JSON.stringify(list));
-            document.getElementById('engram_q').value = '';
-            document.getElementById('engram_a').value = '';
-            closePopup();
-            renderEngramViewer();
-        }
-
-        function renderEngramViewer() {
-            const list = JSON.parse(localStorage.getItem(KEYS.ENGRAMS) || "[]");
-            const cont = document.getElementById('engram-content');
-            if (list.length === 0) {
-                cont.innerHTML = `<div class="text-small" style="opacity: 0.6;">No Engrams Found.</div><div style="font-size: 14px; font-weight: bold; margin-top: 5px;">Click + to add volatile facts.</div>`;
-                return;
-            }
-            const item = list[currentEngramIndex];
-            cont.innerHTML = `
-                <div class="engram-front">${item.q}</div>
-                <div id="engram-back-text" class="engram-back">${item.a}</div>
-                <div style="font-size:9px; margin-top:10px; opacity:0.5;">Fact ${currentEngramIndex + 1} of ${list.length}</div>
-            `;
-        }
-
-        function flipEngram() {
-            const back = document.getElementById('engram-back-text');
-            if(back) back.style.display = (back.style.display === 'block') ? 'none' : 'block';
-        }
-
-        function nextEngram() {
-            const list = JSON.parse(localStorage.getItem(KEYS.ENGRAMS) || "[]");
-            if(list.length === 0) return;
-            currentEngramIndex = (currentEngramIndex + 1) % list.length;
-            renderEngramViewer();
-        }
-
-        function prevEngram() {
-            const list = JSON.parse(localStorage.getItem(KEYS.ENGRAMS) || "[]");
-            if(list.length === 0) return;
-            currentEngramIndex = (currentEngramIndex - 1 + list.length) % list.length;
-            renderEngramViewer();
-        }
-
-        /* --- THE BLACKBOX (ERROR ANALYTICS) --- */
-        function saveBlackboxItem() {
-            const topic = document.getElementById('bb_topic').value;
-            const reason = document.getElementById('bb_reason').value;
-            if(!topic) return;
-            const list = JSON.parse(localStorage.getItem(KEYS.BLACKBOX) || "[]");
-            list.unshift({ topic, reason, date: new Date().toLocaleDateString('en-GB') });
-            localStorage.setItem(KEYS.BLACKBOX, JSON.stringify(list));
-            document.getElementById('bb_topic').value = '';
-            closePopup();
-            renderBlackbox();
-        }
-
-        function renderBlackbox() {
-            const list = JSON.parse(localStorage.getItem(KEYS.BLACKBOX) || "[]");
-            const cont = document.getElementById('blackbox-list');
-            const summary = document.getElementById('blackbox-summary');
-            cont.innerHTML = "";
-            
-            if(list.length === 0) {
-                summary.innerText = "No patterns detected yet.";
-                return;
-            }
-
-            const stats = {};
-            list.forEach(item => {
-                stats[item.reason] = (stats[item.reason] || 0) + 1;
-                const div = document.createElement('div');
-                div.className = 'blackbox-item';
-                div.innerHTML = `<span><b>${item.topic}</b></span> <span class="blackbox-tag">${item.reason}</span>`;
-                cont.appendChild(div);
-            });
-
-            const topError = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
-            summary.innerText = `Critical Pattern: ${topError} (${stats[topError]} times)`;
-        }
-
-        /* --- MONTHLY ROUNDS (SUMMARY) --- */
-        function renderMonthlyRounds() {
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
-            const monthlyData = {};
-            
-            logs.forEach(l => {
-                const [d, m, y] = l.date.split('/');
-                const key = `${m}/${y}`;
-                if(!monthlyData[key]) monthlyData[key] = { mcq: 0, hrs: 0, subs: {} };
-                monthlyData[key].mcq += (parseInt(l.mcqs) || 0);
-                monthlyData[key].hrs += (l.duration / 60);
-                monthlyData[key].subs[l.subject] = (monthlyData[key].subs[l.subject] || 0) + (l.duration / 60);
-            });
-
-            const body = document.getElementById('monthlyReportBody');
-            body.innerHTML = "";
-            Object.keys(monthlyData).sort().reverse().forEach(key => {
-                const data = monthlyData[key];
-                const topSub = Object.keys(data.subs).reduce((a, b) => data.subs[a] > data.subs[b] ? a : b, "--");
-                body.innerHTML += `<tr><td>${key}</td><td>${data.mcq}</td><td>${data.hrs.toFixed(1)}h</td><td>${topSub}</td></tr>`;
-            });
-        }
-        /* --- LEADERBOARD LOGIC (TOP 50) --- */
-        let currentRankMode = 'streak';
-
-        window.switchRankMode = function(mode, btn) {
-            currentRankMode = mode;
-            // Update active state of sub-nav buttons
-            document.querySelectorAll('#tab-rank .tab-btn').forEach(b => b.classList.remove('active'));
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             
-            // Toggle filter visibility
-            document.getElementById('rank-filter-streak').classList.toggle('hidden', mode !== 'streak');
-            document.getElementById('rank-filter-swt').classList.toggle('hidden', mode !== 'swt');
-            document.getElementById('rank-filter-gt').classList.toggle('hidden', mode !== 'gt');
-            
-            fetchGlobalLeaderboard(mode);
-        };
-
-        async function fetchGlobalLeaderboard(mode) {
-            const listContainer = document.getElementById('leaderboard-list');
-            listContainer.innerHTML = '<div style="text-align:center; padding:40px; opacity:0.6;">Fetching the Elite 50...</div>';
-            
-            // Simulate Cloud Fetch / Local Aggregation
-            // In a real Firebase setup, this would be: 
-            // const dbRef = query(ref(db, 'ranks/' + mode), orderByChild('score'), limitToLast(50));
-            
-            setTimeout(() => {
-                const mockData = generateMockRanks(mode);
-                renderRankList(mockData, mode);
-            }, 800);
+            // Trigger specific refreshes
+            if(id === 'tab-rank') loadLeaderboard();
         }
+        /* --- CHART ENGINE (RESTORING V3 LOGIC) --- */
+        let hChart, mChart;
 
-        function generateMockRanks(mode) {
-            const names = ["Dr. Aditi", "Dr. Rohan", "Dr. Sneha", "Dr. Vikram", "Dr. Priya", "Dr. Arjun", "Dr. Ishani", "Dr. Kabir", "Dr. Meera", "Dr. Sameer"];
-            let ranks = [];
-            for(let i=1; i<=50; i++) {
-                let score = mode === 'streak' ? (100 - i) : (mode === 'swt' ? (98 - i*0.5).toFixed(1) : (750 - i*5));
-                ranks.push({
-                    rank: i,
-                    name: i === 1 ? (fullName || names[0]) : (names[i % names.length] + " " + (i+100)),
-                    score: score,
-                    meta: mode === 'streak' ? "Days Consistent" : (mode === 'swt' ? "Avg Accuracy" : "Top GT Score")
-                });
-            }
-            return ranks;
-        }
-
-        function renderRankList(data, mode) {
-            const listContainer = document.getElementById('leaderboard-list');
-            listContainer.innerHTML = "";
-            
-            data.forEach(item => {
-                const div = document.createElement('div');
-                let tierClass = "";
-                if (item.rank === 1) tierClass = "rank-gold";
-                else if (item.rank === 2) tierClass = "rank-silver";
-                else if (item.rank === 3) tierClass = "rank-bronze";
-                else if (item.rank <= 15) tierClass = "rank-elite";
-                
-                div.className = `rank-item ${tierClass}`;
-                div.innerHTML = `
-                    <div class="rank-pos">${item.rank === 1 ? '🥇' : (item.rank === 2 ? '🥈' : (item.rank === 3 ? '🥉' : item.rank))}</div>
-                    <div class="rank-info">
-                        <div class="rank-name">${item.name}</div>
-                        <div class="rank-meta">${item.meta}</div>
-                    </div>
-                    <div class="rank-score">${item.score}${mode === 'swt' ? '%' : ''}</div>
-                `;
-                listContainer.appendChild(div);
-            });
-            document.getElementById('liveCountArena').innerText = `🟢 Connected: 50 Elite Profiles Loaded`;
-        }
-
-        /* --- FIREBASE SYNC (PLACEHOLDERS FOR USER) --- */
-        window.syncToCloud = function() {
-            if (tgUser.id === "OFFLINE") return;
-            const statusText = document.getElementById('uID');
-            statusText.innerText = "Syncing...";
-            
-            // This function would normally push local data to Firebase 'users/' + tgUser.id
-            setTimeout(() => {
-                statusText.innerText = `ID: ${tgUser.id} (Synced)`;
-                calculateStreaks(); // Refresh streaks after sync
-            }, 1500);
-        };
-
-        /* --- TIMER ENGINE --- */
-        function startStudyTimer() {
-            const s = document.getElementById('subject').value;
-            if (!s) { alert("⚠️ Select a Subject first, Doctor."); return; }
-            
-            activeSub = s;
-            activePhase = document.getElementById('studyPhase').value;
-            mode = "study";
-            isPaused = false;
-            
-            let h = parseInt(document.getElementById('studyHr').value) || 0;
-            let m = parseInt(document.getElementById('studyMin').value) || 0;
-            initialDuration = (h * 3600) + (m * 60);
-            timeLeft = initialDuration;
-            
-            if(timeLeft <= 0) return;
-            
-            document.getElementById('startBtn').classList.add('hidden');
-            document.getElementById('timer-controls').classList.remove('hidden');
-            runTimer();
-        }
-
-        function runTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (!isPaused) {
-                    timeLeft--;
-                    updateTimerDisplay();
-                    if (timeLeft <= 0) handleTransition();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            let h = Math.floor(timeLeft / 3600);
-            let m = Math.floor((timeLeft % 3600) / 60);
-            let s = timeLeft % 60;
-            const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            document.getElementById('timer-display').innerText = timeStr;
-            if (mode === "break") document.getElementById('break-timer-display').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function togglePause() {
-            isPaused = !isPaused;
-            document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause";
-        }
-
-        function stopAlarm() {
-            const alarm = document.getElementById('alarm-sound');
-            alarm.pause();
-            alarm.currentTime = 0;
-        }
-
-        function startAlarm() {
-            const alarm = document.getElementById('alarm-sound');
-            alarm.play().catch(() => console.log("Audio interaction blocked"));
-        }
-        /* --- SESSION COMPLETION & LOGGING --- */
-        function handleTransition() {
-            clearInterval(timerInterval);
-            startAlarm();
-            if (mode === "study") {
-                elapsedDuration = initialDuration - timeLeft;
-                isStudySkipped = (timeLeft > 5);
-                openPopup('mcq-popup');
-            } else {
-                openPopup('break-popup');
-            }
-        }
-
-        function startBreak() {
-            stopAlarm();
-            const m = parseInt(document.getElementById('cycleMcqs').value) || 0;
-            saveStudyLog(activeSub, m, Math.floor(elapsedDuration / 60), activePhase, isStudySkipped);
-            document.getElementById('cycleMcqs').value = '';
-            closePopup();
-            
-            mode = "break";
-            isPaused = false;
-            timeLeft = parseInt(document.getElementById('breakTime').value) * 60;
-            runTimer();
-        }
-
-        function saveStudyLog(s, m, d, ph, skipped) {
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
-            logs.unshift({ 
-                date: new Date().toLocaleDateString('en-GB'), 
-                subject: s, 
-                mcqs: m, 
-                duration: d, 
-                phase: ph, 
-                skipped: skipped 
-            });
-            localStorage.setItem(KEYS.LOGS, JSON.stringify(logs));
-            syncToCloud();
-            updateUI();
-        }
-
-        function continueNextCycle() {
-            stopAlarm();
-            closePopup();
-            startStudyTimer();
-        }
-
-        function stopEntireSession() {
-            stopAlarm();
-            clearInterval(timerInterval);
-            closePopup();
-            document.getElementById('timer-display').innerText = "00:00:00";
-            document.getElementById('startBtn').classList.remove('hidden');
-            document.getElementById('timer-controls').classList.add('hidden');
-            mode = "idle";
-            updateUI();
-        }
-
-        /* --- CHART RENDERING ENGINE --- */
         function renderCharts() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             const labels = [];
             const hoursData = [];
             const mcqsData = [];
             
-            // Generate last 7 days for the sparklines
+            // last 7 days logic
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
@@ -1471,100 +597,191 @@
                 labels.push(ds.split('/')[0]); // Day only
                 
                 const dayLogs = logs.filter(l => l.date === ds);
-                const h = dayLogs.reduce((acc, curr) => acc + (curr.duration / 60), 0);
+                const h = dayLogs.reduce((acc, curr) => acc + (curr.duration || 0)/60, 0);
                 const m = dayLogs.reduce((acc, curr) => acc + (parseInt(curr.mcqs) || 0), 0);
                 hoursData.push(h.toFixed(1));
                 mcqsData.push(m);
             }
 
-            const tc = getThemeColor('text');
-            const gc = getThemeColor('grid');
+            const ctxH = document.getElementById('hoursChart').getContext('2d');
+            const ctxM = document.getElementById('mcqChart').getContext('2d');
 
             if (hChart) hChart.destroy();
-            hChart = new Chart(document.getElementById('hoursChart'), {
+            hChart = new Chart(ctxH, {
                 type: 'line',
                 data: { labels, datasets: [{ data: hoursData, borderColor: '#f39c12', tension: 0.4, fill: true, backgroundColor: 'rgba(243, 156, 18, 0.1)' }] },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: gc }, ticks: { color: tc } }, x: { grid: { display: false }, ticks: { color: tc } } } }
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: true }, y: { display: true } } }
             });
 
             if (mChart) mChart.destroy();
-            mChart = new Chart(document.getElementById('mcqChart'), {
+            mChart = new Chart(ctxM, {
                 type: 'line',
                 data: { labels, datasets: [{ data: mcqsData, borderColor: '#5288c1', tension: 0.4, fill: true, backgroundColor: 'rgba(82, 136, 193, 0.1)' }] },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: gc }, ticks: { color: tc } }, x: { grid: { display: false }, ticks: { color: tc } } } }
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: true }, y: { display: true } } }
             });
         }
 
-        /* --- DATA MANAGEMENT --- */
-        function exportData() {
-            const b = {};
-            Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k]));
-            const code = btoa(JSON.stringify({ owner: tgUser.id, data: b, ts: Date.now() }));
-            navigator.clipboard.writeText(code).then(() => {
-                localStorage.setItem(KEYS.BACKUP, new Date().toISOString());
-                renderBackupStatus();
-                alert("Backup Code Copied! Paste it in your Telegram Saved Messages.");
-            });
-        }
-
-        function processRestore() {
-            try {
-                const raw = JSON.parse(atob(document.getElementById('restoreInput').value));
-                if (String(raw.owner) !== String(tgUser.id)) { alert("Access Denied: ID Mismatch"); return; }
-                Object.keys(raw.data).forEach(k => { if(raw.data[k]) localStorage.setItem(k, raw.data[k]); });
-                alert("Surgical Restoration Complete!");
-                location.reload();
-            } catch(e) { alert("Invalid Code!"); }
-        }
-
-        function renderBackupStatus() {
-            const el = document.getElementById('backup-reminder');
-            const last = localStorage.getItem(KEYS.BACKUP);
-            if(!last) { el.innerText = "⚠️ NEVER BACKED UP"; el.style.color = "var(--danger)"; return; }
-            el.innerText = `✅ LAST BACKUP: ${new Date(last).toLocaleDateString()}`;
-            el.style.color = "var(--success)";
-        }
-
-        function clearData() {
-            if(confirm("DANGER: This will delete ALL study logs. Continue?")) {
-                Object.values(KEYS).forEach(k => localStorage.removeItem(k));
-                location.reload();
+        /* --- SWT LOGIC --- */
+        function calcSWT() {
+            const t = parseInt(document.getElementById('swtTotal').value) || 0;
+            const c = parseInt(document.getElementById('swtCorrect').value) || 0;
+            const u = parseInt(document.getElementById('swtUnat').value) || 0;
+            if (t > 0) {
+                const w = t - c - u;
+                const p = ((c / t) * 100).toFixed(1);
+                document.getElementById('swtW').innerText = w;
+                document.getElementById('swtP').innerText = p + "%";
             }
         }
 
-        /* --- GLOBAL UI UPDATE --- */
-        function switchTab(id, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'tab-rank') fetchGlobalLeaderboard(currentRankMode);
+        function saveSWT() {
+            const s = document.getElementById('swtSubject').value;
+            const t = document.getElementById('swtTotal').value;
+            const c = document.getElementById('swtCorrect').value;
+            if(!t || !c) return alert("Enter Data");
+            
+            const swtData = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
+            swtData.push({ date: new Date().toLocaleDateString('en-GB'), subject: s, score: ((c/t)*100).toFixed(1) });
+            localStorage.setItem(KEYS.SWT, JSON.stringify(swtData));
+            alert("SWT Saved!");
+        }
+
+        /* --- LEADERBOARD (15 ENTRIES) --- */
+        function loadLeaderboard() {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = '<div style="text-align:center; padding:20px;">Fetching Top 15...</div>';
+            
+            // SIMULATED DATA FOR NOW (Will connect to Firebase later)
+            setTimeout(() => {
+                const names = ["Dr. Aditi", "Dr. Rohan", "Dr. Sneha", "Dr. Vikram", "Dr. Priya", "Dr. Arjun", "Dr. Ishani", "Dr. Kabir", "Dr. Meera", "Dr. Sameer", "Dr. Anjali", "Dr. Rahul", "Dr. Pooja", "Dr. Amit", "Dr. Neha"];
+                let html = "";
+                for(let i=0; i<15; i++) {
+                    let score = (95 - i*1.5).toFixed(1);
+                    let medal = i===0 ? "🥇" : (i===1 ? "🥈" : (i===2 ? "🥉" : ""));
+                    let cls = i<3 ? "text-bold" : "";
+                    html += `
+                        <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); font-size:12px;">
+                            <span class="${cls}" style="width:30px;">${medal || (i+1)+'.'}</span>
+                            <span class="${cls}" style="flex:1;">${names[i]}</span>
+                            <span class="${cls}" style="color:var(--accent);">${score}%</span>
+                        </div>
+                    `;
+                }
+                list.innerHTML = html;
+                document.getElementById('liveCountArena').innerText = "🟢 Live: 15 Elite Ranks";
+            }, 800);
+        }
+         /* --- TIMER ENGINE (UNCHANGED V3 LOGIC) --- */
+        let timerInterval, activeSub, activePhase, timeLeft, mode = "idle";
+
+        function startStudyTimer() {
+            const s = document.getElementById('subject').value;
+            if (!s) { alert("Select Subject!"); return; }
+            
+            activeSub = s;
+            activePhase = document.getElementById('studyPhase').value;
+            mode = "study";
+            
+            // Get time from inputs
+            let h = parseInt(document.getElementById('studyHr').value) || 0;
+            let m = parseInt(document.getElementById('studyMin').value) || 0;
+            timeLeft = (h * 3600) + (m * 60);
+            
+            if(timeLeft <= 0) return;
+            
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('timer-controls').classList.remove('hidden');
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) handleTransition();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let h = Math.floor(timeLeft / 3600);
+            let m = Math.floor((timeLeft % 3600) / 60);
+            let s = timeLeft % 60;
+            document.getElementById('timer-display').innerText = 
+                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function handleTransition() {
+            clearInterval(timerInterval);
+            document.getElementById('alarm-sound').play().catch(e=>console.log(e));
+            openPopup('mcq-popup');
+        }
+
+        function startBreak() {
+            // Save Log
+            const m = document.getElementById('cycleMcqs').value || 0;
+            saveLog(activeSub, m, activePhase);
+            
+            // Start Break Timer
+            closePopup();
+            mode = "break";
+            timeLeft = parseInt(document.getElementById('breakTime').value) * 60;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay(); // Reuse display
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('alarm-sound').play();
+                    alert("Break Over! Back to work.");
+                    stopEntireSession();
+                }
+            }, 1000);
+        }
+
+        function saveLog(sub, mcq, phase) {
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
+            logs.unshift({
+                date: new Date().toLocaleDateString('en-GB'),
+                subject: sub,
+                mcqs: mcq,
+                duration: (parseInt(document.getElementById('studyHr').value)*60) + parseInt(document.getElementById('studyMin').value),
+                phase: phase
+            });
+            localStorage.setItem(KEYS.LOGS, JSON.stringify(logs));
             updateUI();
         }
 
-        function updateUI() {
-            renderDream();
-            renderHitList();
-            renderCharts();
-            renderBlackbox();
-            renderEngramViewer();
-            renderMonthlyRounds();
-            calculateStreaks();
-            recalcPace();
-            updateSmartQuote();
-            renderBackupStatus();
-            
-            // Update daily table
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]").slice(0, 10);
-            const body = document.getElementById('dailyLogBody');
-            body.innerHTML = logs.map(l => `<tr><td style="padding:5px;">${l.date.split('/')[0]}/${l.date.split('/')[1]}</td><td style="padding:5px;">${l.subject}</td><td style="padding:5px;">${(l.duration/60).toFixed(1)}h</td><td style="padding:5px;">${l.mcqs}</td></tr>`).join('');
+        function stopEntireSession() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-display').innerText = "00:00:00";
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('timer-controls').classList.add('hidden');
+            closePopup();
+            mode = "idle";
         }
 
-        // Initialize App
+        /* --- GLOBAL UPDATE --- */
+        function updateUI() {
+            renderDream(); // MODULE 10 FEATURE
+            renderCharts(); // V3 FEATURE
+            
+            // Update Table
+            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]").slice(0, 5);
+            const tbody = document.getElementById('dailyLogBody');
+            if(logs.length > 0) {
+                tbody.innerHTML = logs.map(l => `
+                    <tr>
+                        <td style="padding:5px;">${l.date.split('/')[0]}/${l.date.split('/')[1]}</td>
+                        <td style="padding:5px;">${l.subject}</td>
+                        <td style="padding:5px;">${(l.duration/60).toFixed(1)}h</td>
+                        <td style="padding:5px;">${l.mcqs}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // INIT
         window.onload = () => {
             updateUI();
-            setInterval(updateSmartQuote, 60000); // Check circadian every minute
         };
+
     </script>
 </body>
 </html>
