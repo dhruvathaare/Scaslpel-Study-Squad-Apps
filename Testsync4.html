@@ -220,7 +220,12 @@
             }
         }
 
-        .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .header-ui { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+/* New Virtual Library Styles */
+.virtual-lib { background: rgba(0,0,0,0.3); padding: 5px 12px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
+.live-dot { width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; box-shadow: 0 0 8px #e74c3c; animation: blinkLive 2s infinite; }
+.lib-text { font-weight: bold; color: var(--text); font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; }
+@keyframes blinkLive { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
         .user-id-tag { opacity: 0.7; font-size: 9px; font-family: monospace; }
@@ -436,7 +441,12 @@
     </div>
 
     <div class="container">
-        <div class="header-ui">
+            <div class="header-ui">
+            <div class="virtual-lib">
+                <div class="live-dot"></div>
+                <span id="lib-count" class="lib-text">Loading...</span>
+            </div>
+
             <div class="user-badge">
                 <span id="uFullName">...</span>
                 <span id="cloud-sync-status" style="font-size: 8px; display: block; opacity: 0.8; color: #f39c12;">Cloud: Initializing...</span>
@@ -446,7 +456,7 @@
                 </div>
             </div>
         </div>
-        
+
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
         <div class="streak-section">
@@ -1537,6 +1547,16 @@
         }
         function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         updateUI(); setInterval(updateCountdowns, 60000);
+              // --- VIRTUAL LIBRARY LOGIC ---
+      function updateVirtualLibrary() {
+          const baseCount = 800; 
+          const fluctuation = Math.floor(Math.random() * 600); 
+          const total = baseCount + fluctuation;
+          const el = document.getElementById('lib-count');
+          if(el) el.innerText = `${total.toLocaleString()} STUDYING NOW`;
+      }
+      updateVirtualLibrary();
+      setInterval(updateVirtualLibrary, 5000);
     </script>
 </body>
 </html>
