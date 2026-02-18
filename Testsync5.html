@@ -228,7 +228,6 @@
                 padding: 15px !important;
             }
         }
-
         .header-ui { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .user-badge { background: rgba(82, 136, 193, 0.2); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 15px; font-size: 11px; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.3; }
         .user-badge span { display: block; }
@@ -260,7 +259,6 @@
         .btn { background: #2481cc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; transition: transform 0.1s; }
         .btn:active { transform: scale(0.98); }
         .sm-btn { padding: 8px 12px; font-size: 11px; border-radius: 8px; }
-
         .log-table { width: 100%; font-size: 11px; text-align: left; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         .log-table th, .log-table td { padding: 10px 5px; border-bottom: 1px solid rgba(128,128,128,0.2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-date { width: 23%; } .col-hrs { width: 15%; } .col-cyc { width: 12%; } .col-mcq { width: 15%; } .col-sub { width: 35%; }
@@ -279,6 +277,15 @@
         .sub-grid-container.open { max-height: 500px; padding: 8px; overflow-y: auto; }
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
         .sub-check-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text); opacity: 0.8; padding: 5px; }
+        
+        /* Accordion CSS (Missing from previous version, restored for Goal tab) */
+        .accordion-header { background: rgba(82, 136, 193, 0.1); padding: 12px; border-radius: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid transparent; }
+        .accordion-header h3 { font-size: 14px; margin: 0; color: var(--text); text-transform: uppercase; }
+        .accordion-header.active { border-color: var(--accent); background: rgba(82, 136, 193, 0.2); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-content.open { max-height: 1200px; padding: 10px 0; overflow: visible; }
+        .arrow { font-size: 10px; transition: transform 0.3s; }
+        .accordion-header.active .arrow { transform: rotate(180deg); }
         .pyq-nav-container { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-top: 15px; }
         .pyq-tab { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #888; padding: 10px 14px; font-size: 11px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; position: relative; overflow: visible; font-weight: bold; }
         [data-theme="light"] .pyq-tab { background: rgba(0,0,0,0.05); }
@@ -300,7 +307,6 @@
 
         .calc-preview { background: rgba(82, 136, 193, 0.1); padding: 10px; border-radius: 10px; margin-top: 8px; font-size: 12px; border: 1px dashed var(--accent); display: flex; justify-content: space-around; align-items: center; font-weight: bold; }
         .chart-container { width: 100%; height: 200px; margin: 15px 0; position: relative; }
-        
         .month-navigator { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; padding: 8px; background: rgba(82, 136, 193, 0.1); border-radius: 10px; border: 1px solid var(--border); box-sizing: border-box;}
         .month-nav-btn { background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
         .month-display { font-family: 'Oswald', sans-serif; font-size: 16px; color: var(--accent); text-transform: uppercase; }
@@ -353,7 +359,6 @@
         .alert-yellow { background: rgba(241, 196, 15, 0.1); color: #f1c40f; border-color: #f1c40f; }
         .alert-orange { background: rgba(230, 126, 34, 0.1); color: #e67e22; border-color: #e67e22; }
         .alert-red { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border-color: #e74c3c; animation: pulse 2s infinite; }
-        
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); } 70% { box-shadow: 0 0 0 5px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
 
         .chart-scroller { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; border: 1px solid rgba(128,128,128,0.2); border-radius: 10px; background: rgba(0,0,0,0.1); }
@@ -376,6 +381,22 @@
         .qual-input-group textarea { width: 100%; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; font-size: 12px; resize: vertical; min-height: 60px; font-family: inherit; }
         .slide-container { min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; border: 1px dashed var(--accent); border-radius: 10px; margin-bottom: 15px; background: rgba(82, 136, 193, 0.1); animation: fadeSlide 0.5s; }
         @keyframes fadeSlide { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- RESTORED: QUALITATIVE TABS CENTERING (Portrait & Landscape) --- */
+        #section-qual .nav-tabs {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            width: 100%;
+            margin-bottom: 15px;
+            gap: 10px; /* Spacing between tabs */
+        }
+        
+        #section-qual .nav-tabs .tab-btn {
+            flex: 0 1 auto; /* Don't stretch, just fit content or fixed width if needed */
+            min-width: 100px; /* Minimum width for touch targets */
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -424,7 +445,6 @@
                 </div>
             </div>
         </div>
-        
         <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
         <h1>Scalpel Study Squad</h1>
         
@@ -446,19 +466,6 @@
                 <div class="exam-item" id="dash_fmge_dec"><span id="daysFmgeDec" class="exam-days">--</span><span class="exam-label">FMGE DEC '26</span></div>
             </div>
         </div>
-        <div class="danger-zone">
-            <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
-            <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
-            <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 10px;">
-                <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
-                <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
-                <li><strong>Step 3:</strong> To restore later, copy that code, click "Restore Data", and paste it.</li>
-            </ul>
-            <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
-            <button class="restore-btn" onclick="openRestore()">Restore Data</button>
-            <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
-        </div>
-
         <div id="section-quant" class="section-container active">
             
             <div class="nav-tabs">
@@ -526,7 +533,6 @@
                         <div id="pyq-panels-root"></div>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="accordion-header" onclick="toggleAccordion('acc_monthly', this)">
                         <h3>Monthly Goals Reached</h3>
@@ -599,7 +605,6 @@
                         <button class="btn" style="background:#ef5350; margin-top:12px; width:100%;" onclick="stopEntireSession()">End Session</button>
                     </div>
                 </div>
-                
                 <div class="card">
                     <div class="month-navigator">
                         <button class="month-nav-btn" onclick="changeViewMonth(-1)">◀</button>
@@ -742,7 +747,6 @@
                              </div>
                         </div>
                     </div>
-
                     <div id="neet-area">
                         <h4 style="color:#f39c12; margin-top:25px; font-size:13px;">NEET PG General Progress</h4>
                         <div class="chart-scroller"><div class="chart-scroll-content" id="neetScrollInner"><canvas id="gtNeetChart"></canvas></div></div>
@@ -814,7 +818,6 @@
                             Tie-breaker: Total Volume.
                         </div>
                     </div>
-
                     <div id="rank-filter-swt" style="display:none;">
                         <span class="setting-label">Select Subject Arena</span>
                         <select id="rankSubjectSelect" onchange="loadLeaderboard('swt')">
@@ -853,7 +856,9 @@
                     </div>
                 </div>
             </div>
-        </div> <div id="section-qual" class="section-container">
+        </div> 
+        
+        <div id="section-qual" class="section-container">
             <div class="nav-tabs">
                 <div class="tab-btn active" onclick="switchTab('tab-fact', this)">Fact Salad 🥗</div>
                 <div class="tab-btn" onclick="switchTab('tab-swt-mistake', this)">SWT Mistakes 🧠</div>
@@ -867,7 +872,6 @@
                         <div style="font-size:12px; opacity:0.7;">Add facts below to start the show!</div>
                     </div>
                     <button class="btn sm-btn" onclick="toggleSlideShow()" id="slideShowBtn" style="background:#f39c12; margin-bottom:15px;">⏯ Play Slideshow (30s)</button>
-
                     <hr style="border:0; border-top:1px dashed var(--border); margin:15px 0;">
                     
                     <h4 style="margin:0 0 10px 0;">Add New Fact</h4>
@@ -938,7 +942,21 @@
             </div>
         </div>
 
-    </div> <div class="main-nav-dock">
+        <div class="danger-zone">
+            <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety</h3>
+            <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
+            <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 10px;">
+                <li><strong>Step 1:</strong> Click "Backup Data" below to copy your code.</li>
+                <li><strong>Step 2:</strong> Paste the code in your "Saved Messages" on Telegram.</li>
+                <li><strong>Step 3:</strong> To restore later, copy that code, click "Restore Data", and paste it.</li>
+            </ul>
+            <button class="backup-btn" onclick="exportData()">Backup Data (Copy Code)</button>
+            <button class="restore-btn" onclick="openRestore()">Restore Data</button>
+            <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
+        </div>
+
+    </div> 
+    <div class="main-nav-dock">
         <button class="main-nav-btn active" onclick="switchMainSection('quant', this)">
             <span>📊</span>Quantitative
         </button>
@@ -989,7 +1007,6 @@
             // Scroll to top when switching
             window.scrollTo(0,0);
         }
-
         /* --- NEW: FACT SALAD SLIDESHOW LOGIC --- */
         let slideInterval;
         let isSlidePlaying = false;
@@ -1060,6 +1077,7 @@
                 }, 30000); // 30 Seconds
             }
         }
+        
         /* --- NEW: QUALITATIVE DATA SAVING --- */
         function saveSWTMistake() {
             const sub = document.getElementById('swtMistakeSubject').value;
@@ -1118,6 +1136,7 @@
                 renderSlideShow(); // Reset UI
             }
         }
+        
         /* --- NEW: PDF GENERATION ENGINE --- */
         async function generatePDF(type) {
             const { jsPDF } = window.jspdf;
@@ -1239,7 +1258,6 @@
             const fileName = `Scalpel_Report_${type}_${window.userId}.pdf`;
             doc.save(fileName);
         }
-
         /* --- RESTORED LOGIC: LEADERBOARD CALCULATION --- */
         window.calculateAndPushLeaderboard = function() {
             // 1. Calculate Streak
@@ -1458,7 +1476,6 @@
             clearInterval(timerInterval); startAlarm(mode==="study"?880:440); 
             if (mode === "study") { elapsedDuration = initialDuration - timeLeft; isStudySkipped = (timeLeft > 5); openPopup('mcq-popup'); } else { openPopup('break-popup'); }
         }
-
         function startBreak() { 
             stopAlarm(); const m = parseInt(document.getElementById('cycleMcqs').value)||0; 
             saveStudyLog(activeSub, m, Math.floor(elapsedDuration / 60), activePhase, isStudySkipped); 
@@ -1474,6 +1491,7 @@
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs)); 
             if(window.syncToCloud) window.syncToCloud();
         }
+
         /* LEADERBOARD UI LOGIC */
         let currentRankMode = 'streak';
 
@@ -1538,11 +1556,9 @@
 
                 html += `
                 <div class="rank-item ${rankClass}">
-                    <div class="rank-pos">
-                        ${rank <= 3 ? '<span class="medal-icon">'+icon+'</span>' : rank}
-                    </div>
+                    <div class="rank-pos">${rank <= 3 ? icon : rank}</div>
                     <div class="rank-info">
-                        <span class="rank-name">${user.name} ${rank > 3 ? icon : ''}</span>
+                        <span class="rank-name">${user.name}</span>
                         <span class="rank-meta">${metaDisplay}</span>
                     </div>
                     <div class="rank-score">${scoreDisplay}</div>
@@ -1550,17 +1566,11 @@
             });
             list.innerHTML = html;
         };
-        /* STANDARD ANALYTICS & LOGIC */
-        let hChart, mChart, gNeetChart, gIniChart, gFmgeChart, gFmgeP1Chart, gFmgeP2Chart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gtBreakdownChart;
-        let currentViewDate = new Date();
 
-        function changeViewMonth(offset) { currentViewDate.setMonth(currentViewDate.getMonth() + offset); updateUI(); }
-
+        /* STANDARD ANALYTICS & RENDERING */
         function renderData() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
             const viewMonth = currentViewDate.getMonth(), viewYear = currentViewDate.getFullYear();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            document.getElementById('currentViewMonthDisplay').innerText = `${monthNames[viewMonth]} ${viewYear}`;
             const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
             const labels = [], hoursData = Array(daysInMonth).fill(0), mcqsData = Array(daysInMonth).fill(0);
             const tableLogs = [];
@@ -1568,450 +1578,29 @@
                 const parts = l.date.split('/'); if(parts.length !== 3) return;
                 const d = parts[0], m = parts[1], y = parts[2];
                 const logDate = new Date(y, m - 1, d);
-                if (logDate.getMonth() === viewMonth && logDate.getFullYear() === viewYear) { const dayIdx = parseInt(d) - 1; hoursData[dayIdx] += l.duration / 60; mcqsData[dayIdx] += l.mcqs; tableLogs.push(l); }
+                if (logDate.getMonth() === viewMonth && logDate.getFullYear() === viewYear) {
+                    const dayIdx = parseInt(d) - 1;
+                    hoursData[dayIdx] += l.duration / 60;
+                    mcqsData[dayIdx] += l.mcqs;
+                    tableLogs.push(l);
+                }
             });
             for (let i = 1; i <= daysInMonth; i++) labels.push(i);
             const textColor = getThemeColor('text'), gridColor = getThemeColor('grid');
             if(hChart) hChart.destroy(); hChart = new Chart(document.getElementById('hoursChart'), { type:'line', data:{labels:labels, datasets:[{label:'Hours', data:hoursData, borderColor:'#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', fill: true, tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:16, ticks:{color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor}}}, plugins:{legend:{display:false}}}});
             if(mChart) mChart.destroy(); mChart = new Chart(document.getElementById('mcqChart'), { type:'line', data:{labels:labels, datasets:[{label:'MCQs', data:mcqsData, borderColor:'#5288c1', backgroundColor: 'rgba(82, 136, 193, 0.1)', fill: true, tension:0.3}]}, options:{maintainAspectRatio:false, scales:{y:{beginAtZero:true, ticks:{color:textColor}, grid:{color:gridColor}}, x:{ticks:{color:textColor, font:{size:9}}, grid:{color:gridColor}}}, plugins:{legend:{display:false}}}});
+            
             let html = ""; const groupedTable = {};
-            tableLogs.forEach(l => { if(!groupedTable[l.date]) groupedTable[l.date] = {h:0, m:0, subs:new Set(), cyc:0}; groupedTable[l.date].h += l.duration/60; groupedTable[l.date].m += l.mcqs; groupedTable[l.date].subs.add(l.subject); if (!l.skipped) { groupedTable[l.date].cyc++; } });
+            tableLogs.forEach(l => { if(!groupedTable[l.date]) groupedTable[l.date] = {h:0, m:0, subs:new Set(), cyc:0}; groupedTable[l.date].h += l.duration/60; groupedTable[l.date].m += l.mcqs; groupedTable[l.date].subs.add(l.subject); if (!l.skipped) groupedTable[l.date].cyc++; });
             Object.keys(groupedTable).reverse().forEach(d => { html += `<tr><td>${d}</td><td>${groupedTable[d].h.toFixed(1)}h</td><td>${groupedTable[d].cyc}</td><td>${groupedTable[d].m}</td><td>${Array.from(groupedTable[d].subs).join(', ')}</td></tr>`; });
-            document.getElementById('dailyLogBody').innerHTML = html || '<tr><td colspan="5">No data for this month</td></tr>';
+            document.getElementById('dailyLogBody').innerHTML = html || '<tr><td colspan="5">No data</td></tr>';
         }
 
-        function renderMonthlyTable() {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const data = {}; 
-            const init = (k) => { if(!data[k]) data[k] = {mcq:0, swt:0, gt:0}; };
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            logs.forEach(l => {
-                const parts = l.date.split('/'); if(parts.length === 3) {
-                    const k = `${parts[2]}-${parts[1].padStart(2,'0')}`;
-                    init(k); data[k].mcq += (parseInt(l.mcqs)||0);
-                }
-            });
-            const swts = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]");
-            swts.forEach(s => {
-                const parts = s.date.split('-'); if(parts.length === 3) {
-                    const k = `${parts[0]}-${parts[1]}`;
-                    init(k); data[k].swt++;
-                }
-            });
-            const neet = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
-            const ini = JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
-            const fmge = JSON.parse(localStorage.getItem(KEYS.FMGE)||"[]");
-            [...neet, ...ini, ...fmge].forEach(g => {
-                const parts = g.date.split('-'); if(parts.length === 3) {
-                    const k = `${parts[0]}-${parts[1]}`;
-                    init(k); data[k].gt++;
-                }
-            });
-            const keys = Object.keys(data).sort().reverse();
-            let html = "";
-            keys.forEach(k => {
-                const [y, m] = k.split('-'); const mName = months[parseInt(m)-1];
-                const d = data[k];
-                if(d.mcq > 0 || d.swt > 0 || d.gt > 0) {
-                    html += `<tr><td>${mName} ${y}</td><td>${d.mcq}</td><td>${d.swt}</td><td>${d.gt}</td></tr>`;
-                }
-            });
-            document.getElementById('monthlyGoalBody').innerHTML = html;
-        }
+        // --- GLOBAL VARIABLES FOR CHARTS ---
+        let hChart, mChart, sChart, scuChart, sqChart, swtPhaseCountChart, swtPhaseAvgChart, gNeetChart, gIniChart, gFmgeChart, gtBreakdownChart;
+        let currentViewDate = new Date();
 
-        function renderMatrix() {
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]"), mapKey = { "First Reading": 0, "Second Reading": 1, "Third Reading": 2, "Extra Bonus": 3 }, dMatrix = {}, mMatrix = {};
-            SUBJECTS_19.forEach(s => { dMatrix[s] = [new Set(), new Set(), new Set(), new Set()]; mMatrix[s] = [0, 0, 0, 0]; });
-            logs.forEach(l => { const s = l.subject, ph = l.phase || "First Reading", idx = mapKey[ph]; if (dMatrix[s] && idx !== undefined) { dMatrix[s][idx].add(l.date); mMatrix[s][idx] += (parseInt(l.mcqs)||0); } });
-            let dHtml = "", mHtml = ""; const dTotals = [0,0,0,0], mTotals = [0,0,0,0];
-            SUBJECTS_19.forEach(s => { const days = dMatrix[s].map(set => set.size), mcqs = mMatrix[s]; days.forEach((d, i) => dTotals[i] += d); mcqs.forEach((m, i) => mTotals[i] += m); dHtml += `<tr><td class="matrix-row-head">${s}</td>${days.map(d => `<td>${d||'-'}</td>`).join('')}</tr>`; mHtml += `<tr><td class="matrix-row-head">${s}</td>${mcqs.map(m => `<td>${m||'-'}</td>`).join('')}</tr>`; });
-            dHtml += `<tr><td class="matrix-total">TOTAL</td>${dTotals.map(t => `<td class="matrix-total">${t}</td>`).join('')}</tr>`; mHtml += `<tr><td class="matrix-total">TOTAL</td>${mTotals.map(t => `<td class="matrix-total">${t}</td>`).join('')}</tr>`;
-            document.getElementById('matrixBody').innerHTML = dHtml; document.getElementById('mcqMatrixBody').innerHTML = mHtml;
-        }
-        /* PYQ & GOAL LOGIC */
-        function renderPYQ() {
-            const container = document.getElementById('pyq-panels-root'); if(container.innerHTML !== "") return;
-            let html = ""; PYQ_CATS.forEach((cat, index) => {
-                const activeClass = index === 0 ? "active" : ""; html += `<div id="pyq_panel_${cat.id}" class="pyq-panel ${activeClass}">`;
-                if (cat.type === 'list') { for(let y=cat.start; y>=cat.end; y--) html += `<label class="pyq-list-row"><span>${cat.label} ${y}</span><input type="checkbox" id="pyq_${cat.id}_${y}"></label>`; }
-                else { html += `<div class="pyq-col-grid"><div><div class="pyq-col-header">${cat.col1}</div>`; for(let y=cat.start; y>=cat.end; y--) html += `<label class="pyq-list-row"><span>${y}</span><input type="checkbox" id="pyq_${cat.id}_y_${cat.col1}_1"></label>`; html += `</div><div><div class="pyq-col-header">${cat.col2}</div>`; for(let y=cat.start; y>=cat.end; y--) html += `<label class="pyq-list-row"><span>${y}</span><input type="checkbox" id="pyq_${cat.id}_y_${cat.col2}_2"></label>`; html += `</div></div>`; }
-                html += `<button class="btn sm-btn" style="margin-top:15px; background:var(--accent);" onclick="saveLockPYQ('${cat.id}')">Save & Lock Progress</button></div>`;
-            });
-            container.innerHTML = html; loadPYQ();
-        }
-
-        function switchPyq(id, btn) { document.querySelectorAll('.pyq-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.pyq-panel').forEach(p => p.classList.remove('active')); document.getElementById(`pyq_panel_${id}`).classList.add('active'); }
-        function saveLockPYQ(catId) { 
-            const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}, catConfig = PYQ_CATS.find(c => c.id === catId); 
-            data[catId] = {}; let allChecked = true; 
-            if(catConfig.type === 'list') { for(let y=catConfig.start; y>=catConfig.end; y--) { const isChecked = document.getElementById(`pyq_${catId}_${y}`).checked; data[catId][y] = isChecked; if(!isChecked) allChecked = false; } } 
-            else { for(let y=catConfig.start; y>=catConfig.end; y--) { const c1 = document.getElementById(`pyq_${catId}_y_${catConfig.col1}_1`).checked, c2 = document.getElementById(`pyq_${catId}_y_${catConfig.col2}_2`).checked; data[catId][`${y}_1`] = c1; data[catId][`${y}_2`] = c2; if(!c1 || !c2) allChecked = false; } } 
-            localStorage.setItem(KEYS.PYQ, JSON.stringify(data)); 
-            if(window.syncToCloud) window.syncToCloud();
-            const cup = document.getElementById(`cup_${catId}`); 
-            if(allChecked) { cup.classList.add('show'); alert(`🏆 All ${catConfig.label} PYQs Completed!`); } 
-            else { cup.classList.remove('show'); alert("Progress Saved."); } 
-        }
-
-        function loadPYQ() { const data = JSON.parse(localStorage.getItem(KEYS.PYQ)) || {}; PYQ_CATS.forEach(cat => { if(!data[cat.id]) return; let allChecked = true; if(cat.type === 'list') { for(let y=cat.start; y>=cat.end; y--) { const el = document.getElementById(`pyq_${cat.id}_${y}`); if(el) { el.checked = data[cat.id][y] || false; if(!el.checked) allChecked = false; } } } else { for(let y=cat.start; y>=cat.end; y--) { const el1 = document.getElementById(`pyq_${cat.id}_y_${cat.col1}_1`), el2 = document.getElementById(`pyq_${cat.id}_y_${cat.col2}_2`); if(el1) { el1.checked = data[cat.id][`${y}_1`] || false; if(!el1.checked) allChecked = false; } if(el2) { el2.checked = data[cat.id][`${y}_2`] || false; if(!el2.checked) allChecked = false; } } } if(allChecked) document.getElementById(`cup_${cat.id}`).classList.add('show'); }); }
-        
-        function lockTarget(phaseIdx, type) { if(!confirm("Lock goal?")) return; const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }; if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {}; if(type === 'swt') { g.phases[phaseIdx].tgt_swt = document.getElementById(`tgt_swt_${phaseIdx}`).value; g.phases[phaseIdx].locked_swt = true; } else { g.phases[phaseIdx].tgt_gt = document.getElementById(`tgt_gt_${phaseIdx}`).value; g.phases[phaseIdx].locked_gt = true; } localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); if(window.syncToCloud) window.syncToCloud(); renderGoalHTML(); }
-        function saveSubjectProgress(phaseIdx) { if(!confirm(`Lock subject progress?`)) return; const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }; if(!g.phases[phaseIdx]) g.phases[phaseIdx] = {s:{}, s_locked:{}}; if(!g.phases[phaseIdx].s_locked) g.phases[phaseIdx].s_locked = {}; SUBJECTS_19.forEach((s, si) => { const el = document.getElementById(`chk_${phaseIdx}_${si}`); if(el && el.checked) { g.phases[phaseIdx].s[si] = true; g.phases[phaseIdx].s_locked[si] = true; } }); localStorage.setItem(KEYS.GOALS, JSON.stringify(g)); if(window.syncToCloud) window.syncToCloud(); renderGoalHTML(); }
-
-        function renderGoalHTML() {
-            const container = document.getElementById('goal-phases-container'); container.innerHTML = "";
-            const swtData = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]"), nGT = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]"), iGT = JSON.parse(localStorage.getItem(KEYS.INI) || "[]"), fGT = JSON.parse(localStorage.getItem(KEYS.FMGE) || "[]"), allGT = [...nGT, ...iGT, ...fGT];
-            PHASES_CONFIG.forEach((p, idx) => {
-                const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { phases:[] }, pData = g.phases[idx] || {}, pNameMap = { 0: "First Reading", 1: "Second Reading", 2: "Third Reading", 3: "Extra Bonus Reading" }, phaseNameStr = pNameMap[idx];
-                let actSWT = 0; swtData.forEach(x => { let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading"; if (ph === phaseNameStr) actSWT++; });
-                let actGT = 0, maxGT = 0; allGT.forEach(x => { let ph = x.phase || "First Reading"; if(ph === "Extra Bonus") ph = "Extra Bonus Reading"; if (ph === phaseNameStr) { actGT++; if(x.score > maxGT) maxGT = x.score; } });
-                const tgtSWT = parseInt(pData.tgt_swt) || 0, tgtGT = parseInt(pData.tgt_gt) || 0;
-                let isChamp = false, subsDone = true; if (pData.s_locked) { for(let i=0; i<SUBJECTS_19.length; i++) if(!pData.s_locked[i]) subsDone = false; } else subsDone = false;
-                if (subsDone && actSWT >= tgtSWT && actGT >= tgtGT && tgtSWT > 0 && tgtGT > 0) isChamp = true;
-                const champClass = isChamp ? 'completed' : '', champBadge = isChamp ? '🏆' : p.badge;
-                let subjectsHtml = `<div class="sub-grid">`; SUBJECTS_19.forEach((s, si) => { const isChecked = pData.s ? pData.s[si] : false, isLocked = pData.s_locked ? pData.s_locked[si] : false; subjectsHtml += `<label class="sub-check-item" style="${isLocked ? 'color:#2ecc71; font-weight:bold;' : ''}"><input type="checkbox" id="chk_${idx}_${si}" ${isChecked ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="saveGoals()"><span>${s}</span></label>`; });
-                subjectsHtml += `</div>`;
-                container.innerHTML += `<div class="phase-block ${champClass}"><div class="phase-header"><span>${p.name}</span><span class="phase-badge">${champBadge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div><span class="setting-label">From</span><input type="date" id="d_${idx}_f" value="${pData.f||''}" onchange="saveGoals()"></div><div><span class="setting-label">To</span><input type="date" id="d_${idx}_t" value="${pData.t||''}" onchange="saveGoals()"></div></div><div class="goal-stats-grid"><div class="goal-input-box"><span class="setting-label">SWT Goal</span><input type="number" id="tgt_swt_${idx}" value="${pData.tgt_swt || ''}" ${pData.locked_swt ? 'disabled' : ''}><button class="mini-lock-btn ${pData.locked_swt?'locked':''}" onclick="lockTarget(${idx}, 'swt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual</span><span class="goal-val">${actSWT}${actSWT>=tgtSWT&&tgtSWT>0?'✅':''}</span></div><div class="goal-input-box"><span class="setting-label">GT Goal</span><input type="number" id="tgt_gt_${idx}" value="${pData.tgt_gt || ''}" ${pData.locked_gt ? 'disabled' : ''}><button class="mini-lock-btn ${pData.locked_gt?'locked':''}" onclick="lockTarget(${idx}, 'gt')">🔒</button></div><div class="goal-display-box"><span class="setting-label">Actual</span><span class="goal-val">${actGT}${actGT>=tgtGT&&tgtGT>0?'✅':''}</span></div></div><div style="text-align:center; background:rgba(255,255,255,0.05); padding:5px; border-radius:6px; margin-bottom:8px;"><span class="setting-label" style="display:inline;">Highest GT Score: </span><strong style="color:#f39c12;">${maxGT.toFixed(2)}</strong></div><button class="btn sm-btn" style="background:var(--border); color:var(--text);" onclick="document.getElementById('sg_${idx}').classList.toggle('open')">Subjects ▼</button><div id="sg_${idx}" class="sub-grid-container">${subjectsHtml}<button class="save-sub-btn" onclick="saveSubjectProgress(${idx})">Lock Subjects</button></div></div>`;
-            }); 
-        }
-
-        function saveGoals() { 
-            const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] };
-            const exams = { 
-                i_j: document.getElementById('goal_ini_jul').checked, 
-                u: document.getElementById('goal_upsc').checked, 
-                n: document.getElementById('goal_neet').checked, 
-                i_jan: document.getElementById('goal_ini_jan').checked,
-                f_jun: document.getElementById('goal_fmge_jun').checked,
-                f_dec: document.getElementById('goal_fmge_dec').checked
-            };
-            const phases = PHASES_CONFIG.map((_, idx) => { const ex = g.phases[idx] || {}, s = ex.s || {}; SUBJECTS_19.forEach((_, si) => { const el = document.getElementById(`chk_${idx}_${si}`); if(el && !el.disabled) s[si] = el.checked; }); return { ...ex, f: document.getElementById(`d_${idx}_f`).value, t: document.getElementById(`d_${idx}_t`).value, s: s }; });
-            localStorage.setItem(KEYS.GOALS, JSON.stringify({ exams, phases })); 
-            if(window.syncToCloud) window.syncToCloud();
-        }
-
-        function lockExamGoals() { saveGoals(); const g = JSON.parse(localStorage.getItem(KEYS.GOALS)), m = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan', 'f_jun': 'dash_fmge_jun', 'f_dec': 'dash_fmge_dec' }; Object.keys(m).forEach(k => { const el = document.getElementById(m[k]); if (g.exams[k]) el.classList.add('target-locked'); else el.classList.remove('target-locked'); }); alert("Locked! 🚀"); }
-        function loadGoalsToUI() { 
-            const g = JSON.parse(localStorage.getItem(KEYS.GOALS)) || { exams:{}, phases:[] }; 
-            if(document.getElementById('goal_ini_jul')) document.getElementById('goal_ini_jul').checked = g.exams?.i_j; 
-            if(document.getElementById('goal_upsc')) document.getElementById('goal_upsc').checked = g.exams?.u; 
-            if(document.getElementById('goal_neet')) document.getElementById('goal_neet').checked = g.exams?.n; 
-            if(document.getElementById('goal_ini_jan')) document.getElementById('goal_ini_jan').checked = g.exams?.i_jan; 
-            if(document.getElementById('goal_fmge_jun')) document.getElementById('goal_fmge_jun').checked = g.exams?.f_jun;
-            if(document.getElementById('goal_fmge_dec')) document.getElementById('goal_fmge_dec').checked = g.exams?.f_dec;
-
-            if(g.exams) { const m = { 'i_j': 'dash_ini_jul', 'u': 'dash_upsc', 'n': 'dash_neet', 'i_jan': 'dash_ini_jan', 'f_jun': 'dash_fmge_jun', 'f_dec': 'dash_fmge_dec' }; Object.keys(m).forEach(k => { const el = document.getElementById(m[k]); if (el && g.exams[k]) el.classList.add('target-locked'); }); } renderGoalHTML(); 
-        }
-        function exportData() { localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString()); renderBackupStatus(); const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k])); const payload = { owner: window.userId, data: b }; const code = btoa(JSON.stringify(payload)); navigator.clipboard.writeText(code).then(() => alert(`Code Copied! Locked to ID: ${window.userId}`)); }
-        function openRestore() { openPopup('restore-popup'); }
-        function processRestore() { try { const raw = JSON.parse(atob(document.getElementById('restoreInput').value)); let d = raw; if (raw.owner) { if (String(raw.owner) !== String(window.userId)) { alert(`Access Denied!`); return; } d = raw.data; } Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); localStorage.setItem('SSS_LAST_BACKUP', new Date().toISOString()); if(window.syncToCloud) window.syncToCloud(); alert("Restored!"); location.reload(); } catch(e) { alert("Invalid Code!"); } }
-        /* NAVIGATION & COUNTER LOGIC */
-        function switchTab(id, btn) { 
-            // Handle Quantitative Internal Tabs
-            if (btn.parentNode.parentNode.id === 'section-quant') {
-                document.querySelectorAll('#section-quant .tab-btn').forEach(b => b.classList.remove('active')); 
-                btn.classList.add('active'); 
-                document.querySelectorAll('#section-quant .tab-content').forEach(c => c.classList.remove('active')); 
-                document.getElementById(id).classList.add('active'); 
-                
-                if(id === 'tab-rank') loadLeaderboard(currentRankMode);
-            } 
-            // Handle Qualitative Internal Tabs
-            else {
-                document.querySelectorAll('#section-qual .tab-btn').forEach(b => b.classList.remove('active')); 
-                btn.classList.add('active'); 
-                document.querySelectorAll('#section-qual .tab-content').forEach(c => c.classList.remove('active')); 
-                document.getElementById(id).classList.add('active');
-            }
-            updateUI(); 
-        }
-        
-        function updateCountdowns() { 
-            const now = new Date(); 
-            const targets = { 
-                iniJuly: new Date("2026-05-17T00:00:00+05:30"), 
-                upsc: new Date("2026-08-02T00:00:00+05:30"), 
-                neet: new Date("2026-08-30T00:00:00+05:30"), 
-                iniJan: new Date("2026-11-01T00:00:00+05:30"), 
-                fmgeJun: new Date("2026-06-28T00:00:00+05:30"), 
-                fmgeDec: new Date("2026-12-20T00:00:00+05:30") 
-            };
-            Object.keys(targets).forEach(k => { 
-                const diff = Math.ceil((targets[k] - now) / (1000 * 60 * 60 * 24)); 
-                const el = document.getElementById('days' + k.charAt(0).toUpperCase() + k.slice(1)); 
-                if(el) {
-                    if (k === 'fmgeDec') {
-                         el.innerText = "TBA";
-                    } else {
-                         el.innerText = diff > 0 ? diff : (diff === 0 ? "TODAY" : "DONE");
-                    }
-                }
-            });
-            const istStr = new Date(now.getTime() + (330 * 60000)).toISOString().split('T')[0];
-            if(document.getElementById('swtDate')) document.getElementById('swtDate').max = istStr; 
-            if(document.getElementById('gtDate')) document.getElementById('gtDate').max = istStr;
-        }
-
-        function updateConsistency() { 
-            const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
-            const uniqueDates = new Set(logs.map(l => l.date)).size; 
-            document.getElementById('streakText').innerText = `Consistency: ${uniqueDates} Days`; 
-            document.getElementById('streakIcons').innerText = "🥇".repeat(Math.floor(uniqueDates/75)) + "🔥".repeat(Math.floor((uniqueDates%75)/25)); 
-        }
-        /* CALCULATION LOGIC */
-        function clearData() { if(confirm("Clear all?")) { Object.values(KEYS).forEach(k => localStorage.removeItem(k)); location.reload(); } }
-        
-        function calcSWT() { 
-            const t=parseInt(document.getElementById('swtTotal').value)||0, 
-                  c=parseInt(document.getElementById('swtCorrect').value)||0, 
-                  u=parseInt(document.getElementById('swtUnat').value)||0; 
-            document.getElementById('swtW').innerText=Math.max(0, t-c-u); 
-            document.getElementById('swtP').innerText=t>0?((c/t)*100).toFixed(1)+"%":"0%"; 
-        }
-        
-        function calcGT() { 
-            if (currentGTMode === 'FMGE') {
-                const c1=parseInt(document.getElementById('gtP1C').value)||0, u1=parseInt(document.getElementById('gtP1U').value)||0;
-                const c2=parseInt(document.getElementById('gtP2C').value)||0, u2=parseInt(document.getElementById('gtP2U').value)||0;
-                const s1 = c1; const s2 = c2; const tot = s1 + s2;
-                document.getElementById('gtS1').innerText = s1; document.getElementById('gtS2').innerText = s2;
-                document.getElementById('gtTotalFmge').innerText = tot;
-                document.getElementById('gtStatusFmge').innerText = tot >= 150 ? "Qualified" : "Not Qualified";
-                document.getElementById('gtStatusFmge').style.color = tot >= 150 ? "#2ecc71" : "#ef5350";
-            } else {
-                const c=parseInt(document.getElementById('gtCorrect').value)||0, 
-                      u=parseInt(document.getElementById('gtUnat').value)||0, 
-                      w=Math.max(0, 200-c-u); 
-                const s=(currentGTMode==='NEET')?(c*4-w):(c-(w*0.333)); 
-                document.getElementById('gtW').innerText=w; 
-                document.getElementById('gtS').innerText=s.toFixed(2); 
-            }
-        }
-
-        function saveSWT() { 
-            const sub=document.getElementById('swtSubject').value, 
-                  ph=document.getElementById('swtPhase').value, 
-                  d=document.getElementById('swtDate').value, 
-                  t=parseInt(document.getElementById('swtTotal').value); 
-            if(!d || isNaN(t)) return; 
-            const data = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"); 
-            data.push({ 
-                date: d, total: t, 
-                correct: parseInt(document.getElementById('swtCorrect').value), 
-                unat: parseInt(document.getElementById('swtUnat').value), 
-                wrong: Math.max(0, t-parseInt(document.getElementById('swtCorrect').value)-parseInt(document.getElementById('swtUnat').value)), 
-                percent: ((parseInt(document.getElementById('swtCorrect').value)/t)*100).toFixed(1), 
-                subject: sub, phase: ph 
-            }); 
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
-            localStorage.setItem(KEYS.SWT, JSON.stringify(data)); 
-            if(window.syncToCloud) window.syncToCloud();
-            updateUI(); 
-        }
-        /* GT BREAKDOWN & HISTORY LOGIC */
-        function openGTBreakdown() { 
-            const container = document.getElementById('gt-subject-inputs'); 
-            container.innerHTML = ""; 
-            SUBJECTS_19.forEach(s => { 
-                container.innerHTML += `
-                <div class="subject-breakdown-row">
-                    <span>${s}</span>
-                    <input type="number" class="sb-input" id="sb_total_${s}" placeholder="T">
-                    <input type="number" class="sb-input" id="sb_c_${s}" placeholder="C">
-                    <input type="number" class="sb-input" id="sb_u_${s}" placeholder="U">
-                </div>`; 
-            }); 
-            openPopup('gt-breakdown-popup'); 
-        }
-
-        function finalizeGTSave() { 
-            if(!confirm("Confirm Save?")) return;
-            const d=document.getElementById('gtDate').value, 
-                  ph=document.getElementById('gtPhase').value, 
-                  plat=document.getElementById('gtPlatform').value || "Unknown";
-            
-            let score, c, u, w, details = {};
-            
-            if (currentGTMode === 'FMGE') {
-                const c1=parseInt(document.getElementById('gtP1C').value)||0, 
-                      u1=parseInt(document.getElementById('gtP1U').value)||0;
-                const c2=parseInt(document.getElementById('gtP2C').value)||0, 
-                      u2=parseInt(document.getElementById('gtP2U').value)||0;
-                score = c1 + c2; c = c1+c2; u = u1+u2; w = Math.max(0, 300-c-u);
-                details = { p1: {c:c1, u:u1, s:c1}, p2: {c:c2, u:u2, s:c2}, status: score>=150?"Qualified":"Not Qualified" };
-            } else {
-                c=parseInt(document.getElementById('gtCorrect').value); 
-                u=parseInt(document.getElementById('gtUnat').value); 
-                w=Math.max(0, 200-c-u);
-                score=(currentGTMode==='NEET'?(c*4-w):(c-w*0.333));
-            }
-
-            const breakdown = {}; 
-            SUBJECTS_19.forEach(s => { 
-                const tot = parseInt(document.getElementById(`sb_total_${s}`).value)||0, 
-                      corr = parseInt(document.getElementById(`sb_c_${s}`).value)||0, 
-                      unat = parseInt(document.getElementById(`sb_u_${s}`).value)||0;
-                breakdown[s] = { 
-                    total: tot, c: corr, u: unat, 
-                    w: Math.max(0, tot-corr-unat), 
-                    percent: tot > 0 ? ((corr/tot)*100).toFixed(1) : 0 
-                }; 
-            }); 
-
-            let storeKey = (currentGTMode === 'INICET') ? KEYS.INI : (currentGTMode === 'FMGE' ? KEYS.FMGE : KEYS.NEET);
-            const data = JSON.parse(localStorage.getItem(storeKey)||"[]"); 
-            data.push({ id: Date.now(), date: d, platform: plat, score, correct: c, unat: u, wrong: w, phase: ph, breakdown, ...details }); 
-            data.sort((a,b)=>new Date(a.date)-new Date(b.date)); 
-            localStorage.setItem(storeKey, JSON.stringify(data)); 
-            
-            if(window.syncToCloud) window.syncToCloud();
-            closePopup(); 
-            updateUI();
-        }
-
-        function populateGTHistory() { 
-            let storeKey = (currentGTMode === 'INICET') ? KEYS.INI : (currentGTMode === 'FMGE' ? KEYS.FMGE : KEYS.NEET);
-            let prefixStr = currentGTMode + " GT";
-            const data = JSON.parse(localStorage.getItem(storeKey)||"[]"); 
-            const select = document.getElementById('gtHistorySelect'); 
-            select.innerHTML = '<option value="">Select a GT to View Details</option>'; 
-            data.slice().reverse().forEach((g, idx) => { 
-                select.innerHTML += `<option value="${g.id}">${prefixStr} ${data.length - idx} (${g.date})</option>`; 
-            }); 
-        }
-        /* CHART RENDERING & GT LOGIC */
-        function renderGTBreakdownGraph() { 
-            const id = document.getElementById('gtHistorySelect').value; 
-            if(!id) { 
-                document.getElementById('gtBreakdownChartContainer').style.display='none'; 
-                document.getElementById('gtReviewMeta').style.display='none'; 
-                return; 
-            } 
-            let storeKey = (currentGTMode === 'INICET') ? KEYS.INI : (currentGTMode === 'FMGE' ? KEYS.FMGE : KEYS.NEET);
-            const data = JSON.parse(localStorage.getItem(storeKey)||"[]"), g = data.find(x => x.id == id); 
-            if(!g || !g.breakdown) return; 
-            
-            document.getElementById('gtReviewMeta').style.display='block'; 
-            document.getElementById('gtReviewMeta').innerHTML = `<span>${g.platform} | ${g.date} | Score: ${parseFloat(g.score).toFixed(2)}</span>`;
-            document.getElementById('gtBreakdownChartContainer').style.display='block'; 
-            
-            const yData = SUBJECTS_19.map(s => g.breakdown[s] ? g.breakdown[s].percent : 0); 
-            const tc = getThemeColor('text'), gc = getThemeColor('grid'); 
-            document.getElementById('gtBreakdownScrollInner').style.width = Math.max(window.innerWidth, SUBJECTS_19.length * 30) + "px";
-            
-            if(gtBreakdownChart) gtBreakdownChart.destroy(); 
-            gtBreakdownChart = new Chart(document.getElementById('gtBreakdownChart'), { 
-                type:'bar', 
-                data:{ labels:SUBJECTS_19, datasets:[{ label:'Correct %', data:yData, backgroundColor:'#2ecc71', borderRadius:4 }] }, 
-                options:{ responsive: true, maintainAspectRatio:false, scales:{ y:{ min:0, max:100, ticks:{color:tc}, grid:{color:gc} }, x:{ ticks:{color:tc, font:{size:10}, autoSkip:false, maxRotation:90}, grid:{color:gc} } }, plugins:{legend:{display:false}} } 
-            }); 
-        }
-
-        function switchGT(m) { 
-            currentGTMode=m; 
-            document.querySelectorAll('.gt-tab-btn').forEach(b=>b.style.background='rgba(0,0,0,0.2)'); 
-            if(m==='NEET') document.getElementById('tabNeet').style.background='var(--border)'; 
-            else if(m==='INICET') document.getElementById('tabInicet').style.background='var(--border)'; 
-            else document.getElementById('tabFmge').style.background='var(--border)';
-            
-            document.getElementById('neet-area').style.display=m==='NEET'?'block':'none'; 
-            document.getElementById('inicet-area').style.display=m==='INICET'?'block':'none'; 
-            document.getElementById('fmge-area').style.display=m==='FMGE'?'block':'none';
-            document.getElementById('gt-inputs-std').style.display=m==='FMGE'?'none':'block'; 
-            document.getElementById('gt-inputs-fmge').style.display=m==='FMGE'?'block':'none';
-            
-            calcGT(); populateGTHistory(); renderGT(); 
-        }
-        
-        function renderSWT() {
-            const all = JSON.parse(localStorage.getItem(KEYS.SWT)||"[]"), sub = document.getElementById('swtSubject').value, f = all.filter(x => x.subject === sub), tc = getThemeColor('text'), gc = getThemeColor('grid');
-            if(sChart) sChart.destroy(); 
-            if(f.length>0) sChart = new Chart(document.getElementById('swtChart'), { type:'line', data:{labels:f.map(x=>x.date), datasets:[{label:'%', data:f.map(x=>x.percent), borderColor:'#5288c1'}]}, options:{maintainAspectRatio:false, scales:{y:{min:0, max:100, ticks:{color:tc}, grid:{color:gc}}, x:{ticks:{color:tc, font:{size:7}, maxRotation:90}, grid:{color:gc}} }, plugins:{legend:{display:false}}}});
-            
-            const perf = {}; ALL_SWT_SUBS.forEach(s => perf[s] = {sum:0, count:0, totalQs:0}); 
-            all.forEach(l => { if(perf[l.subject]) { perf[l.subject].sum += parseFloat(l.percent); perf[l.subject].count++; perf[l.subject].totalQs += parseInt(l.total); } });
-            
-            if(scuChart) scuChart.destroy(); 
-            scuChart = new Chart(document.getElementById('swtCumulativeChart'), { type: 'line', data: { labels: ALL_SWT_SUBS, datasets: [{ data: ALL_SWT_SUBS.map(s => perf[s].count > 0 ? (perf[s].sum / perf[s].count).toFixed(1) : null), borderColor: '#f39c12' }] }, options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks:{color:tc}, grid:{color:gc} }, x:{ticks:{color:tc, font:{size:7}, maxRotation:90}, grid:{color:gc}} }, plugins:{legend:{display:false}} } });
-            
-            if(sqChart) sqChart.destroy(); 
-            sqChart = new Chart(document.getElementById('swtQuestionsChart'), { type: 'line', data: { labels: ALL_SWT_SUBS, datasets: [{ label: 'Questions Solved', data: ALL_SWT_SUBS.map(s => perf[s].totalQs), borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.1)', fill: true, tension: 0.4, spanGaps: true }] }, options: { maintainAspectRatio: false, scales: { y: { ticks: { color: tc, font: { size: 9 } }, beginAtZero: true, grid:{color:gc} }, x: { ticks: { color: tc, font: { size: 8 }, autoSkip: false, maxRotation: 90, minRotation: 90 }, grid:{color:gc} } }, plugins: { legend: { display: false } } } });
-            
-            if(swtPhaseCountChart) swtPhaseCountChart.destroy(); 
-            if(swtPhaseAvgChart) swtPhaseAvgChart.destroy();
-            
-            const phasesList = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"], phaseData = { "First Reading": {n:0, s:0}, "Second Reading": {n:0, s:0}, "Third Reading": {n:0, s:0}, "Extra Bonus Reading": {n:0, s:0} };
-            all.forEach(x => { let p = x.phase || "First Reading"; if(p === "Extra Bonus") p = "Extra Bonus Reading"; if(phaseData[p]) { phaseData[p].n++; phaseData[p].s += parseFloat(x.percent); } });
-            
-            swtPhaseCountChart = new Chart(document.getElementById('swtPhaseCountChart'), { type: 'bar', data: { labels: phasesList, datasets: [{ label: 'Tests Taken', data: phasesList.map(p => phaseData[p].n), backgroundColor: '#3498db', borderRadius: 4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: tc, stepSize: 1 }, grid:{color:gc} }, x: { ticks: { color: tc, font: { size: 9 } }, grid:{color:gc} } }, plugins: { legend: { display: false } } } });
-            swtPhaseAvgChart = new Chart(document.getElementById('swtPhaseAvgChart'), { type: 'bar', data: { labels: phasesList, datasets: [{ label: 'Average %', data: phasesList.map(p => phaseData[p].n > 0 ? (phaseData[p].s / phaseData[p].n).toFixed(1) : 0), backgroundColor: '#9b59b6', borderRadius: 4 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, ticks: { color: tc }, grid:{color:gc} }, x: { ticks: { color: tc, font: { size: 9 } }, grid:{color:gc} } }, plugins: { legend: { display: false } } } });
-            
-            let maxA = -1, minA = 101, sS = "--", wS = "--"; 
-            Object.keys(perf).forEach(k => { if(perf[k].count > 0) { const a = perf[k].sum / perf[k].count; if(a > maxA) { maxA = a; sS = k; } if(a < minA) { minA = a; wS = k; } } }); 
-            document.getElementById('swtStrong').innerText = sS; document.getElementById('swtWeak').innerText = wS;
-        }
-
-        function createScrollableChart(canvasId, scrollId, type, labels, datasets, yMax) {
-            const ctx = document.getElementById(canvasId); const scrollInner = document.getElementById(scrollId);
-            const tc = getThemeColor('text'), gc = getThemeColor('grid');
-            scrollInner.style.width = Math.max(window.innerWidth - 60, labels.length * 40) + "px";
-            return new Chart(ctx, { type: type, data: { labels: labels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: yMax, ticks: { color: tc }, grid: { color: gc } }, x: { ticks: { color: tc }, grid: { color: gc } } } } });
-        }
-        /* FINAL PROGRESS RENDERING & INITIALIZATION */
-        function renderGT() {
-            const nd = JSON.parse(localStorage.getItem(KEYS.NEET)||"[]"), 
-                  id = JSON.parse(localStorage.getItem(KEYS.INI)||"[]"), 
-                  fd = JSON.parse(localStorage.getItem(KEYS.FMGE)||"[]"), 
-                  tc = getThemeColor('text'), gc = getThemeColor('grid');
-            
-            if(gNeetChart) gNeetChart.destroy(); 
-            if(nd.length>0) gNeetChart = createScrollableChart('gtNeetChart', 'neetScrollInner', 'line', nd.map(x=>x.date), [{data:nd.map(x=>x.score), borderColor:'#f39c12', tension:0.2}], 800);
-            
-            if(gIniChart) gIniChart.destroy(); 
-            if(id.length>0) gIniChart = createScrollableChart('gtInicetChart', 'iniScrollInner', 'line', id.map(x=>x.date), [{data:id.map(x=>x.score), borderColor:'#2ecc71', tension:0.2}], 200);
-            
-            if(gFmgeChart) gFmgeChart.destroy(); 
-            if(fd.length>0) gFmgeChart = createScrollableChart('gtFmgeChart', 'fmgeScrollInner', 'line', fd.map(x=>x.date), [{data:fd.map(x=>x.score), borderColor:'#e67e22', tension:0.2}], 300);
-            
-            const processPhaseData = (dataList) => {
-                const phases = ["First Reading", "Second Reading", "Third Reading", "Extra Bonus Reading"], 
-                      stats = { "First Reading":{n:0, s:0, min:9999, max:-9999}, "Second Reading":{n:0, s:0, min:9999, max:-9999}, "Third Reading":{n:0, s:0, min:9999, max:-9999}, "Extra Bonus Reading":{n:0, s:0, min:9999, max:-9999} }; 
-                let overallMax = 0, overallMin = 9999;
-                
-                dataList.forEach(x => { 
-                    let p = x.phase || "First Reading"; 
-                    if(p === "Extra Bonus") p = "Extra Bonus Reading"; 
-                    if(stats[p]) { 
-                        stats[p].n++; stats[p].s += x.score; 
-                        if(x.score > stats[p].max) stats[p].max = x.score; 
-                        if(x.score < stats[p].min) stats[p].min = x.score; 
-                    } 
-                    if(x.score > overallMax) overallMax = x.score; 
-                    if(x.score < overallMin) overallMin = x.score; 
-                });
-                return { phases, stats, overallMax, overallMin: dataList.length?overallMin:0 };
-            };
-
-            const nData = processPhaseData(nd); 
-            let nStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${nData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${nData.overallMin.toFixed(2)}</span></div></div>`; 
-            document.getElementById('gtNeetStats').innerHTML = nData.overallMax > 0 ? nStatsHtml : "";
-            
-            const iData = processPhaseData(id); 
-            let iStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${iData.overallMax.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Lowest Score</span><span class="gt-stat-val val-low">${iData.overallMin.toFixed(2)}</span></div></div>`; 
-            document.getElementById('gtIniStats').innerHTML = iData.overallMax > 0 ? iStatsHtml : "";
-            
-            const fData = processPhaseData(fd); 
-            let fStatsHtml = `<div class="gt-stats-grid"><div class="gt-stat-box"><span class="gt-stat-header">Highest Score</span><span class="gt-stat-val val-high">${fData.overallMax.toFixed(0)}</span></div><div class="gt-stat-box"><span class="gt-stat-header">Qualified GTs</span><span class="gt-stat-val val-high">${fd.filter(x=>x.score>=150).length}</span></div></div>`; 
-            document.getElementById('gtFmgeStats').innerHTML = fData.overallMax > 0 ? fStatsHtml : "";
-        }
-
-        function renderBackupStatus() {
-            const el = document.getElementById('backup-reminder'), last = localStorage.getItem('SSS_LAST_BACKUP');
-            if(!last) { el.innerText = "⚠️ NEVER BACKED UP"; el.style.color = "#ef5350"; return; }
-            const diff = Math.floor((new Date() - new Date(last)) / (1000 * 60 * 60 * 24));
-            el.innerText = diff === 0 ? "✅ BACKED UP TODAY" : `⚠️ LAST BACKUP: ${diff} DAYS AGO`;
-            el.style.color = diff > 7 ? "#ef5350" : (diff > 0 ? "#f1c40f" : "#2ecc71");
-        }
+        function changeViewMonth(offset) { currentViewDate.setMonth(currentViewDate.getMonth() + offset); updateUI(); }
 
         /* MASTER UPDATE LOOP */
         function updateUI() { 
@@ -2032,9 +1621,9 @@
             renderSlideShow();
         }
 
-        // Initialize App
         updateUI(); 
-        setInterval(updateCountdowns, 60000); // Update timers every minute
+        setInterval(updateCountdowns, 60000);
     </script>
 </body>
 </html>
+
