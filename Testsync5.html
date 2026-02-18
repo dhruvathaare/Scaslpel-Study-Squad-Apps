@@ -7,61 +7,62 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #ffffff; --text: #333333; --card: #f8f9fa; --primary: #2c3e50; --accent: #e74c3c; }
-        [data-theme='dark'] { --bg: #1a1a1a; --text: #f0f0f0; --card: #2d2d2d; --primary: #3498db; }
+        /* Dark Theme set as Default */
+        :root { 
+            --bg: #1a1a1a; --text: #f0f0f0; --card: #2d2d2d; 
+            --primary: #3498db; --accent: #e74c3c; --logo-bg: #3498db; 
+        }
+        [data-theme='light'] { 
+            --bg: #ffffff; --text: #333333; --card: #f8f9fa; 
+            --primary: #2c3e50; --accent: #e74c3c; --logo-bg: #2c3e50; 
+        }
         
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
         
-        /* High-Impact Branding */
         .header { text-align: center; margin-bottom: 30px; }
         .logo-img { 
             width: 150px; height: 150px; border-radius: 50%; 
             object-fit: cover; border: 5px solid var(--primary);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
         .user-info { position: absolute; top: 10px; right: 15px; text-align: right; font-size: 12px; font-weight: bold; }
 
-        /* Responsive Layout */
         .container { max-width: 900px; margin: 0 auto; }
         @media (orientation: landscape) { .sections-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } }
 
-        /* Centered Navigation */
         .tabs { display: flex; justify-content: center; gap: 8px; margin: 25px 0; }
-        .tab-btn { flex: 1; padding: 14px; border: none; border-radius: 30px; background: var(--card); color: var(--text); cursor: pointer; font-weight: bold; }
+        .tab-btn { flex: 1; padding: 14px; border: none; border-radius: 30px; background: var(--card); color: var(--text); cursor: pointer; font-weight: bold; font-size: 13px; border: 1px solid rgba(255,255,255,0.1); }
         .tab-btn.active { background: var(--primary); color: white; transform: scale(1.05); }
 
-        /* Slideshow Dialogue Box */
         #slideshow-box { 
             background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 25px; 
             border-left: 6px solid var(--accent); text-align: center; min-height: 80px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .section { display: none; background: var(--card); padding: 20px; border-radius: 15px; }
         .section.active { display: block; }
 
         label { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); }
-        input, textarea, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ccc; border-radius: 10px; background: var(--bg); color: var(--text); box-sizing: border-box; }
+        input, textarea, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #444; border-radius: 10px; background: #222; color: #fff; box-sizing: border-box; }
         
-        .save-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 25px; }
+        .save-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 16px; }
         .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
-        .pdf-btn { padding: 15px; border-radius: 12px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; }
+        .pdf-btn { padding: 15px; border-radius: 12px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; text-transform: uppercase; }
         
-        .theme-toggle { position: absolute; top: 10px; left: 15px; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; cursor: pointer; }
+        .theme-toggle { position: absolute; top: 10px; left: 15px; padding: 8px 12px; border-radius: 20px; border: 1px solid #444; background: var(--card); color: var(--text); cursor: pointer; }
     </style>
 </head>
-<body>
-    <button class="theme-toggle" onclick="toggleTheme()">🌓 MODE</button>
+<body data-theme="dark"> <button class="theme-toggle" onclick="toggleTheme()">🌓 THEME</button>
     <div class="user-info" id="user-display">Connecting...</div>
 
     <div class="container">
         <div class="header">
             <img src="https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg" class="logo-img">
-            <h1 style="margin:10px 0 0;">Scalpel Study Squad</h1>
+            <h1 style="margin:10px 0 0; font-weight: 900;">Scalpel Study Squad</h1>
             <h3 style="margin:5px 0; color:var(--accent); text-transform: uppercase;">Qualitative Revision Report</h3>
         </div>
 
-        <div id="slideshow-box">Your high-yield Fact Salad will appear here... 🥗</div>
+        <div id="slideshow-box">Loading high-yield facts... 🥗</div>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="showSection('fact-salad', this)">Fact Salad</button>
@@ -73,7 +74,7 @@
             <div id="fact-salad" class="section active">
                 <label>Subject</label><select id="fs-sub" class="sub-list"></select>
                 <label>Question / Topic</label><textarea id="fs-q" rows="3"></textarea>
-                <label>The Answer / Key Fact</label><textarea id="fs-a" rows="2"></textarea>
+                <label>Answer / Key Fact</label><textarea id="fs-a" rows="2"></textarea>
                 <button class="save-btn" onclick="saveData('factSalad')">SAVE TO SALAD</button>
             </div>
 
@@ -83,7 +84,10 @@
                 <label>Correct Answer</label><textarea id="swt-a"></textarea>
                 <label>Your Incorrect Answer</label><textarea id="swt-w"></textarea>
                 <label>Reason for Error</label>
-                <select id="swt-r"><option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option></select>
+                <select id="swt-r">
+                    <option>Silly Mistake</option><option>Concept Gap</option>
+                    <option>Recall Failure</option><option>Out of Syllabus</option>
+                </select>
                 <button class="save-btn" onclick="saveData('swt')">LOG SWT ERROR</button>
             </div>
 
@@ -93,7 +97,10 @@
                 <label>Question</label><textarea id="gt-q"></textarea>
                 <label>Correct Answer</label><textarea id="gt-a"></textarea>
                 <label>Your Incorrect Answer</label><textarea id="gt-w"></textarea>
-                <label>Reason for Error</label><textarea id="gt-r"></textarea>
+                <label>Reason for Error</label>
+                <select id="gt-r"> <option>Silly Mistake</option><option>Concept Gap</option>
+                    <option>Recall Failure</option><option>Out of Syllabus</option>
+                </select>
                 <button class="save-btn" onclick="saveData('gt')">LOG GT ERROR</button>
             </div>
         </div>
@@ -102,21 +109,16 @@
             <button class="pdf-btn" onclick="exportPDF('daily')">Daily PDF</button>
             <button class="pdf-btn" onclick="exportPDF('monthly')">Monthly PDF</button>
         </div>
-        <p style="text-align:center; font-size:11px; color:var(--accent); font-weight:bold; margin-top:20px;">
-            ⚠️ DATA WIPES AT MONTH END. DOWNLOAD YOUR PDF!
-        </p>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Login Logic using First and Last Name
         const firstName = tg.initDataUnsafe?.user?.first_name || "Doctor";
         const lastName = tg.initDataUnsafe?.user?.last_name || "";
         const fullName = `${firstName} ${lastName}`.trim();
         const userId = tg.initDataUnsafe?.user?.id || "N/A";
-
         document.getElementById('user-display').innerHTML = `Dr. ${fullName}<br>ID: ${userId}`;
 
         const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "Forensic", "PSM", "ENT", "Ophthalmology", "Medicine", "Surgery", "OBG", "Paediatrics", "Radiology", "Dermatology", "Psychiatry", "Orthopaedics", "Anesthesia"];
@@ -127,8 +129,8 @@
         let database = JSON.parse(localStorage.getItem('scalpelQualData')) || { factSalad: [], swt: [], gt: [] };
 
         function toggleTheme() {
-            const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', theme);
+            const current = document.body.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
         }
 
         function showSection(id, btn) {
@@ -160,15 +162,8 @@
             }
             database[type].push(entry);
             localStorage.setItem('scalpelQualData', JSON.stringify(database));
-            tg.HapticFeedback.notificationOccurred('success');
-            alert("Saved to Qualitative Notebook!");
+            alert("Entry Saved Successfully!");
         }
-
-        // 10-Minute Data Sync
-        setInterval(() => {
-            localStorage.setItem('scalpelQualData', JSON.stringify(database));
-            console.log("Auto-sync complete.");
-        }, 600000);
 
         // 30-Second Slideshow
         let currentSlide = 0;
@@ -176,24 +171,56 @@
             const box = document.getElementById('slideshow-box');
             if(database.factSalad.length > 0) {
                 const f = database.factSalad[currentSlide];
-                box.innerHTML = `<strong>${f.sub}</strong><br>${f.q}<br><span style="color:#27ae60; font-weight:bold;">Ans: ${f.a}</span>`;
+                box.innerHTML = `<b>${f.sub}</b><br>${f.q}<br><span style="color:#27ae60">Ans: ${f.a}</span>`;
                 currentSlide = (currentSlide + 1) % database.factSalad.length;
             }
         }
         setInterval(updateSlideshow, 30000);
         updateSlideshow();
 
-        // PDF Revision Engine
+        // FIXED PDF REVISION ENGINE
         async function exportPDF(mode) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            let y = 60;
+
+            // Page Header
             doc.setFont("helvetica", "bold"); doc.setFontSize(22);
             doc.text("Scalpel Study Squad", 105, 25, { align: "center" });
             doc.setFontSize(10); doc.text(`Dr. ${fullName} | ID: ${userId}`, 200, 15, { align: "right" });
             doc.setFontSize(14); doc.text("Scalpel Squad Revision Report", 105, 35, { align: "center" });
-            const dateStr = mode === 'daily' ? new Date().toLocaleDateString() : `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`;
+            
+            const dateStr = mode === 'daily' ? new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
             doc.text(dateStr, 105, 45, { align: "center" });
-            // Data grouping logic goes here...
+
+            const addSection = (title, items) => {
+                if (items.length === 0) return;
+                if (y > 250) { doc.addPage(); y = 20; }
+                doc.setFontSize(14); doc.setFont("helvetica", "bold");
+                doc.text(title, 10, y); y += 10;
+                
+                // Group by Subject
+                const subjects = [...new Set(items.map(i => i.sub))];
+                subjects.forEach(sub => {
+                    doc.setFontSize(12); doc.setFont("helvetica", "bold");
+                    doc.text(`Subject: ${sub}`, 15, y); y += 7;
+                    doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+                    
+                    items.filter(i => i.sub === sub).forEach(item => {
+                        const text = `Q: ${item.q} | A: ${item.a}` + (item.r ? ` | Reason: ${item.r}` : "");
+                        const splitText = doc.splitTextToSize(text, 180);
+                        doc.text(splitText, 20, y);
+                        y += (splitText.length * 5) + 5;
+                        if (y > 270) { doc.addPage(); y = 20; }
+                    });
+                });
+                y += 10;
+            };
+
+            addSection("1. FACT SALAD", database.factSalad);
+            addSection("2. SWT MISTAKES", database.swt);
+            addSection("3. GT MISTAKES", database.gt);
+
             doc.save(`Scalpel_Revision_${mode}.pdf`);
         }
     </script>
