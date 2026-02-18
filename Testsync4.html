@@ -1548,48 +1548,32 @@
         }
         function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         updateUI(); setInterval(updateCountdowns, 60000);
-          // --- REALTIME VIRTUAL LIBRARY (FINAL) ---
-      try {
-          // 1. Define References
-          const onlineRef = ref(db, 'online/' + userId);
-          const connectedRef = ref(db, '.info/connected');
-          const allOnlineRef = ref(db, 'online');
+                // --- STABILIZED REALTIME LIBRARY ---
+      const onlineRef = ref(db, 'online/' + userId);
+      const connectedRef = ref(db, '.info/connected');
+      const allOnlineRef = ref(db, 'online');
 
-          // 2. Monitor My Connection
-          onValue(connectedRef, (snap) => {
-              if (snap.val() === true) {
-                  // If I disconnect, remove me
-                  onDisconnect(onlineRef).remove();
-                  // Add me to the list now
-                  set(onlineRef, { 
-                      status: "online", 
-                      time: Date.now() 
-                  });
-              }
-          });
+      // Monitor My Presence
+      onValue(connectedRef, (snap) => {
+          if (snap.val() === true) {
+              onDisconnect(onlineRef).remove();
+              set(onlineRef, { status: "online", time: Date.now() });
+          }
+      });
 
-                    // 3. Count Everyone Else
-          onValue(allOnlineRef, (snap) => {
-              const el = document.getElementById('lib-count');
-              if(el) {
-                  const count = snap.exists() ? snap.size : 1;
-                  el.innerText = `${count} DOCTORS ONLINE`;
-                  el.style.color = "#ffffff";
-                  
-                  // Safer way to make the dot glow
-                  const dot = document.querySelector('.live-dot');
-                  if(dot) {
-                      dot.style.background = "#e74c3c";
-                      dot.style.boxShadow = "0 0 8px #e74c3c";
-                  }
-              }
-          });
-      } catch (error) {
-          // If this runs, it means 'onValue' is still missing from the top imports
-          console.error("Library Error:", error);
+      // Count Online Doctors
+      onValue(allOnlineRef, (snap) => {
           const el = document.getElementById('lib-count');
-          if(el) el.innerText = "Import Error";
-      }       
+          if(el) {
+              const count = snap.exists() ? snap.size : 1;
+              el.innerText = `${count} DOCTORS ONLINE`;
+              el.style.color = "#ffffff";
+              
+              // Ensure the red dot glows
+              const dot = document.querySelector('.live-dot');
+              if(dot) dot.style.background = "#e74c3c";
+          }
+      });
     </script>
 </body>
 </html>
