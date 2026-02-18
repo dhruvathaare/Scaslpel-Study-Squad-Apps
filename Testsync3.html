@@ -933,18 +933,27 @@
             }
 
             // 2. Calculate Top GT Scores
+                        // 2. Calculate GT Scores (Updated: Average of all tests, Min 3 required)
             const neetLogs = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]");
             const iniLogs = JSON.parse(localStorage.getItem(KEYS.INI) || "[]");
             const fmgeLogs = JSON.parse(localStorage.getItem(KEYS.FMGE) || "[]");
             
-            let maxNeet = 0, platNeet = "";
-            neetLogs.forEach(l => { if(l.score > maxNeet) { maxNeet = l.score; platNeet = l.platform || "Unknown"; } });
-            
-            let maxIni = 0, platIni = "";
-            iniLogs.forEach(l => { if(l.score > maxIni) { maxIni = l.score; platIni = l.platform || "Unknown"; } });
-            
-            let maxFmge = 0, platFmge = "";
-            fmgeLogs.forEach(l => { if(l.score > maxFmge) { maxFmge = l.score; platFmge = l.platform || "Unknown"; } });
+            // Helper: Calculate Average if tests >= 3
+            const calcAvg = (logs) => {
+                if (!logs || logs.length < 3) return { s: 0, p: "" };
+                const total = logs.reduce((sum, l) => sum + (parseFloat(l.score) || 0), 0);
+                // Return Average fixed to 2 decimals, and the Platform of the latest test
+                return { s: parseFloat((total / logs.length).toFixed(2)), p: logs[logs.length-1]?.platform || "Multiple" };
+            };
+
+            const nStat = calcAvg(neetLogs);
+            const iStat = calcAvg(iniLogs);
+            const fStat = calcAvg(fmgeLogs);
+
+            // Mapping to existing variables so pushToLeaderboard works without changes
+            let maxNeet = nStat.s, platNeet = nStat.p;
+            let maxIni = iStat.s, platIni = iStat.p;
+            let maxFmge = fStat.s, platFmge = fStat.p;
 
             // 3. Calculate SWT Accuracy (>300 Qs threshold)
             const swtLogs = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
