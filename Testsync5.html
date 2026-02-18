@@ -8,34 +8,23 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --primary: #38bdf8; --accent: #f43f5e; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .header { text-align: center; margin-bottom: 20px; }
         .logo-img { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
-        
-        /* RESTORED: Slideshow Dialogue Box */
-        #slideshow-box { 
-            background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; 
-            border-left: 5px solid var(--accent); text-align: center; min-height: 60px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-style: italic;
-        }
-
+        #slideshow-box { background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; border-left: 5px solid var(--accent); text-align: center; min-height: 60px; font-style: italic; }
         .tabs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
         .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; background: #334155; color: #94a3b8; font-weight: bold; }
         .tab-btn.active { background: var(--primary); color: white; }
-
         .section { display: none; background: var(--card); padding: 15px; border-radius: 12px; }
         .section.active { display: block; }
-        
         select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; background: #0f172a; color: #fff; border: 1px solid #334155; }
         .save-btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; }
-        
         .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
         .pdf-btn { padding: 14px; border-radius: 10px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body data-theme="dark">
     <div id="user-display" style="position: absolute; top: 10px; right: 15px; font-size: 10px; text-align: right;"></div>
-    
     <div class="container">
         <div class="header">
             <img src="https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg" class="logo-img">
@@ -43,7 +32,7 @@
             <p style="color:var(--accent); font-weight: bold;">QUALITATIVE REVISION REPORT</p>
         </div>
 
-        <div id="slideshow-box">Loading your high-yield facts... 🥗</div>
+        <div id="slideshow-box">Add your facts! 🥗</div>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('fact-salad', this)">Fact Salad</button>
@@ -53,8 +42,8 @@
 
         <div id="fact-salad" class="section active">
             <select id="fs-sub" class="sub-list"></select>
-            <textarea id="fs-q" placeholder="Topic/Question"></textarea>
-            <textarea id="fs-a" placeholder="Gold Fact"></textarea>
+            <textarea id="fs-q" placeholder="Topic"></textarea>
+            <textarea id="fs-a" placeholder="Answer"></textarea>
             <button class="save-btn" onclick="saveData('factSalad')">SAVE FACT</button>
         </div>
 
@@ -93,7 +82,6 @@
         const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "Forensic", "PSM", "ENT", "Ophthalmology", "Medicine", "Surgery", "OBG", "Paediatrics", "Radiology", "Dermatology", "Psychiatry", "Orthopaedics", "Anesthesia"];
         document.querySelectorAll('.sub-list').forEach(s => subjects.forEach(sub => s.innerHTML += `<option>${sub}</option>`));
 
-        // STORAGE FIX: Using a Permanent Key
         let db = JSON.parse(localStorage.getItem('Scalpel_Squad_Permanent_v1')) || { factSalad: [], swt: [], gt: [] };
 
         function showTab(id, btn) {
@@ -107,10 +95,9 @@
             const entry = { date: new Date().toLocaleDateString(), sub: document.getElementById(type==='factSalad'?'fs-sub':type+'-sub').value, q: document.getElementById(type==='factSalad'?'fs-q':type+'-q').value, a: document.getElementById(type==='factSalad'?'fs-a':type+'-a').value, r: document.getElementById(type==='factSalad'?null:type+'-r')?.value };
             db[type].push(entry);
             localStorage.setItem('Scalpel_Squad_Permanent_v1', JSON.stringify(db));
-            alert("Entry Saved!");
+            alert("Saved!");
         }
 
-        // RESTORED: Slideshow Logic (30s Interval)
         let sIdx = 0;
         setInterval(() => {
             const box = document.getElementById('slideshow-box');
@@ -121,14 +108,13 @@
             }
         }, 30000);
 
-        // FIXED: Bulletproof PDF Download
+        // --- THE "SURGICAL" PDF STREAM FIX ---
         async function exportPDF(mode) {
-            const btn = document.getElementById(mode==='daily'?'pdf-d':'pdf-m');
-            btn.innerText = "WAIT...";
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
+                // Header
                 doc.setFont("helvetica", "bold"); doc.setFontSize(22);
                 doc.text("Scalpel Study Squad", 105, 25, { align: "center" });
                 doc.setFontSize(10); doc.text(`Dr. ${fullName} | ID: ${user.id}`, 200, 15, { align: "right" });
@@ -137,34 +123,28 @@
                 const process = (title, key) => {
                     if(!db[key].length) return;
                     doc.setFontSize(14); doc.setTextColor(244, 63, 94);
-                    doc.text(title, 10, y); y += 10; doc.setTextColor(0,0,0); doc.setFontSize(10);
+                    doc.text(title, 10, y); y += 12; doc.setTextColor(0,0,0); doc.setFontSize(10);
                     
                     db[key].forEach(i => {
-                        const txt = `[${i.sub}] Q: ${i.q} | A: ${i.a}`;
+                        const txt = `[${i.sub}] Q: ${i.q} | A: ${i.a}` + (i.r ? ` | Reason: ${i.r}` : "");
                         const lines = doc.splitTextToSize(txt, 180);
                         doc.text(lines, 15, y);
                         y += (lines.length * 6) + 4;
                         if(y > 275) { doc.addPage(); y = 20; }
                     });
-                    y += 10;
+                    y += 8;
                 };
 
                 process("FACT SALAD", "factSalad");
                 process("SWT MISTAKES", "swt");
                 process("GT MISTAKES", "gt");
 
-                // The "Force-Save" Fix
-                const pdfBlob = doc.output('blob');
-                const url = URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `Scalpel_Report_${mode}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // THE FIX: Open as a Data Stream
+                const dataUri = doc.output('datauristring');
+                const win = window.open();
+                win.document.write('<iframe width="100%" height="100%" src="' + dataUri + '"></iframe>');
                 
-                btn.innerText = mode.toUpperCase() + " PDF";
-            } catch (e) { alert("Error: " + e.message); btn.innerText = "RETRY"; }
+            } catch (e) { alert("Diagnostic Error: " + e.message); }
         }
     </script>
 </body>
