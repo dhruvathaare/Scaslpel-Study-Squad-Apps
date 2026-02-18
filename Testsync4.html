@@ -1568,18 +1568,22 @@
               }
           });
 
-          // 3. Count Everyone Else
+                    // 3. Count Everyone Else
           onValue(allOnlineRef, (snap) => {
               const el = document.getElementById('lib-count');
               if(el) {
                   const count = snap.exists() ? snap.size : 1;
-                  el.innerText = `● ${count} DOCTORS ONLINE`;
+                  el.innerText = `${count} DOCTORS ONLINE`;
                   el.style.color = "#ffffff";
-                  // Make the dot glow red
-                  if(el.previousElementSibling) el.previousElementSibling.style.background = "#e74c3c";
+                  
+                  // Safer way to make the dot glow
+                  const dot = document.querySelector('.live-dot');
+                  if(dot) {
+                      dot.style.background = "#e74c3c";
+                      dot.style.boxShadow = "0 0 8px #e74c3c";
+                  }
               }
           });
-
       } catch (error) {
           // If this runs, it means 'onValue' is still missing from the top imports
           console.error("Library Error:", error);
