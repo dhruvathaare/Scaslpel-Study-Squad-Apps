@@ -10,20 +10,32 @@
         :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --primary: #38bdf8; --accent: #f43f5e; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .header { text-align: center; margin-bottom: 20px; }
-        .logo-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--primary); }
+        .logo-img { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
+        
+        /* RESTORED: Slideshow Dialogue Box */
+        #slideshow-box { 
+            background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; 
+            border-left: 5px solid var(--accent); text-align: center; min-height: 60px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-style: italic;
+        }
+
         .tabs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; background: var(--card); color: var(--text); font-weight: bold; }
+        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; background: #334155; color: #94a3b8; font-weight: bold; }
         .tab-btn.active { background: var(--primary); color: white; }
+
         .section { display: none; background: var(--card); padding: 15px; border-radius: 12px; }
         .section.active { display: block; }
+        
         select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; background: #0f172a; color: #fff; border: 1px solid #334155; }
         .save-btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; }
+        
         .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
-        .pdf-btn { padding: 14px; border-radius: 10px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; }
+        .pdf-btn { padding: 14px; border-radius: 10px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body data-theme="dark">
     <div id="user-display" style="position: absolute; top: 10px; right: 15px; font-size: 10px; text-align: right;"></div>
+    
     <div class="container">
         <div class="header">
             <img src="https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg" class="logo-img">
@@ -31,28 +43,28 @@
             <p style="color:var(--accent); font-weight: bold;">QUALITATIVE REVISION REPORT</p>
         </div>
 
+        <div id="slideshow-box">Loading your high-yield facts... 🥗</div>
+
         <div class="tabs">
-            <button class="tab-btn active" onclick="show('fact-salad', this)">Fact Salad</button>
-            <button class="tab-btn" onclick="show('swt', this)">SWT</button>
-            <button class="tab-btn" onclick="show('gt', this)">GT</button>
+            <button class="tab-btn active" onclick="showTab('fact-salad', this)">Fact Salad</button>
+            <button class="tab-btn" onclick="showTab('swt', this)">SWT</button>
+            <button class="tab-btn" onclick="showTab('gt', this)">GT</button>
         </div>
 
         <div id="fact-salad" class="section active">
             <select id="fs-sub" class="sub-list"></select>
             <textarea id="fs-q" placeholder="Topic/Question"></textarea>
             <textarea id="fs-a" placeholder="Gold Fact"></textarea>
-            <button class="save-btn" onclick="save('factSalad')">SAVE FACT</button>
+            <button class="save-btn" onclick="saveData('factSalad')">SAVE FACT</button>
         </div>
 
         <div id="swt" class="section">
             <select id="swt-sub" class="sub-list"></select>
             <textarea id="swt-q" placeholder="Question"></textarea>
             <textarea id="swt-a" placeholder="Correct Answer"></textarea>
-            <textarea id="swt-w" placeholder="Wrong Answer"></textarea>
-            <select id="swt-r">
-                <option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option>
-            </select>
-            <button class="save-btn" onclick="save('swt')">SAVE SWT</button>
+            <textarea id="swt-w" placeholder="Incorrect Answer"></textarea>
+            <select id="swt-r"><option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option></select>
+            <button class="save-btn" onclick="saveData('swt')">LOG SWT</button>
         </div>
 
         <div id="gt" class="section">
@@ -60,16 +72,14 @@
             <select id="gt-sub" class="sub-list"></select>
             <textarea id="gt-q" placeholder="Question"></textarea>
             <textarea id="gt-a" placeholder="Correct Answer"></textarea>
-            <textarea id="gt-w" placeholder="Wrong Answer"></textarea>
-            <select id="gt-r">
-                <option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option>
-            </select>
-            <button class="save-btn" onclick="save('gt')">SAVE GT</button>
+            <textarea id="gt-w" placeholder="Incorrect Answer"></textarea>
+            <select id="gt-r"><option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option></select>
+            <button class="save-btn" onclick="saveData('gt')">LOG GT</button>
         </div>
 
         <div class="pdf-grid">
-            <button class="pdf-btn" onclick="generatePDF('daily')">DAILY PDF</button>
-            <button class="pdf-btn" onclick="generatePDF('monthly')">MONTHLY PDF</button>
+            <button class="pdf-btn" id="pdf-d" onclick="exportPDF('daily')">DAILY PDF</button>
+            <button class="pdf-btn" id="pdf-m" onclick="exportPDF('monthly')">MONTHLY PDF</button>
         </div>
     </div>
 
@@ -83,60 +93,78 @@
         const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "Forensic", "PSM", "ENT", "Ophthalmology", "Medicine", "Surgery", "OBG", "Paediatrics", "Radiology", "Dermatology", "Psychiatry", "Orthopaedics", "Anesthesia"];
         document.querySelectorAll('.sub-list').forEach(s => subjects.forEach(sub => s.innerHTML += `<option>${sub}</option>`));
 
-        // PERMANENT STORAGE KEY
+        // STORAGE FIX: Using a Permanent Key
         let db = JSON.parse(localStorage.getItem('Scalpel_Squad_Permanent_v1')) || { factSalad: [], swt: [], gt: [] };
 
-        function show(id, btn) {
+        function showTab(id, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
         }
 
-        function save(type) {
+        function saveData(type) {
             const entry = { date: new Date().toLocaleDateString(), sub: document.getElementById(type==='factSalad'?'fs-sub':type+'-sub').value, q: document.getElementById(type==='factSalad'?'fs-q':type+'-q').value, a: document.getElementById(type==='factSalad'?'fs-a':type+'-a').value, r: document.getElementById(type==='factSalad'?null:type+'-r')?.value };
             db[type].push(entry);
             localStorage.setItem('Scalpel_Squad_Permanent_v1', JSON.stringify(db));
-            alert("Saved to permanent memory!");
+            alert("Entry Saved!");
         }
 
-        // --- BULLETPROOF PDF ENGINE ---
-        async function generatePDF(mode) {
+        // RESTORED: Slideshow Logic (30s Interval)
+        let sIdx = 0;
+        setInterval(() => {
+            const box = document.getElementById('slideshow-box');
+            if(db.factSalad.length > 0) {
+                const f = db.factSalad[sIdx];
+                box.innerHTML = `<b>${f.sub}</b><br>${f.q}<br><span style="color:#10b981">Ans: ${f.a}</span>`;
+                sIdx = (sIdx + 1) % db.factSalad.length;
+            }
+        }, 30000);
+
+        // FIXED: Bulletproof PDF Download
+        async function exportPDF(mode) {
+            const btn = document.getElementById(mode==='daily'?'pdf-d':'pdf-m');
+            btn.innerText = "WAIT...";
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // Centered Header
                 doc.setFont("helvetica", "bold"); doc.setFontSize(22);
                 doc.text("Scalpel Study Squad", 105, 25, { align: "center" });
                 doc.setFontSize(10); doc.text(`Dr. ${fullName} | ID: ${user.id}`, 200, 15, { align: "right" });
                 
                 let y = 60;
-                const printSec = (title, key) => {
-                    const items = db[key];
-                    if (!items || items.length === 0) return;
-                    doc.setFontSize(14); doc.setTextColor(231, 76, 60);
-                    doc.text(title, 10, y); y += 10; doc.setTextColor(0,0,0);
+                const process = (title, key) => {
+                    if(!db[key].length) return;
+                    doc.setFontSize(14); doc.setTextColor(244, 63, 94);
+                    doc.text(title, 10, y); y += 10; doc.setTextColor(0,0,0); doc.setFontSize(10);
                     
-                    items.forEach(i => {
-                        doc.setFontSize(10); doc.setFont("helvetica", "bold");
-                        doc.text(`[${i.sub}]`, 15, y);
-                        doc.setFont("helvetica", "normal");
-                        const lines = doc.splitTextToSize(`Q: ${i.q} | A: ${i.a}`, 170);
-                        doc.text(lines, 25, y);
-                        y += (lines.length * 5) + 5;
-                        if (y > 270) { doc.addPage(); y = 20; }
+                    db[key].forEach(i => {
+                        const txt = `[${i.sub}] Q: ${i.q} | A: ${i.a}`;
+                        const lines = doc.splitTextToSize(txt, 180);
+                        doc.text(lines, 15, y);
+                        y += (lines.length * 6) + 4;
+                        if(y > 275) { doc.addPage(); y = 20; }
                     });
                     y += 10;
                 };
 
-                printSec("1. FACT SALAD", "factSalad");
-                printSec("2. SWT MISTAKES", "swt");
-                printSec("3. GT MISTAKES", "gt");
+                process("FACT SALAD", "factSalad");
+                process("SWT MISTAKES", "swt");
+                process("GT MISTAKES", "gt");
 
-                // FINAL DOWNLOAD TRIGGER
-                doc.save(`Scalpel_Revision_${mode}.pdf`);
-            } catch (e) { alert("PDF Error: " + e.message); }
+                // The "Force-Save" Fix
+                const pdfBlob = doc.output('blob');
+                const url = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Scalpel_Report_${mode}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                btn.innerText = mode.toUpperCase() + " PDF";
+            } catch (e) { alert("Error: " + e.message); btn.innerText = "RETRY"; }
         }
     </script>
 </body>
