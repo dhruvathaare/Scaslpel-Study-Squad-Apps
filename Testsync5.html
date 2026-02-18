@@ -4,175 +4,784 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scalpel Qual App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* RESTORED THEMES */
-        :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --primary: #38bdf8; --accent: #f43f5e; }
-        [data-theme='light'] { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --primary: #0284c7; --accent: #e11d48; }
-        
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .logo-img { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
-        
-        /* RESTORED SLIDESHOW */
-        #slideshow-box { 
-            background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; 
-            border-left: 5px solid var(--accent); text-align: center; min-height: 60px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        :root {
+            --bg: #0f0f14;
+            --bg2: #16161f;
+            --card: #1e1e2a;
+            --card2: #252535;
+            --border: #2e2e45;
+            --primary: #4f8ef7;
+            --primary-glow: rgba(79,142,247,0.25);
+            --accent: #e05c7a;
+            --accent2: #f7a94f;
+            --green: #3ecf7c;
+            --text: #e8e8f0;
+            --text-muted: #8888aa;
+            --shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        [data-theme='light'] {
+            --bg: #f0f2f8;
+            --bg2: #e6e9f4;
+            --card: #ffffff;
+            --card2: #f5f6fc;
+            --border: #d0d4e8;
+            --primary: #3a6fd8;
+            --primary-glow: rgba(58,111,216,0.15);
+            --accent: #c94066;
+            --accent2: #d4820a;
+            --green: #1fa85a;
+            --text: #1a1a2e;
+            --text-muted: #5a5a7a;
+            --shadow: 0 8px 32px rgba(0,0,0,0.12);
         }
 
-        .tabs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; background: var(--card); color: var(--text); font-weight: bold; cursor: pointer; }
-        .tab-btn.active { background: var(--primary); color: white; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .section { display: none; background: var(--card); padding: 15px; border-radius: 12px; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .theme-toggle {
+            padding: 8px 14px; border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card); color: var(--text);
+            cursor: pointer; font-size: 12px; font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .user-info {
+            text-align: right; font-size: 11px;
+            color: var(--text-muted); line-height: 1.5;
+        }
+        .user-info span { color: var(--primary); font-weight: 800; }
+
+        /* ── HEADER ── */
+        .header {
+            text-align: center; margin-bottom: 20px;
+            padding: 24px 16px;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative; overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--primary), var(--accent2));
+        }
+        .logo-img {
+            width: 100px; height: 100px; border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+            margin-bottom: 12px;
+        }
+        .header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 26px; font-weight: 700;
+            letter-spacing: 2px; color: var(--text);
+        }
+        .header h3 {
+            font-size: 12px; font-weight: 700; letter-spacing: 3px;
+            color: var(--accent); text-transform: uppercase; margin-top: 4px;
+        }
+
+        /* ── SLIDESHOW ── */
+        .slideshow-wrap {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--accent2);
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            min-height: 90px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        .slideshow-label {
+            font-size: 10px; font-weight: 800; letter-spacing: 2px;
+            color: var(--accent2); margin-bottom: 8px; text-transform: uppercase;
+        }
+        .slideshow-content { font-size: 14px; line-height: 1.6; }
+        .slideshow-content .slide-sub { font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+        .slideshow-content .slide-q { color: var(--text); }
+        .slideshow-content .slide-a { color: var(--green); font-weight: 700; margin-top: 4px; }
+        .slide-timer {
+            position: absolute; bottom: 10px; right: 14px;
+            font-size: 11px; color: var(--text-muted);
+        }
+        .slide-counter {
+            position: absolute; top: 14px; right: 14px;
+            font-size: 10px; color: var(--text-muted); font-weight: 700;
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 20px;
+            background: var(--card);
+            border-radius: 14px; padding: 6px;
+            border: 1px solid var(--border);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px 6px;
+            border: none; border-radius: 10px;
+            background: transparent; color: var(--text-muted);
+            cursor: pointer; font-weight: 700; font-size: 12px;
+            letter-spacing: 0.5px; transition: all 0.2s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 16px var(--primary-glow);
+        }
+
+        /* ── SECTIONS ── */
+        .section { display: none; }
         .section.active { display: block; }
-        
-        select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; background: rgba(0,0,0,0.2); color: inherit; border: 1px solid rgba(255,255,255,0.1); font-size: 14px; }
-        .save-btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; cursor: pointer; }
-        
-        .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
-        .pdf-btn { padding: 14px; border-radius: 10px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; }
-        .theme-toggle { position: absolute; top: 10px; left: 15px; padding: 6px 10px; border-radius: 15px; background: var(--card); color: var(--text); border: 1px solid var(--primary); cursor: pointer; font-size: 11px; }
+
+        .form-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+            color: var(--accent); text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%; padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg2); color: var(--text);
+            font-size: 14px; font-family: 'Nunito', sans-serif;
+            transition: border 0.2s;
+            resize: vertical;
+        }
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .save-btn {
+            width: 100%; padding: 16px;
+            border: none; border-radius: 12px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 17px; font-weight: 700; letter-spacing: 2px;
+            cursor: pointer; margin-top: 8px;
+            text-transform: uppercase; transition: all 0.2s;
+        }
+        .save-btn-green { background: linear-gradient(135deg, #27ae60, #1a8a45); color: #fff; }
+        .save-btn-green:active { transform: scale(0.98); }
+        .save-btn-blue { background: linear-gradient(135deg, var(--primary), #2a5cc0); color: #fff; }
+        .save-btn-red { background: linear-gradient(135deg, var(--accent), #a03050); color: #fff; }
+
+        /* ── PDF SECTION ── */
+        .pdf-section {
+            margin-top: 24px;
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .pdf-section-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px; font-weight: 700; letter-spacing: 2px;
+            color: var(--text-muted); text-transform: uppercase;
+            margin-bottom: 14px; text-align: center;
+        }
+        .warning-box {
+            background: rgba(247,169,79,0.12);
+            border: 1.5px solid var(--accent2);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 12px; line-height: 1.5;
+            color: var(--accent2);
+        }
+        .warning-box strong { font-weight: 800; }
+        .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .pdf-btn {
+            padding: 16px 10px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            background: transparent; color: var(--text);
+            font-weight: 800; font-size: 13px; letter-spacing: 1px;
+            cursor: pointer; font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase; transition: all 0.2s;
+        }
+        .pdf-btn:hover { background: var(--primary-glow); }
+        .pdf-btn.monthly { border-color: var(--accent2); }
+        .pdf-btn.monthly:hover { background: rgba(247,169,79,0.12); }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--green); color: #fff;
+            padding: 12px 28px; border-radius: 30px;
+            font-weight: 800; font-size: 14px; letter-spacing: 1px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 9999; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 400px) {
+            .tab-btn { font-size: 11px; padding: 10px 4px; }
+        }
     </style>
 </head>
 <body data-theme="dark">
+
+<div class="toast" id="toast"></div>
+
+<div class="topbar">
     <button class="theme-toggle" onclick="toggleTheme()">🌓 THEME</button>
-    <div id="user-display" style="position: absolute; top: 10px; right: 15px; font-size: 10px; text-align: right;"></div>
-    
-    <div class="container">
-        <div class="header">
-            <img src="https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg" class="logo-img">
-            <h2 style="margin:10px 0 0;">Scalpel Study Squad</h2>
-            <p style="color:var(--accent); font-weight: bold; letter-spacing: 1px;">QUALITATIVE REVISION REPORT</p>
-        </div>
+    <div class="user-info" id="user-display">
+        <span>Connecting...</span>
+    </div>
+</div>
 
-        <div id="slideshow-box">No facts yet! 🥗</div>
+<div class="container" style="max-width:700px;margin:0 auto;">
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('fact-salad', this)">Fact Salad</button>
-            <button class="tab-btn" onclick="showTab('swt', this)">SWT</button>
-            <button class="tab-btn" onclick="showTab('gt', this)">GT</button>
-        </div>
+    <!-- Header -->
+    <div class="header">
+        <img src="https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg"
+             class="logo-img" alt="Logo">
+        <h1>Scalpel Study Squad</h1>
+        <h3>Qualitative Revision Report</h3>
+    </div>
 
-        <div id="fact-salad" class="section active">
-            <select id="fs-sub" class="sub-list"></select>
-            <textarea id="fs-q" placeholder="High-yield topic..."></textarea>
-            <textarea id="fs-a" placeholder="The gold key..."></textarea>
-            <button class="save-btn" onclick="saveData('factSalad')">SAVE FACT</button>
-        </div>
+    <!-- Slideshow -->
+    <div class="slideshow-wrap">
+        <div class="slideshow-label">📌 High-Yield Fact Slideshow</div>
+        <div class="slideshow-counter" id="slide-counter"></div>
+        <div id="slideshow-box" class="slideshow-content">No facts saved yet. Add facts in the Fact Salad tab!</div>
+        <div class="slide-timer" id="slide-timer"></div>
+    </div>
 
-        <div id="swt" class="section">
-            <select id="swt-sub" class="sub-list"></select>
-            <textarea id="swt-q" placeholder="SWT Question"></textarea>
-            <textarea id="swt-a" placeholder="Correct Ans"></textarea>
-            <textarea id="swt-w" placeholder="Your Incorrect Ans"></textarea>
-            <select id="swt-r">
-                <option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option>
-            </select>
-            <button class="save-btn" onclick="saveData('swt')">LOG SWT</button>
-        </div>
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showSection('fact-salad', this)">🥗 Fact Salad</button>
+        <button class="tab-btn" onclick="showSection('swt', this)">⚡ SWT Mistake</button>
+        <button class="tab-btn" onclick="showSection('gt', this)">🎯 GT Mistake</button>
+    </div>
 
-        <div id="gt" class="section">
-            <select id="gt-type"><option>NEET PG</option><option>INICET</option><option>FMGE</option></select>
-            <select id="gt-sub" class="sub-list"></select>
-            <textarea id="gt-q" placeholder="GT Question"></textarea>
-            <textarea id="gt-a" placeholder="Correct Ans"></textarea>
-            <textarea id="gt-w" placeholder="Your Incorrect Ans"></textarea>
-            <select id="gt-r">
-                <option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option>
-            </select>
-            <button class="save-btn" onclick="saveData('gt')">LOG GT</button>
-        </div>
-
-        <div class="pdf-grid">
-            <button class="pdf-btn" id="pdf-d" onclick="exportPDF('daily')">DAILY PDF</button>
-            <button class="pdf-btn" id="pdf-m" onclick="exportPDF('monthly')">MONTHLY PDF</button>
+    <!-- FACT SALAD -->
+    <div id="fact-salad" class="section active">
+        <div class="form-card">
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="fs-sub" class="sub-list"></select>
+            </div>
+            <div class="form-group">
+                <label>Question / Topic</label>
+                <textarea id="fs-q" rows="3" placeholder="Enter question or topic..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Answer / Key Fact</label>
+                <textarea id="fs-a" rows="2" placeholder="Enter answer or key fact..."></textarea>
+            </div>
+            <button class="save-btn save-btn-green" onclick="saveData('factSalad')">💾 SAVE TO SALAD</button>
         </div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        const user = tg.initDataUnsafe?.user || { first_name: "Doctor", last_name: "", id: "0000" };
-        const fullName = `Dr. ${user.first_name} ${user.last_name}`.trim();
-        document.getElementById('user-display').innerHTML = `<b>${fullName}</b><br>ID: ${user.id}`;
+    <!-- SWT MISTAKE -->
+    <div id="swt" class="section">
+        <div class="form-card">
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="swt-sub" class="sub-list"></select>
+            </div>
+            <div class="form-group">
+                <label>Question</label>
+                <textarea id="swt-q" rows="3" placeholder="Enter the question..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Correct Answer</label>
+                <textarea id="swt-a" rows="2" placeholder="Correct answer..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Your Incorrect Answer</label>
+                <textarea id="swt-w" rows="2" placeholder="What did you mark wrongly?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Reason for Error</label>
+                <select id="swt-r">
+                    <option>Silly Mistake</option>
+                    <option>Concept Gap</option>
+                    <option>Recall Failure</option>
+                    <option>Out of Syllabus</option>
+                </select>
+            </div>
+            <button class="save-btn save-btn-blue" onclick="saveData('swt')">⚡ LOG SWT ERROR</button>
+        </div>
+    </div>
 
-        const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "Forensic", "PSM", "ENT", "Ophthalmology", "Medicine", "Surgery", "OBG", "Paediatrics", "Radiology", "Dermatology", "Psychiatry", "Orthopaedics", "Anesthesia"];
-        document.querySelectorAll('.sub-list').forEach(s => subjects.forEach(sub => s.innerHTML += `<option>${sub}</option>`));
+    <!-- GT MISTAKE -->
+    <div id="gt" class="section">
+        <div class="form-card">
+            <div class="form-group">
+                <label>Exam Type</label>
+                <select id="gt-type">
+                    <option>NEET PG</option>
+                    <option>INICET</option>
+                    <option>FMGE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="gt-sub" class="sub-list"></select>
+            </div>
+            <div class="form-group">
+                <label>Question</label>
+                <textarea id="gt-q" rows="3" placeholder="Enter the question..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Correct Answer</label>
+                <textarea id="gt-a" rows="2" placeholder="Correct answer..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Your Incorrect Answer</label>
+                <textarea id="gt-w" rows="2" placeholder="What did you mark wrongly?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Reason for Error</label>
+                <select id="gt-r">
+                    <option>Silly Mistake</option>
+                    <option>Concept Gap</option>
+                    <option>Recall Failure</option>
+                    <option>Out of Syllabus</option>
+                </select>
+            </div>
+            <button class="save-btn save-btn-red" onclick="saveData('gt')">🎯 LOG GT ERROR</button>
+        </div>
+    </div>
 
-        let db = JSON.parse(localStorage.getItem('Scalpel_Squad_Permanent_v1')) || { factSalad: [], swt: [], gt: [] };
+    <!-- PDF DOWNLOAD -->
+    <div class="pdf-section">
+        <div class="pdf-section-title">📄 Download Reports</div>
+        <div class="warning-box">
+            ⚠️ <strong>Monthly Data Reset Warning:</strong> All qualitative data is automatically deleted on the <strong>last day of every month</strong>. Please download the <strong>Monthly PDF before the month ends</strong> to preserve your records permanently!
+        </div>
+        <div class="pdf-grid">
+            <button class="pdf-btn" onclick="exportPDF('daily')">
+                📅 Daily PDF<br><small style="font-size:10px;font-weight:400;">Today's entries</small>
+            </button>
+            <button class="pdf-btn monthly" onclick="exportPDF('monthly')">
+                🗓️ Monthly PDF<br><small style="font-size:10px;font-weight:400;">This month's entries</small>
+            </button>
+        </div>
+    </div>
 
-        function toggleTheme() {
-            const current = document.body.getAttribute('data-theme');
-            document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+</div>
+
+<script>
+// ── TELEGRAM INIT ──
+const tg = window.Telegram?.WebApp;
+if (tg) tg.expand();
+
+const firstName = tg?.initDataUnsafe?.user?.first_name || "Doctor";
+const lastName  = tg?.initDataUnsafe?.user?.last_name  || "";
+const fullName  = `${firstName} ${lastName}`.trim();
+const userId    = tg?.initDataUnsafe?.user?.id || "N/A";
+
+document.getElementById('user-display').innerHTML =
+    `<span>Dr. ${fullName}</span><br>ID: ${userId}`;
+
+// ── SUBJECTS ──
+const subjects = [
+    "Anatomy","Physiology","Biochemistry","Pathology","Microbiology",
+    "Pharmacology","Forensic","PSM","ENT","Ophthalmology",
+    "Medicine","Surgery","OBG","Paediatrics","Radiology",
+    "Dermatology","Psychiatry","Orthopaedics","Anesthesia"
+];
+document.querySelectorAll('.sub-list').forEach(sel => {
+    subjects.forEach(s => { const o = document.createElement('option'); o.textContent = s; sel.appendChild(o); });
+});
+
+// ── DATABASE ──
+let db = JSON.parse(localStorage.getItem('scalpelQualData') || '{"factSalad":[],"swt":[],"gt":[]}');
+
+function saveDB() { localStorage.setItem('scalpelQualData', JSON.stringify(db)); }
+
+// ── MONTHLY RESET CHECK ──
+function checkMonthlyReset() {
+    const now = new Date();
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const lastReset = localStorage.getItem('lastResetMonth');
+    const currentMonth = `${now.getFullYear()}-${now.getMonth()}`;
+    if (now.getDate() === lastDay && lastReset !== currentMonth) {
+        db = { factSalad: [], swt: [], gt: [] };
+        saveDB();
+        localStorage.setItem('lastResetMonth', currentMonth);
+        showToast('📅 Monthly reset done! Data cleared.', '#e05c7a');
+    }
+}
+checkMonthlyReset();
+
+// ── TOAST ──
+function showToast(msg, color = '#3ecf7c') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = color;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── THEME ──
+function toggleTheme() {
+    const d = document.body;
+    d.setAttribute('data-theme', d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+// ── TAB SWITCH ──
+function showSection(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+}
+
+// ── SAVE ──
+function saveData(type) {
+    const now = new Date();
+    const entry = {
+        date: now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' }),
+        timestamp: now.toLocaleString(),
+        month: now.toLocaleString('default', { month:'long', year:'numeric' })
+    };
+    if (type === 'factSalad') {
+        entry.sub = document.getElementById('fs-sub').value;
+        entry.q   = document.getElementById('fs-q').value.trim();
+        entry.a   = document.getElementById('fs-a').value.trim();
+        if (!entry.q || !entry.a) { showToast('⚠️ Please fill Question & Answer', '#e05c7a'); return; }
+        document.getElementById('fs-q').value = '';
+        document.getElementById('fs-a').value = '';
+    } else if (type === 'swt') {
+        entry.sub = document.getElementById('swt-sub').value;
+        entry.q   = document.getElementById('swt-q').value.trim();
+        entry.a   = document.getElementById('swt-a').value.trim();
+        entry.w   = document.getElementById('swt-w').value.trim();
+        entry.r   = document.getElementById('swt-r').value;
+        if (!entry.q) { showToast('⚠️ Please fill the Question', '#e05c7a'); return; }
+    } else {
+        entry.examType = document.getElementById('gt-type').value;
+        entry.sub = document.getElementById('gt-sub').value;
+        entry.q   = document.getElementById('gt-q').value.trim();
+        entry.a   = document.getElementById('gt-a').value.trim();
+        entry.w   = document.getElementById('gt-w').value.trim();
+        entry.r   = document.getElementById('gt-r').value;
+        if (!entry.q) { showToast('⚠️ Please fill the Question', '#e05c7a'); return; }
+    }
+    db[type].push(entry);
+    saveDB();
+    showToast('✅ Entry Saved Successfully!');
+    updateSlideshow();
+}
+
+// ── SLIDESHOW ──
+let currentSlide = 0;
+let slideTimer = 30;
+let timerInterval = null;
+
+function updateSlideshow() {
+    const box = document.getElementById('slideshow-box');
+    const counter = document.getElementById('slide-counter');
+    const timerEl = document.getElementById('slide-timer');
+
+    if (db.factSalad.length === 0) {
+        box.innerHTML = 'No facts saved yet. Add facts in the <strong>Fact Salad</strong> tab!';
+        counter.textContent = '';
+        timerEl.textContent = '';
+        return;
+    }
+
+    if (currentSlide >= db.factSalad.length) currentSlide = 0;
+    const f = db.factSalad[currentSlide];
+
+    box.innerHTML = `
+        <div class="slide-sub">📚 ${f.sub}</div>
+        <div class="slide-q">❓ ${f.q}</div>
+        <div class="slide-a">✅ ${f.a}</div>
+    `;
+    counter.textContent = `${currentSlide + 1} / ${db.factSalad.length}`;
+    document.getElementById('slide-counter').style.cssText =
+        'position:absolute;top:14px;right:14px;font-size:10px;color:var(--text-muted);font-weight:700;';
+
+    slideTimer = 30;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        slideTimer--;
+        timerEl.textContent = `Next in ${slideTimer}s`;
+        if (slideTimer <= 0) {
+            clearInterval(timerInterval);
+            currentSlide = (currentSlide + 1) % db.factSalad.length;
+            updateSlideshow();
         }
+    }, 1000);
+}
+updateSlideshow();
 
-        function showTab(id, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
+// ── PDF EXPORT ──
+async function exportPDF(mode) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = 210, pageH = 297;
+    const margin = 15;
+    let y = 0;
+
+    // Colors
+    const C_TITLE   = [52, 152, 219];
+    const C_ACCENT  = [224, 92, 122];
+    const C_GREEN   = [46, 204, 113];
+    const C_ORANGE  = [247, 169, 79];
+    const C_DARK    = [30, 30, 42];
+    const C_TEXT    = [60, 60, 80];
+    const C_MUTED   = [120, 120, 150];
+
+    function newPage() {
+        doc.addPage();
+        y = 20;
+        // page footer
+        doc.setFontSize(8); doc.setTextColor(...C_MUTED);
+        doc.text('Scalpel Study Squad – Confidential Revision Report', pageW/2, pageH - 8, { align:'center' });
+        doc.text(`Dr. ${fullName}`, margin, pageH - 8);
+        doc.text(`Page ${doc.internal.getNumberOfPages()}`, pageW - margin, pageH - 8, { align:'right' });
+    }
+
+    function checkY(needed = 15) {
+        if (y + needed > pageH - 20) { newPage(); }
+    }
+
+    // ── Load logo ──
+    let logoDataUrl = null;
+    try {
+        const imgBlob = await fetch('https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg').then(r=>r.blob());
+        logoDataUrl = await new Promise(res => {
+            const fr = new FileReader();
+            fr.onload = e => res(e.target.result);
+            fr.readAsDataURL(imgBlob);
+        });
+    } catch(e) { logoDataUrl = null; }
+
+    // ── COVER PAGE ──
+    // Background top band
+    doc.setFillColor(30, 30, 42);
+    doc.rect(0, 0, pageW, 70, 'F');
+
+    // Gradient accent line
+    doc.setFillColor(...C_ACCENT);
+    doc.rect(0, 68, pageW, 3, 'F');
+
+    // Logo circle
+    if (logoDataUrl) {
+        // Circle clip via rectangle with rounded corners
+        doc.addImage(logoDataUrl, 'JPEG', pageW/2 - 18, 8, 36, 36);
+    }
+
+    // Title
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(22);
+    doc.text('Scalpel Study Squad', pageW/2, 55, { align:'center' });
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.setTextColor(...C_ACCENT);
+    doc.text('QUALITATIVE REVISION REPORT', pageW/2, 63, { align:'center' });
+
+    // User info – top right corner
+    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.setTextColor(200,220,255);
+    doc.text(`Dr. ${fullName}`, pageW - margin, 12, { align:'right' });
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.setTextColor(160,180,220);
+    doc.text(`User ID: ${userId}`, pageW - margin, 18, { align:'right' });
+
+    y = 82;
+
+    // Report type & date
+    doc.setFont('helvetica','bold'); doc.setFontSize(16);
+    doc.setTextColor(...C_TITLE);
+    const reportTitle = mode === 'daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
+    doc.text(reportTitle, pageW/2, y, { align:'center' }); y += 8;
+
+    const now = new Date();
+    let dateStr;
+    if (mode === 'daily') {
+        dateStr = now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    } else {
+        dateStr = now.toLocaleString('default', { month:'long', year:'numeric' });
+    }
+    doc.setFont('helvetica','normal'); doc.setFontSize(11);
+    doc.setTextColor(...C_TEXT);
+    doc.text(dateStr, pageW/2, y, { align:'center' }); y += 16;
+
+    // Divider
+    doc.setDrawColor(...C_TITLE); doc.setLineWidth(0.7);
+    doc.line(margin, y, pageW - margin, y); y += 12;
+
+    // ── Filter data ──
+    function filterByMode(arr) {
+        if (mode === 'daily') {
+            const todayStr = now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+            return arr.filter(i => i.date === todayStr);
+        } else {
+            const mStr = now.toLocaleString('default', { month:'long', year:'numeric' });
+            return arr.filter(i => i.month === mStr || i.date?.includes(now.getFullYear().toString()));
         }
+    }
 
-        function saveData(type) {
-            const entry = { date: new Date().toLocaleDateString(), sub: document.getElementById(type==='factSalad'?'fs-sub':type+'-sub').value, q: document.getElementById(type==='factSalad'?'fs-q':type+'-q').value, a: document.getElementById(type==='factSalad'?'fs-a':type+'-a').value, r: document.getElementById(type==='factSalad'?null:type+'-r')?.value };
-            db[type].push(entry);
-            localStorage.setItem('Scalpel_Squad_Permanent_v1', JSON.stringify(db));
-            tg.HapticFeedback.notificationOccurred('success');
-            alert("Saved!");
-        }
+    const fsData  = filterByMode(db.factSalad);
+    const swtData = filterByMode(db.swt);
+    const gtData  = filterByMode(db.gt);
 
-        let sIdx = 0;
-        setInterval(() => {
-            const box = document.getElementById('slideshow-box');
-            if(db.factSalad.length > 0) {
-                const f = db.factSalad[sIdx];
-                box.innerHTML = `<b>${f.sub}</b><br>${f.q}<br><span style="color:#10b981">Ans: ${f.a}</span>`;
-                sIdx = (sIdx + 1) % db.factSalad.length;
-            }
-        }, 30000);
+    // ── Section renderer ──
+    function renderSection(title, color, items, fields) {
+        if (items.length === 0) return;
 
-        // --- NEW NO-BLANK-PAGE PDF METHOD ---
-        async function exportPDF(mode) {
-            const btn = document.getElementById(mode==='daily'?'pdf-d':'pdf-m');
-            btn.innerText = "PREPARING...";
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                doc.setFont("helvetica", "bold"); doc.setFontSize(22);
-                doc.text("Scalpel Study Squad", 105, 25, { align: "center" });
-                doc.setFontSize(10); doc.text(`${fullName} | ID: ${user.id}`, 200, 15, { align: "right" });
-                
-                let y = 60;
-                const process = (title, key) => {
-                    if(!db[key].length) return;
-                    doc.setFontSize(14); doc.setTextColor(244, 63, 94);
-                    doc.text(title, 10, y); y += 12; doc.setTextColor(0,0,0); doc.setFontSize(10);
-                    
-                    db[key].forEach(i => {
-                        const txt = `[${i.sub}] Q: ${i.q} | A: ${i.a}` + (i.r ? ` | Reason: ${i.r}` : "");
-                        const lines = doc.splitTextToSize(txt, 180);
-                        doc.text(lines, 15, y);
-                        y += (lines.length * 6) + 4;
-                        if(y > 275) { doc.addPage(); y = 20; }
-                    });
-                    y += 8;
-                };
+        checkY(20);
 
-                process("I. FACT SALAD", "factSalad");
-                process("II. SWT MISTAKES", "swt");
-                process("III. GT MISTAKES", "gt");
+        // Section heading band
+        doc.setFillColor(...color);
+        doc.rect(margin, y - 4, pageW - margin*2, 10, 'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(13);
+        doc.setTextColor(255,255,255);
+        doc.text(title, margin + 3, y + 3); y += 14;
 
-                // BYPASS BLANK PAGE: Direct Save Trigger
-                doc.save(`Scalpel_${mode}_Report.pdf`);
-                
-                btn.innerText = mode.toUpperCase() + " PDF";
-            } catch (e) { alert("Error: " + e.message); btn.innerText = "RETRY"; }
-        }
-    </script>
+        // Group by subject
+        const subGroups = {};
+        items.forEach(item => {
+            const s = item.sub || 'General';
+            if (!subGroups[s]) subGroups[s] = [];
+            subGroups[s].push(item);
+        });
+
+        Object.entries(subGroups).forEach(([sub, subItems]) => {
+            checkY(14);
+
+            // Subject subheading
+            doc.setFillColor(240, 244, 252);
+            doc.rect(margin + 3, y - 3, pageW - margin*2 - 6, 9, 'F');
+            doc.setFont('helvetica','bold'); doc.setFontSize(11);
+            doc.setTextColor(...C_DARK);
+            doc.text(`Subject: ${sub}`, margin + 6, y + 3); y += 11;
+
+            subItems.forEach((item, idx) => {
+                checkY(12);
+
+                // Entry number + date
+                doc.setFont('helvetica','bold'); doc.setFontSize(9);
+                doc.setTextColor(...C_TITLE);
+                const entryLabel = `Entry ${idx + 1}  |  ${item.date || ''}`;
+                doc.text(entryLabel, margin + 8, y); y += 5;
+
+                // Draw entry fields
+                fields.forEach(({label, key}) => {
+                    const val = item[key];
+                    if (!val) return;
+                    checkY(8);
+
+                    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+                    doc.setTextColor(...C_ACCENT);
+                    doc.text(`${label}:`, margin + 10, y);
+
+                    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+                    doc.setTextColor(...C_TEXT);
+                    const lines = doc.splitTextToSize(val, pageW - margin*2 - 32);
+                    doc.text(lines, margin + 10, y + 5);
+                    y += 5 + lines.length * 5;
+                    checkY(6);
+                });
+
+                // Separator
+                doc.setDrawColor(220, 220, 235); doc.setLineWidth(0.3);
+                doc.line(margin + 8, y + 1, pageW - margin - 8, y + 1); y += 6;
+            });
+            y += 4;
+        });
+        y += 6;
+    }
+
+    renderSection('1. FACT SALAD', C_GREEN, fsData, [
+        { label: 'Question / Topic', key: 'q' },
+        { label: 'Answer / Key Fact', key: 'a' }
+    ]);
+
+    renderSection('2. SWT MISTAKE CHECKPOINT', C_TITLE, swtData, [
+        { label: 'Question',         key: 'q' },
+        { label: 'Correct Answer',   key: 'a' },
+        { label: 'Incorrect Answer', key: 'w' },
+        { label: 'Reason for Error', key: 'r' }
+    ]);
+
+    renderSection('3. GT MISTAKE CHECKPOINT', C_ACCENT, gtData, [
+        { label: 'Exam Type',        key: 'examType' },
+        { label: 'Question',         key: 'q' },
+        { label: 'Correct Answer',   key: 'a' },
+        { label: 'Incorrect Answer', key: 'w' },
+        { label: 'Reason for Error', key: 'r' }
+    ]);
+
+    // No data message
+    if (fsData.length === 0 && swtData.length === 0 && gtData.length === 0) {
+        doc.setFont('helvetica','italic'); doc.setFontSize(12);
+        doc.setTextColor(...C_MUTED);
+        doc.text('No entries found for this period.', pageW/2, y + 20, { align:'center' });
+    }
+
+    // Footer on first page
+    doc.setPage(1);
+    doc.setFontSize(8); doc.setTextColor(...C_MUTED);
+    doc.text('Scalpel Study Squad – Confidential Revision Report', pageW/2, pageH - 8, { align:'center' });
+    doc.text(`Dr. ${fullName}`, margin, pageH - 8);
+    doc.text('Page 1', pageW - margin, pageH - 8, { align:'right' });
+
+    // ── SAVE / DOWNLOAD ──
+    const filename = mode === 'daily'
+        ? `Scalpel_Daily_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.pdf`
+        : `Scalpel_Monthly_${now.toLocaleString('default',{month:'long',year:'numeric'}).replace(' ','_')}.pdf`;
+
+    // Try to trigger browser download (works in most environments)
+    try {
+        doc.save(filename);
+        showToast(`📥 ${filename} Downloaded!`);
+    } catch(e) {
+        // Fallback: open in new tab
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename; a.target = '_blank';
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`📥 ${filename} Downloading...`);
+    }
+}
+</script>
 </body>
 </html>
 
