@@ -9,21 +9,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     
-        <script type="module">
+    <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+      // This includes the critical 'onValue' and 'onDisconnect' tools
+      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
       const firebaseConfig = {
-        apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
-        authDomain: "scalpel-pro.firebaseapp.com",
-        projectId: "scalpel-pro",
-        storageBucket: "scalpel-pro.firebasestorage.app",
-        messagingSenderId: "244026009766",
-        appId: "1:244026009766:web:3299c2dfa37cf378d1ac67"
-      };
-
-      const app = initializeApp(firebaseConfig);
-    
         apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
         authDomain: "scalpel-pro.firebaseapp.com",
         projectId: "scalpel-pro",
