@@ -1,46 +1,49 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scalpel Master Pro V8.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Scalpel Study Squad V3 Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
+
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getDatabase, ref, set, get, update, onValue, child, query, orderByChild, limitToLast } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
       const firebaseConfig = {
-        apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
-        authDomain: "scalpel-pro.firebaseapp.com",
-        projectId: "scalpel-pro",
-        storageBucket: "scalpel-pro.firebasestorage.app",
-        messagingSenderId: "244026009766",
-        appId: "1:244026009766:web:3299c2dfa37cf378d1ac67"
+        apiKey: "AIzaSyAsS-REPLACE_WITH_YOUR_KEY",
+        authDomain: "sss-pro-v3.firebaseapp.com",
+        databaseURL: "https://sss-pro-v3-default-rtdb.firebaseio.com",
+        projectId: "sss-pro-v3",
+        storageBucket: "sss-pro-v3.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
       };
 
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
 
-      // Globalizing DB functions for the script block
+      // GLOBALS FOR MODULE ACCESS
       window.db = db;
       window.ref = ref;
       window.set = set;
       window.get = get;
-      window.child = child;
       window.update = update;
+      window.child = child;
       window.query = query;
       window.orderByChild = orderByChild;
       window.limitToLast = limitToLast;
 
-      const tgUser = window.Telegram.WebApp.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Guest" };
-      window.userId = tgUser.id;
-      window.userName = tgUser.first_name || "Doctor";
+      // USER AUTH MAPPING
+      const user = window.Telegram.WebApp.initDataUnsafe?.user;
+      window.userId = user ? user.id.toString() : "OFFLINE";
+      window.userName = user ? (user.first_name + (user.last_name ? " " + user.last_name : "")) : "Guest Doctor";
       // --- 1. PERSONAL BACKUP SYNC ---
       window.syncToCloud = function() {
           const dataToSync = {};
@@ -146,7 +149,7 @@
             --chart-text: #ffffff;
             --chart-grid: #aaaaaa;
             --instruction-bg: rgba(255,255,255,0.05);
-            --tab-blue: #2481cc; /* Original Rounded Tab Blue */
+            --tab-blue: #2481cc; 
             --tab-blue-dark: #1a5c96;
             --gold: #ffd700;
             --silver: #c0c0c0;
@@ -195,7 +198,7 @@
             color: #888; 
             padding: 10px 5px; 
             font-size: 10px; 
-            border-radius: 12px; /* Perfect Rounded Corners */
+            border-radius: 12px; 
             cursor: pointer; 
             flex: 1; 
             display: flex; 
@@ -208,7 +211,7 @@
         }
 
         .tab-btn.active { 
-            background: var(--tab-blue); /* Distinct Original Blue */
+            background: var(--tab-blue); 
             color: white; 
             border-color: var(--tab-blue); 
             box-shadow: 0 4px 12px rgba(36, 129, 204, 0.3); 
@@ -222,7 +225,6 @@
         .tab-content.active { display: block; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
         /* CORE CARDS */
         .card { 
             background: var(--card); 
@@ -237,7 +239,17 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .card h3 { margin-top: 0; color: var(--accent); font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .card h3 { 
+            margin-top: 0; 
+            color: var(--accent); 
+            font-size: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
         /* EXAM DASHBOARD & COUNTDOWNS */
         .exam-dashboard { width: 100%; margin-bottom: 20px; }
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -254,368 +266,261 @@
         }
         .exam-days { font-family: 'Oswald', sans-serif; font-size: 22px; color: var(--accent); line-height: 1; }
         .exam-label { font-size: 9px; text-transform: uppercase; margin-top: 4px; opacity: 0.8; font-weight: bold; letter-spacing: 0.5px; }
-
-        /* LOGO & TITLE */
-        .logo { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 10px; object-fit: cover; }
-        h1 { font-family: 'Oswald', sans-serif; font-size: 28px; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px; color: var(--text); }
-        
-        /* MATRIX TABLES */
-        .matrix-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; table-layout: fixed; }
-        .matrix-table th, .matrix-table td { 
-            padding: 8px 4px; 
-            border: 1px solid var(--border); 
-            text-align: center; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap; 
-        }
-        .matrix-table th { background: rgba(82, 136, 193, 0.1); color: var(--accent); font-weight: bold; }
-        .matrix-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-
-        /* STREAK SECTION */
-        .streak-section { margin-bottom: 15px; }
-        .streak-text { font-family: 'Oswald', sans-serif; font-size: 20px; color: #f39c12; }
-        .streak-icons-div { display: flex; justify-content: center; gap: 5px; margin: 5px 0; flex-wrap: wrap; }
-        /* BUTTONS & INPUTS */
-        .btn { 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            border-radius: 10px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: opacity 0.2s, transform 0.2s; 
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
-        
+        /* FORM ELEMENTS */
         input, select, textarea { 
             width: 100%; 
-            padding: 12px; 
-            margin: 5px 0 12px 0; 
+            padding: 10px; 
+            margin: 8px 0; 
             background: var(--input-bg); 
             border: 1px solid var(--border); 
             border-radius: 8px; 
             color: var(--text); 
-            font-size: 14px; 
-            box-sizing: border-box; 
-        }
-
-        .sub-label { font-size: 10px; color: #888; margin-top: -8px; margin-bottom: 10px; }
-
-        /* QUOTE */
-        .quote { 
-            font-style: italic; 
             font-size: 13px; 
-            color: #888; 
-            margin-bottom: 20px; 
-            padding: 0 20px; 
-            line-height: 1.4; 
+            box-sizing: border-box; 
+            outline: none;
         }
 
-        /* TIMER & CLOCK */
+        .btn { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* TIMER DISPLAY */
         #timer-display { 
             font-family: 'Oswald', sans-serif; 
             font-size: 48px; 
+            text-align: center; 
             margin: 15px 0; 
             color: var(--accent); 
+            letter-spacing: 2px;
             text-shadow: 0 0 10px rgba(82,136,193,0.3);
         }
 
-        .setting-label { 
-            display: block; 
-            text-align: left; 
-            font-size: 11px; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            color: var(--accent); 
-            margin-bottom: 2px; 
+        /* TABLES */
+        .matrix-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+        .matrix-table th, .matrix-table td { 
+            border: 1px solid var(--border); 
+            padding: 8px 4px; 
+            text-align: center; 
         }
+        .matrix-table th { background: rgba(82,136,193,0.1); color: var(--accent); text-transform: uppercase; font-size: 9px; }
+        /* CHART CONTAINERS */
+        .chart-scroller { width: 100%; overflow-x: auto; margin-top: 10px; }
+        .chart-scroll-content { min-width: 400px; height: 180px; }
 
         /* ACCORDIONS */
         .accordion-header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            padding: 10px 0; 
             cursor: pointer; 
+            border-bottom: 1px solid var(--border);
         }
-        .accordion-content { 
-            display: none; 
-            padding-top: 15px; 
-            border-top: 1px dashed var(--border); 
-            margin-top: 10px; 
-        }
+        .accordion-content { display: none; padding: 10px 0; }
         .accordion-content.open { display: block; }
-        .arrow { transition: transform 0.3s; font-size: 12px; }
-        .active .arrow { transform: rotate(180deg); }        
-        /* GT & SWT SPECIFIC UI */
-        .calc-preview { 
-            display: flex; 
-            justify-content: space-between; 
-            background: rgba(0,0,0,0.2); 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-size: 12px; 
-            margin: 5px 0 10px 0; 
-        }
-        .calc-preview b { color: var(--accent); }
+        .arrow { transition: transform 0.3s; font-size: 10px; opacity: 0.5; }
+        .active .arrow { transform: rotate(180deg); }
 
-        .gt-tab-btn { transition: all 0.3s ease; border-radius: 8px; }
-        .gt-tab-btn.active { background: var(--accent) !important; color: white !important; }
+        /* QUALITATIVE (FACT SALAD) STYLES */
+        .qual-card { background: var(--card); border-radius: 15px; border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
+        .qual-input-group { margin-bottom: 15px; }
+        .qual-input-group label { display: block; font-size: 10px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; font-weight: bold; }
+        .qual-input-group textarea { height: 60px; resize: none; font-size: 12px; }
 
-        /* PYQ NAVIGATION */
-        .pyq-nav-container { 
-            display: flex; 
-            gap: 5px; 
-            margin-bottom: 12px; 
-            overflow-x: auto; 
-            padding-bottom: 5px; 
-        }
-        .pyq-tab { 
-            padding: 8px 12px; 
+        .slide-container { 
             background: var(--input-bg); 
-            border: 1px solid var(--border); 
-            border-radius: 20px; 
-            font-size: 10px; 
-            white-space: nowrap; 
-            cursor: pointer; 
-            font-weight: bold; 
+            border-radius: 12px; 
+            padding: 20px; 
+            min-height: 120px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            text-align: center; 
+            margin-bottom: 15px; 
+            border: 1px dashed var(--border);
         }
-        .pyq-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .pyq-tab-cup { margin-left: 4px; display: none; }
-
-        /* CHART SCROLLER (For Landscape Charts) */
-        .chart-scroller { width: 100%; overflow-x: auto; margin-top: 10px; background: rgba(0,0,0,0.1); border-radius: 10px; padding: 5px; }
-        .chart-scroll-content { width: 600px; height: 200px; }
-
-        /* LEADERBOARD ARENA CSS */
-        .rank-nav { display: flex; gap: 5px; margin-bottom: 15px; }
-        .rank-nav-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 10px; cursor: pointer; font-weight: bold; }
-        .rank-nav-btn.active { background: #f39c12; color: white; border-color: #f39c12; }
-
+        /* RANKING / LEADERBOARD LIST */
         .rank-list { margin-top: 10px; }
         .rank-item { 
             display: flex; 
+            justify-content: space-between; 
             align-items: center; 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            margin-bottom: 5px; 
-            border-radius: 10px; 
             padding: 10px; 
-            gap: 10px; 
-        }
-        .rank-pos { width: 30px; font-family: 'Oswald', sans-serif; font-size: 18px; text-align: center; }
-        .rank-name { flex: 1; font-weight: bold; font-size: 13px; text-align: left; }
-        .rank-score { font-family: 'Oswald', sans-serif; color: #f39c12; font-size: 16px; }
-        .rank-meta { font-size: 9px; opacity: 0.6; display: block; }
-
-        .rank-1 { border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
-        .rank-2 { border: 2px solid var(--silver); }
-        .rank-3 { border: 2px solid var(--bronze); }
-        .elite-badge { background: var(--accent); color: white; font-size: 8px; padding: 2px 4px; border-radius: 4px; }
-        /* --- QUALITATIVE SECTION STYLES --- */
-        .qual-card { 
-            background: var(--card); 
-            border-radius: 15px; 
-            padding: 20px; 
-            margin-bottom: 15px; 
-            border: 1px solid var(--border); 
-            text-align: left; 
-        }
-
-        .slide-container {
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            padding: 25px;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            margin-bottom: 15px;
-            border: 1px dashed var(--accent);
-            position: relative;
-        }
-
-        .qual-input-group { margin-bottom: 15px; }
-        .qual-input-group label { 
-            font-size: 11px; 
-            text-transform: uppercase; 
-            color: var(--accent); 
-            font-weight: bold; 
-            display: block; 
+            background: rgba(255,255,255,0.03); 
+            border-radius: 8px; 
             margin-bottom: 5px; 
+            border-left: 3px solid var(--border);
         }
+        .rank-name { font-weight: bold; font-size: 13px; }
+        .rank-score { color: var(--accent); font-weight: bold; font-size: 13px; }
+        .rank-pos { font-family: 'Oswald', sans-serif; opacity: 0.5; width: 25px; }
 
-        /* POPUPS */
-        #popup-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-            display: none; justify-content: center; align-items: center; z-index: 2000;
+        /* MAIN BOTTOM DOCK NAV */
+        .main-nav-dock { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: var(--card); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 0; 
+            border-top: 1px solid var(--border); 
+            z-index: 1000;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
-        .popup-card {
-            background: var(--card); width: 90%; max-width: 350px;
-            padding: 25px; border-radius: 20px; border: 1px solid var(--border);
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* BOTTOM NAVIGATION DOCK */
-        .main-nav-dock {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--card); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; padding: 10px 0;
-            z-index: 1500; padding-bottom: calc(10px + env(safe-area-inset-bottom));
-        }
-        .main-nav-btn {
-            background: none; border: none; color: #888;
-            font-size: 11px; font-weight: bold; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        .main-nav-btn { 
+            background: none; 
+            border: none; 
+            color: #888; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-size: 10px; 
+            font-weight: bold;
+            transition: 0.2s;
         }
         .main-nav-btn.active { color: var(--accent); }
-        .main-nav-btn span { font-size: 22px; }
+        .main-nav-btn span { font-size: 20px; margin-bottom: 2px; }
 
-        /* DANGER ZONE (Relocated) */
-        .danger-zone {
-            margin-top: 30px; padding: 15px; border-radius: 12px;
-            background: rgba(239, 83, 80, 0.05); border: 1px solid rgba(239, 83, 80, 0.2);
-            width: 100%; box-sizing: border-box;
+        /* POPUP OVERLAYS */
+        .popup-overlay { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000; 
+            backdrop-filter: blur(5px);
         }
-
-        /* UTILITY */
+        .popup-card { background: var(--card); border-radius: 20px; padding: 25px; width: 85%; max-width: 320px; text-align: center; border: 1px solid var(--border); }
+        /* UTILITY CLASSES */
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .status-online { background: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
         .status-offline { background: #ef5350; }
+        
+        .badge { font-size: 8px; padding: 2px 6px; border-radius: 10px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
+        .badge-r1 { background: var(--bronze); color: white; }
+        .badge-r2 { background: var(--silver); color: black; }
+        .badge-r3 { background: var(--gold); color: black; }
+        
+        .danger-zone { border: 1px solid #ef5350; padding: 10px; border-radius: 10px; margin-top: 10px; background: rgba(239, 83, 80, 0.05); }
+        
+        .pyq-nav-container { display: flex; overflow-x: auto; gap: 5px; padding-bottom: 5px; margin-bottom: 10px; scrollbar-width: none; }
+        .pyq-nav-container::-webkit-scrollbar { display: none; }
+        .pyq-tab { 
+            white-space: nowrap; padding: 6px 12px; border-radius: 15px; background: rgba(255,255,255,0.05); 
+            font-size: 10px; border: 1px solid var(--border); color: #888; 
+        }
+        .pyq-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .rank-nav { display: flex; gap: 5px; margin-bottom: 15px; }
+        .rank-nav-btn { flex: 1; padding: 8px; font-size: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
+        .rank-nav-btn.active { background: var(--accent); border-color: var(--accent); }
+
+        .calc-preview { background: rgba(82,136,193,0.1); padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-size: 12px; }
     </style>
 </head>
-    <body>
-    <div id="popup-overlay">
-        <div id="mcq-popup" class="popup-card">
-            <h2 style="color:var(--accent); font-family:'Oswald';">SESSION COMPLETE!</h2>
-            <p style="font-size:14px; opacity:0.8;">How many MCQs did you solve in this cycle?</p>
-            <input type="number" id="cycleMcqs" placeholder="Enter count..." style="text-align:center; font-size:20px;">
-            <button class="btn" style="width:100%; background:#2ecc71;" onclick="startBreak()">Log & Take Break</button>
-            <button class="btn" style="width:100%; background:#8e44ad; margin-top:10px;" onclick="stopEntireSession()">Finish Study Day</button>
-        </div>
-
-        <div id="break-popup" class="popup-card">
-            <h2 style="color:#f39c12; font-family:'Oswald';">BREAK OVER!</h2>
-            <p style="font-size:14px; opacity:0.8;">Time to get back into the zone, Doctor.</p>
-            <button class="btn" style="width:100%;" onclick="continueNextCycle()">Start Next Cycle</button>
-            <button class="btn" style="width:100%; background:#ef5350; margin-top:10px;" onclick="stopEntireSession()">End Session</button>
-        </div>
-
-        <div id="restore-popup" class="popup-card" style="display:none;">
-            <h3>Restore Data</h3>
-            <p style="font-size:11px; color:#888;">Paste your backup code below:</p>
-            <textarea id="restoreCode" style="height:100px; font-size:10px;"></textarea>
-            <button class="btn" style="width:100%;" onclick="importData()">Execute Restore</button>
-            <button class="btn" style="width:100%; background:#888; margin-top:10px;" onclick="closePopup()">Cancel</button>
-        </div>
-    </div>
-
+<body>
     <div class="container">
-        <div style="width:100%; display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+        <div style="margin-top: 20px; text-align: center;">
+            <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--accent); margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <h1 style="font-family:'Oswald'; font-size:28px; color:var(--text); margin:0; letter-spacing:1px;">SCALPEL STUDY SQUAD</h1>
+            <div id="cloud-sync-status" style="font-size: 10px; margin-top: 5px; color: #888; font-weight: bold;">Initializing Core...</div>
+        </div>
+
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
             <div style="text-align:left;">
-                <div id="uFullName" style="font-weight:bold; font-size:14px; color:var(--accent);">Loading...</div>
-                <div id="uID" style="font-size:10px; opacity:0.5;">ID: --</div>
+                <div style="font-size:10px; text-transform:uppercase; color:var(--accent); font-weight:bold; letter-spacing:0.5px;">Candidate Profile</div>
+                <div id="uFullName" style="font-size:16px; font-weight:bold; font-family:'Oswald';">Loading...</div>
+                <div id="uID" style="font-size:9px; opacity:0.6;">ID: --</div>
             </div>
             <div style="text-align:right;">
-                <div id="cloud-sync-status" style="font-size:10px; font-weight:bold; color:#888;">Cloud: Checking...</div>
-                <div style="font-size:10px; opacity:0.5;"><span id="statusDot" class="status-dot"></span><span id="onlineText">System Live</span></div>
+                <div style="display:flex; align-items:center; justify-content:flex-end; margin-bottom:3px;">
+                    <span id="statusDot" class="status-dot"></span>
+                    <span id="onlineText" style="font-size:10px; font-weight:bold;">Online</span>
+                </div>
+                <div id="streakIcons" style="font-size:14px;">🌑</div>
+                <div id="streakText" style="font-size:9px; font-weight:bold; color:var(--accent);">Consistency: 0 Days</div>
             </div>
         </div>
-        <img src="https://github.com/dhruvathaare/Scaslpel-Study-Squad-Apps/blob/main/photo_2026-02-12_20-08-36.jpg?raw=true" class="logo">
-        <h1>Scalpel Study Squad</h1>
-        
-        <div class="streak-section">
-            <div id="streakText" class="streak-text">Consistency: 0 Days</div>
-            <div id="streakIcons" class="streak-icons-div"></div>
-            <div style="font-size:11px; color:#888;">🔥 per 25 days | 🥇 per 75 days</div>
-        </div>
-        
-        <div class="quote">"I AM HERE TO WIN, CONSISTENCY IS MY KITH AND KIN"</div>
-
         <div class="exam-dashboard">
             <div class="exam-grid">
+                <div class="exam-item" id="dash_neet">
+                    <span id="daysNeet" class="exam-days">--</span>
+                    <span class="exam-label">NEET PG 2026</span>
+                </div>
                 <div class="exam-item" id="dash_ini_jul">
                     <span id="daysIniJuly" class="exam-days">--</span>
                     <span class="exam-label">INICET JULY</span>
+                </div>
+                <div class="exam-item" id="dash_fmge_jun">
+                    <span id="daysFmgeJun" class="exam-days">--</span>
+                    <span class="exam-label">FMGE JUNE 26</span>
                 </div>
                 <div class="exam-item" id="dash_upsc">
                     <span id="daysUpsc" class="exam-days">--</span>
                     <span class="exam-label">UPSC CMS</span>
                 </div>
-                <div class="exam-item" id="dash_neet">
-                    <span id="daysNeet" class="exam-days">--</span>
-                    <span class="exam-label">NEET PG 2026</span>
-                </div>
-                <div class="exam-item" id="dash_ini_jan">
-                    <span id="daysIniJan" class="exam-days">--</span>
-                    <span class="exam-label">INICET JAN '27</span>
-                </div>
-                <div class="exam-item" id="dash_fmge_jun">
-                    <span id="daysFmgeJun" class="exam-days">--</span>
-                    <span class="exam-label">FMGE JUNE '26</span>
-                </div>
-                <div class="exam-item" id="dash_fmge_dec">
-                    <span id="daysFmgeDec" class="exam-days">--</span>
-                    <span class="exam-label">FMGE DEC '26</span>
-                </div>
             </div>
         </div>
-        <div id="section-quant" class="section-container active">
-            
+
+        <div id="section-quant" class="section-container" style="width:100%;">
             <div class="nav-tabs">
-                <button class="tab-btn theme-toggle-tab" onclick="toggleTheme()">
-                    <span>🌗</span>
-                    THEME
+                <button class="tab-btn active" onclick="switchTab('tab-daily', this)">
+                    <span>📅</span>DAILY
                 </button>
-                <div class="tab-btn" onclick="switchTab('tab-goal', this)">
-                    <span>🎯</span>GOAL
-                </div>
-                <div class="tab-btn active" onclick="switchTab('tab-daily', this)">
-                    <span>📊</span>DAILY
-                </div>
-                <div class="tab-btn" onclick="switchTab('tab-swt', this)">
-                    <span>🧠</span>SWT
-                </div>
-                <div class="tab-btn" onclick="switchTab('tab-gt', this)">
-                    <span>📈</span>GT
-                </div>
-                <div class="tab-btn" onclick="switchTab('tab-rank', this)">
-                    <span>🏆</span>RANKS
-                </div>
+                <button class="tab-btn" onclick="switchTab('tab-swt', this)">
+                    <span>🧪</span>SWT
+                </button>
+                <button class="tab-btn" onclick="switchTab('tab-gt', this)">
+                    <span>🎯</span>GT
+                </button>
+                <button class="tab-btn" onclick="switchTab('tab-rank', this)">
+                    <span>🏅</span>RANKS
+                </button>
+                <button class="tab-btn" onclick="switchTab('tab-goal', this)">
+                    <span>⚙️</span>SET
+                </button>
             </div>
 
             <div id="tab-goal" class="tab-content">
                 <div class="card">
                     <div class="accordion-header" onclick="toggleAccordion('acc_exams', this)">
-                        <h3>My Target Exams</h3>
+                        <h3>Target Configuration</h3>
                         <span class="arrow">▼</span>
                     </div>
                     <div id="acc_exams" class="accordion-content">
-                        <div class="goal-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span>INICET July</span><input type="checkbox" id="goal_ini_jul" onchange="saveGoals()" style="width:20px;">
+                        <p style="font-size:10px; color:#888; margin-bottom:10px;">Select which exams you are targeting to show on dashboard.</p>
+                        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+                            <label style="font-size:11px; display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="goal_neet" onchange="saveGoals()" style="width:15px; margin:0;"> NEET PG 2026
+                            </label>
+                            <label style="font-size:11px; display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="goal_ini_jul" onchange="saveGoals()" style="width:15px; margin:0;"> INICET JULY '26
+                            </label>
+                            <label style="font-size:11px; display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="goal_fmge_jun" onchange="saveGoals()" style="width:15px; margin:0;"> FMGE JUNE '26
+                            </label>
+                            <label style="font-size:11px; display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="goal_upsc" onchange="saveGoals()" style="width:15px; margin:0;"> UPSC CMS '26
+                            </label>
                         </div>
-                        <div class="goal-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span>UPSC CMS</span><input type="checkbox" id="goal_upsc" onchange="saveGoals()" style="width:20px;">
-                        </div>
-                        <div class="goal-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span>NEET PG 2026</span><input type="checkbox" id="goal_neet" onchange="saveGoals()" style="width:20px;">
-                        </div>
-                        <div class="goal-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span>INICET Jan '27</span><input type="checkbox" id="goal_ini_jan" onchange="saveGoals()" style="width:20px;">
-                        </div>
-                        <div class="goal-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span>FMGE JUNE '26</span><input type="checkbox" id="goal_fmge_jun" onchange="saveGoals()" style="width:20px;">
-                        </div>
-                        <div class="goal-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span>FMGE DEC '26</span><input type="checkbox" id="goal_fmge_dec" onchange="saveGoals()" style="width:20px;">
-                        </div>
-                        <button class="btn" style="width:100%; margin-top:10px; font-size:12px;" onclick="lockExamGoals()">Lock Selection</button>
+                        <button class="btn" style="width:100%; margin-top:15px; font-size:11px; padding:8px;" onclick="lockExamGoals()">Lock Targets 🔒</button>
                     </div>
                 </div>
                 <div class="card">
@@ -739,14 +644,14 @@
                     <h3>Log Subject-Wise Test (SWT)</h3>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div>
-                            <label class="setting-label">Subject</label>
+                            <label class="setting-label" style="font-size:10px; color:var(--accent); font-weight:bold;">Subject</label>
                             <select id="swtSubject">
                                 <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
                                 <option>Mixed Bag</option>
                             </select>
                         </div>
                         <div>
-                            <label class="setting-label">Reading Phase</label>
+                            <label class="setting-label" style="font-size:10px; color:var(--accent); font-weight:bold;">Reading Phase</label>
                             <select id="swtPhase">
                                 <option value="r1">1st Reading 🥉</option>
                                 <option value="r2">2nd Reading 🥈</option>
@@ -757,11 +662,11 @@
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
                         <div>
-                            <label class="setting-label">Correct MCQs</label>
+                            <label class="setting-label" style="font-size:10px; color:var(--accent); font-weight:bold;">Correct MCQs</label>
                             <input type="number" id="swtCorrect" placeholder="0" oninput="calculateSWTPerc()">
                         </div>
                         <div>
-                            <label class="setting-label">Total MCQs</label>
+                            <label class="setting-label" style="font-size:10px; color:var(--accent); font-weight:bold;">Total MCQs</label>
                             <input type="number" id="swtTotal" placeholder="0" oninput="calculateSWTPerc()">
                         </div>
                     </div>
@@ -817,17 +722,17 @@
 
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div>
-                            <label class="setting-label">Score (Marks/%)</label>
+                            <label class="setting-label" style="font-size:10px; color:var(--accent); font-weight:bold;">Score (Marks/%)</label>
                             <input type="number" id="gtScore" placeholder="Enter Score">
                         </div>
                         <div>
-                            <label class="setting-label">Rank / Percentile</label>
+                            <label class="setting-label" style="font-size:10px; color:var(--accent); font-weight:bold;">Rank / Percentile</label>
                             <input type="number" id="gtRank" placeholder="Enter Rank">
                         </div>
                     </div>
                     
                     <div class="qual-input-group" style="margin-top:5px;">
-                        <label>Exam Platform / Source</label>
+                        <label style="font-size:10px; color:var(--accent); font-weight:bold;">Exam Platform / Source</label>
                         <select id="gtPlatform">
                             <option>Marrow</option><option>Prepladder</option><option>Bhatia</option><option>DAMS</option><option>Cerebellum</option><option>Other</option>
                         </select>
@@ -836,336 +741,332 @@
                     <button class="btn" style="width:100%; background:#8e44ad;" onclick="saveGT()">Log GT Result 📈</button>
                 </div>
                 <div class="card">
-                    <h3>GT Performance Tracking</h3>
-                    <div style="font-size: 10px; color: #888; margin-bottom: 10px;">Visualizing your progress across different exam types.</div>
-                    
-                    <div id="gt-chart-neet" class="chart-scroller">
-                        <div style="font-size:10px; font-weight:bold; color:var(--accent); margin-bottom:5px;">NEET PG TREND</div>
+                    <h3>Grand Test Trends</h3>
+                    <div id="gt-chart-container-neet" class="chart-scroller">
+                        <div style="font-size:10px; font-weight:bold; color:var(--accent); margin-bottom:5px;">NEET PG PROGRESSION</div>
                         <div class="chart-scroll-content">
                             <canvas id="gtNeetChart"></canvas>
                         </div>
                     </div>
-
-                    <div id="gt-chart-ini" class="chart-scroller" style="margin-top:10px;">
-                        <div style="font-size:10px; font-weight:bold; color:var(--accent); margin-bottom:5px;">INICET TREND</div>
+                    <div id="gt-chart-container-ini" class="chart-scroller" style="margin-top:15px; display:none;">
+                        <div style="font-size:10px; font-weight:bold; color:#8e44ad; margin-bottom:5px;">INICET PROGRESSION</div>
                         <div class="chart-scroll-content">
                             <canvas id="gtIniChart"></canvas>
                         </div>
                     </div>
-
-                    <div id="gt-chart-fmge" class="chart-scroller" style="margin-top:10px;">
-                        <div style="font-size:10px; font-weight:bold; color:var(--accent); margin-bottom:5px;">FMGE TREND</div>
+                    <div id="gt-chart-container-fmge" class="chart-scroller" style="margin-top:15px; display:none;">
+                        <div style="font-size:10px; font-weight:bold; color:#2ecc71; margin-bottom:5px;">FMGE PROGRESSION</div>
                         <div class="chart-scroll-content">
                             <canvas id="gtFmgeChart"></canvas>
                         </div>
                     </div>
+                </div>
 
-                    <div class="accordion-header" onclick="toggleAccordion('acc_gt_history', this)" style="margin-top:15px;">
-                        <span style="font-size:11px; font-weight:bold; color:var(--accent);">View GT History Log</span>
+                <div class="card">
+                    <div class="accordion-header" onclick="toggleAccordion('acc_gt_logs', this)">
+                        <h3>GT Detailed Log</h3>
                         <span class="arrow">▼</span>
                     </div>
-                    <div id="acc_gt_history" class="accordion-content">
+                    <div id="acc_gt_logs" class="accordion-content">
                         <div style="max-height: 250px; overflow-y: auto;">
                             <table class="matrix-table">
                                 <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Type</th>
-                                        <th>Score</th>
-                                        <th>Rank</th>
-                                        <th>Source</th>
-                                    </tr>
+                                    <tr><th>Date</th><th>Type</th><th>Score</th><th>Rank</th><th>Platform</th></tr>
                                 </thead>
-                                <tbody id="gtHistoryBody">
-                                    </tbody>
+                                <tbody id="gtLogBody"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div id="tab-rank" class="tab-content">
                 <div class="card">
-                    <h3>Leaderboard Arena 🏆</h3>
-                    <div class="rank-nav">
-                        <button class="rank-nav-btn active" onclick="switchRankMode('streak', this)">Streaks</button>
-                        <button class="rank-nav-btn" onclick="switchRankMode('swt', this)">SWT Accuracy</button>
-                        <button class="rank-nav-btn" onclick="switchRankMode('gt', this)">GT Mean</button>
-                    </div>
-
-                    <div id="rank-filter-streak" style="font-size: 10px; color: #888; margin-bottom: 10px; text-align:center;">
-                        Top 50: Consecutive days with ≥ 50 MCQs.
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="margin:0;">Global Leaderboard</h3>
+                        <button class="btn" onclick="fetchLeaderboard(currentRankCat, currentRankSub)" style="padding:5px 10px; font-size:10px;">🔄 Refresh</button>
                     </div>
                     
-                    <div id="rank-filter-swt" style="display:none; margin-bottom:10px;">
-                        <select id="rankSubjectSelect" onchange="loadLeaderboard('swt')" style="margin:0;">
+                    <div class="rank-nav">
+                        <button id="rankBtnStreak" class="rank-nav-btn active" onclick="switchRankCat('streak', this)">Consistency</button>
+                        <button id="rankBtnNeet" class="rank-nav-btn" onclick="switchRankCat('neet', this)">NEET PG</button>
+                        <button id="rankBtnSwt" class="rank-nav-btn" onclick="switchRankCat('swt', this)">SWT Mastery</button>
+                    </div>
+                    <div id="rankSubjectSelector" style="display:none; margin-bottom:10px;">
+                        <label style="font-size:10px; color:var(--accent); font-weight:bold; display:block; margin-bottom:5px;">Select Subject Leaderboard</label>
+                        <select id="rankSub" onchange="switchRankSub(this.value)">
                             <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
                         </select>
                     </div>
-                    
-                    <div id="rank-filter-gt" style="display:none; margin-bottom:10px;">
-                        <select id="rankGtSelect" onchange="loadLeaderboard('gt')" style="margin:0;">
-                            <option value="neet">NEET PG Average</option>
-                            <option value="ini">INICET Average</option>
-                            <option value="fmge">FMGE Average</option>
-                        </select>
-                    </div>
 
-                    <div class="rank-list" id="leaderboard-list">
-                        </div>
+                    <div id="rank-list-container" class="rank-list">
+                        <div style="text-align:center; padding:20px; opacity:0.5; font-size:12px;">Fetching competitors...</div>
+                    </div>
                 </div>
             </div>
-        </div> <div id="section-qual" class="tab-content" style="width:100%;">
-            <h2 style="font-family:'Oswald'; color:var(--accent); text-transform:uppercase; margin-top:10px;">Qualitative Analysis</h2>
-            
-            <div class="qual-card">
-                <h3>Fact Salad Bowl 🥗</h3>
-                <div class="slide-container">
-                    <div id="fact-slideshow">Add facts below to start the show!</div>
-                </div>
+        </div>
+
+        <div id="section-qual" class="section-container" style="width:100%; display:none;">
+            <div class="card" style="border-left: 5px solid #e67e22;">
+                <h3 style="color:#e67e22;">Active Recall: Fact Salad Bowl 🥗</h3>
+                <div style="font-size:10px; color:#888; margin-bottom:15px;">Randomized facts from your own database for rapid fire revision.</div>
                 
-                <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center;">
-                    <button id="slideShowBtn" class="btn" style="flex:1; background:#f39c12; font-size:10px;" onclick="toggleSlideShow()">⏯ Play Slideshow (30s)</button>
-                    <button class="btn" style="flex:1; background:var(--accent); font-size:10px;" onclick="showRandomFact()">🎲 Shuffle Fact</button>
+                <div id="fact-slideshow" class="slide-container">
+                    <div style="opacity:0.5; font-size:12px;">Your bowl is currently empty.<br>Add facts below to start the slideshow.</div>
                 </div>
 
+                <div style="display:flex; gap:10px;">
+                    <button id="slideShowBtn" class="btn" style="flex:1; background:#f39c12; font-size:11px;" onclick="toggleSlideShow()">⏯ Play Slideshow (30s)</button>
+                    <button class="btn" style="flex:1; background:#34495e; font-size:11px;" onclick="showRandomFact()">🎲 Next Fact</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Toss a New Fact into the Bowl</h3>
                 <div class="qual-input-group">
                     <label>Subject</label>
                     <select id="factSubject">
                         <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
+                        <option>High Yield Fact</option>
                     </select>
                 </div>
                 <div class="qual-input-group">
-                    <label>Fact / Question</label>
-                    <textarea id="factQuestion" placeholder="e.g., Nerve supply of the diaphragm?"></textarea>
+                    <label>The Question (One Liner/Concept)</label>
+                    <textarea id="factQuestion" placeholder="e.g. Most common cause of..."></textarea>
                 </div>
                 <div class="qual-input-group">
-                    <label>The Answer</label>
-                    <textarea id="factAnswer" placeholder="e.g., Phrenic Nerve (C3, C4, C5)"></textarea>
+                    <label>The Answer (Short & Sharp)</label>
+                    <textarea id="factAnswer" placeholder="Keep it brief for rapid recall"></textarea>
                 </div>
-                <button class="btn" style="width:100%;" onclick="saveFact()">Add to Salad Bowl 🥗</button>
+                <button class="btn" style="width:100%; background:#27ae60;" onclick="saveFact()">Toss into Bowl 🥗</button>
             </div>
 
-            <div class="qual-card">
-                <h3>SWT Mistake Checkpoint 🧠</h3>
-                <p style="font-size:11px; color:#888; margin-bottom:15px;">Log conceptual errors or silly mistakes from your Subject-Wise Tests.</p>
+            <div class="card" style="border-left: 5px solid #ef5350;">
+                <h3 style="color:#ef5350;">Mistake Autopsy / Weakness Log 🔬</h3>
+                <div style="font-size:10px; color:#888; margin-bottom:15px;">Log high-yield mistakes from your GTs and SWTs for focused revision.</div>
                 
-                <div class="qual-input-group">
-                    <label>Subject</label>
-                    <select id="swtMistakeSubject">
-                        <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
-                    </select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <label class="setting-label" style="font-size:10px; color:#ef5350; font-weight:bold;">Source</label>
+                        <select id="mistakeType">
+                            <option value="SWT">SWT Mistake</option>
+                            <option value="GT">GT Mistake</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="setting-label" style="font-size:10px; color:#ef5350; font-weight:bold;">Subject</label>
+                        <select id="mistakeSub">
+                            <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
+                        </select>
+                    </div>
                 </div>
-                
-                <div class="qual-input-group">
-                    <label>Question</label>
-                    <textarea id="swtMistakeQ" placeholder="The question you got wrong..."></textarea>
+
+                <div class="qual-input-group" style="margin-top:10px;">
+                    <label>The Mistake (Question context)</label>
+                    <textarea id="mistakeQ" placeholder="What was the question?"></textarea>
                 </div>
-                
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <div class="qual-input-group">
                         <label>Correct Answer</label>
-                        <textarea id="swtMistakeA"></textarea>
+                        <input type="text" id="mistakeCorrect" placeholder="Right Ans">
                     </div>
                     <div class="qual-input-group">
-                        <label>My Incorrect Answer</label>
-                        <textarea id="swtMistakeWrong"></textarea>
+                        <label>My Wrong Choice</label>
+                        <input type="text" id="mistakeWrong" placeholder="My Ans">
                     </div>
                 </div>
-
                 <div class="qual-input-group">
-                    <label>Why did I get this wrong?</label>
-                    <textarea id="swtMistakeReason" placeholder="e.g., Confused with X, Didn't see 'EXCEPT'..."></textarea>
+                    <label>Why did I miss it? (Reasoning/Fact)</label>
+                    <textarea id="mistakeReason" placeholder="e.g. Concept error, Silly mistake, New info..."></textarea>
                 </div>
-                
-                <button class="btn" style="width:100%; background:#e74c3c;" onclick="saveSWTMistake()">Log Mistake 🧠</button>
+                <button class="btn" style="width:100%; background:#ef5350;" onclick="saveMistake()">Log for Revision 📌</button>
             </div>
-            <div class="qual-card">
-                <h3>GT Mistake Autopsy 📉</h3>
-                <p style="font-size:11px; color:#888; margin-bottom:15px;">Deep dive into your Grand Test errors to improve your rank.</p>
-                
-                <div class="qual-input-group">
-                    <label>Exam Type</label>
-                    <select id="gtMistakeType">
-                        <option>NEET PG</option><option>INICET</option><option>FMGE</option><option>UPSC CMS</option>
-                    </select>
+            <div class="card">
+                <div class="accordion-header" onclick="toggleAccordion('acc_mistake_list', this)">
+                    <h3>Mistake History</h3>
+                    <span class="arrow">▼</span>
                 </div>
-
-                <div class="qual-input-group">
-                    <label>Subject</label>
-                    <select id="gtMistakeSubject">
-                        <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Pathology</option><option>Microbiology</option><option>Pharmacology</option><option>FMT</option><option>PSM</option><option>Ophthalmology</option><option>ENT</option><option>Medicine</option><option>Surgery</option><option>OBG</option><option>Pediatrics</option><option>Anaesthesia</option><option>Dermatology</option><option>Orthopedics</option><option>Psychiatry</option><option>Radiology</option>
-                    </select>
+                <div id="acc_mistake_list" class="accordion-content">
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <table class="matrix-table">
+                            <thead>
+                                <tr><th>Sub</th><th>Mistake</th><th>Correct</th><th>Reason</th></tr>
+                            </thead>
+                            <tbody id="mistakeLogBody"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="qual-input-group"><label>Question</label><textarea id="gtMistakeQ"></textarea></div>
-                <div class="qual-input-group"><label>Correct Answer</label><textarea id="gtMistakeA"></textarea></div>
-                <div class="qual-input-group"><label>My Incorrect Answer</label><textarea id="gtMistakeWrong"></textarea></div>
-                <div class="qual-input-group"><label>Reason for Error</label><textarea id="gtMistakeReason" placeholder="e.g., Misread question, Recall error..."></textarea></div>
-                <button class="btn" style="width:100%; background:#e74c3c;" onclick="saveGTMistake()">Log Autopsy 📉</button>
             </div>
 
-            <div class="danger-zone" style="margin-top:15px; background:var(--card); border:1px solid var(--border);">
-                <h3 style="color:#2ecc71; margin:0 0 10px 0;">Revision Reports (PDF)</h3>
-                <div style="font-size:10px; color:#ef5350; margin-bottom:10px; font-weight:bold;">⚠️ NOTE: Download "Month End" report on the last day. Data in this section is volatile!</div>
+            <div class="card" style="background: linear-gradient(135deg, var(--card) 0%, #1a1a1a 100%); border: 1px solid #ffd700;">
+                <h3 style="color:#ffd700;">Revision Reports 📄</h3>
+                <div style="font-size:10px; color:#888; margin-bottom:15px;">Generate PDF summaries of your logged data for offline revision or printing.</div>
                 
-                <button class="btn" onclick="generatePDF('daily')" style="margin-bottom:10px; background:var(--tab-blue); width:100%;">📄 Download Today's Report</button>
-                <button class="btn" onclick="generatePDF('monthly')" style="margin-bottom:10px; background:#8e44ad; width:100%;">📅 Download Month End Report</button>
-                <button class="clear-btn" onclick="clearQualitativeData()" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ef5350; background:transparent; color:#ef5350; font-size:10px; font-weight:bold;">🗑️ Clear Qualitative Data (New Month)</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <button class="btn" style="background:#34495e; font-size:11px; flex-direction:column; padding:15px;" onclick="generatePDF('daily')">
+                        <span style="font-size:20px;">🥗</span>
+                        Daily Fact Bowl
+                    </button>
+                    <button class="btn" style="background:#34495e; font-size:11px; flex-direction:column; padding:15px;" onclick="generatePDF('monthly')">
+                        <span style="font-size:20px;">🔬</span>
+                        Mistake Autopsy
+                    </button>
+                </div>
             </div>
-        </div> ```
-        <div class="danger-zone" style="margin-top: 40px; border-color: #f39c12; background: rgba(243, 156, 18, 0.05);">
-            <h3 style="color:#f39c12; margin:0 0 10px 0;">Data Safety & Migration</h3>
-            <div id="backup-reminder" style="font-weight:bold; margin-bottom:10px; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; text-align: center;"></div>
-            
-            <ul style="text-align: left; font-size: 10px; opacity: 0.7; padding-left: 15px; margin-bottom: 15px;">
-                <li><strong>Backup:</strong> Copies your data code. Save this in your Telegram "Saved Messages".</li>
-                <li><strong>Restore:</strong> Paste your saved code to recover data on a new device.</li>
-            </ul>
-
-            <button class="btn" onclick="exportData()" style="width:100%; background:#f39c12; margin-bottom:10px;">Backup Data (Copy Code)</button>
-            <button class="btn" onclick="openPopup('restore-popup')" style="width:100%; background:transparent; border:1px solid #f39c12; color:#f39c12; margin-bottom:10px;">Restore Data</button>
-            <button class="btn" onclick="clearData()" style="width:100%; background:#ef5350; font-size:10px;">Wipe All Local Data</button>
         </div>
 
-    </div> <div class="main-nav-dock">
-        <button class="main-nav-btn active" id="nav-quant" onclick="switchMainSection('quant', this)">
-            <span>📊</span>Quant
-        </button>
-        <button class="main-nav-btn" id="nav-qual" onclick="switchMainSection('qual', this)">
-            <span>📝</span>Qual
-        </button>
+        <div id="section-sys" class="section-container" style="width:100%; display:none;">
+            <div class="card">
+                <h3>Cloud Sync & Data Security</h3>
+                <div style="padding:10px; background:rgba(46, 204, 113, 0.1); border-radius:10px; margin-bottom:15px;">
+                    <div style="font-size:12px; font-weight:bold; color:#2ecc71; margin-bottom:5px;">Real-time Cloud Sync is ACTIVE</div>
+                    <div style="font-size:9px; color:#888;">All your progress is automatically linked to your Telegram ID and stored in the Firebase encrypted vault.</div>
+                </div>
+                <button class="btn" style="width:100%; margin-bottom:10px;" onclick="window.syncToCloud()">Manual Cloud Push ☁️</button>
+                <button class="btn" style="width:100%; background:#34495e;" onclick="window.pullFromCloud()">Force Cloud Pull ⬇️</button>
+            </div>
+            <div class="card">
+                <h3>Local Backup & Migration</h3>
+                <div style="font-size:10px; color:#888; margin-bottom:10px;">Export a coded string to move your data to another device or for local backup.</div>
+                <button class="btn" style="width:100%; background:#34495e; margin-bottom:10px;" onclick="exportData()">Generate Backup Code 📤</button>
+                <input type="text" id="restoreCode" placeholder="Paste backup code here..." style="font-size:10px;">
+                <button class="btn" style="width:100%; background:#e67e22;" onclick="importData()">Restore from Code 📥</button>
+            </div>
+
+            <div class="card danger-zone">
+                <h3 style="color:#ef5350;">Danger Zone</h3>
+                <p style="font-size:10px; color:#888;">This will wipe ALL local data from this device. Cloud data remains safe until overwritten.</p>
+                <button class="btn" style="width:100%; background:#ef5350;" onclick="clearAllData()">Wipe Local Storage 🧨</button>
+            </div>
+        </div>
+
+        <nav class="main-nav-dock">
+            <button id="nav-quant" class="main-nav-btn active" onclick="navigate('section-quant', this)">
+                <span>📊</span>QUANT
+            </button>
+            <button id="nav-qual" class="main-nav-btn" onclick="navigate('section-qual', this)">
+                <span>🥗</span>QUAL
+            </button>
+            <button id="nav-sys" class="main-nav-btn" onclick="navigate('section-sys', this)">
+                <span>⚙️</span>SYS
+            </button>
+            <button class="main-nav-btn" onclick="toggleTheme()" style="border-left: 1px solid var(--border); padding-left:15px; margin-left:10px;">
+                <span>🌗</span>THEME
+            </button>
+        </nav>
+
+        <div id="popup-overlay" class="popup-overlay">
+            <div id="mcq-popup" class="popup-card" style="display:none;">
+                <h2 style="font-family:'Oswald'; color:var(--accent);">Cycle Complete! ⚡</h2>
+                <p style="font-size:14px;">Great focus, Doctor. How many MCQs did you solve in this cycle?</p>
+                <input type="number" id="cycleMcqs" placeholder="0" style="text-align:center; font-size:24px; height:60px;">
+                <button class="btn" style="width:100%; margin-top:15px;" onclick="startBreak()">Log & Take Break</button>
+            </div>
+            <div id="break-popup" class="popup-card" style="display:none;">
+                <h2 style="font-family:'Oswald'; color:#2ecc71;">Break Time! ☕</h2>
+                <p id="breakStatus">Refreshing your mind...</p>
+                <div id="break-timer-display" style="font-family:'Oswald'; font-size:40px; margin:15px 0;">00:00</div>
+                <button class="btn" style="width:100%;" onclick="continueNextCycle()">Back to Study 📚</button>
+                <button class="btn" style="width:100%; margin-top:10px; background:#34495e;" onclick="stopEntireSession()">End Mission</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        
-        // Use window.userId and window.userName set in the Firebase block
-        document.getElementById('uFullName').innerText = window.userName || "Guest User";
-        document.getElementById('uID').innerText = `ID: ${window.userId}`;
-        
-        const statusDot = document.getElementById('statusDot');
-        if (window.userId === "OFFLINE") { 
-            statusDot.classList.add('status-offline'); 
-            document.getElementById('onlineText').innerText = "Offline Mode";
-        } else { 
-            statusDot.classList.add('status-online'); 
-        }
-
+        // --- 1. CONFIG & CONSTANTS ---
         const prefix = `SSS_PRO_V3_${window.userId}_`;
-        
-        const KEYS = { 
-            LOGS: prefix+'LOGS', NEET: prefix+'NEET', INI: prefix+'INI', FMGE: prefix+'FMGE', 
-            SWT: prefix+'SWT', GOALS: prefix+'GOALS', PYQ: prefix+'PYQ', TOUGH: prefix+'TOUGH',
-            FACTS: prefix+'FACTS', SWT_MISTAKES: prefix+'SWT_MISTAKES', GT_MISTAKES: prefix+'GT_MISTAKES'
+        const KEYS = {
+            LOGS: prefix + 'LOGS',
+            NEET: prefix + 'NEET',
+            INI: prefix + 'INI',
+            FMGE: prefix + 'FMGE',
+            SWT: prefix + 'SWT',
+            GOALS: prefix + 'GOALS',
+            PYQ: prefix + 'PYQ',
+            TOUGH: prefix + 'TOUGH',
+            FACTS: prefix + 'FACTS',
+            SWT_MISTAKES: prefix + 'SWT_MISTAKES',
+            GT_MISTAKES: prefix + 'GT_MISTAKES'
         };
-        
-        const SUBJECTS_19 = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", "Surgery", "OBG", "Pediatrics", "Anaesthesia", "Dermatology", "Orthopedics", "Psychiatry", "Radiology"];
-        
-        const EXAMS_CONFIG = [
-            { id: 'ini_jul', label: 'INICET JULY', date: '2026-05-10', el: 'daysIniJuly' },
-            { id: 'upsc', label: 'UPSC CMS', date: '2026-07-20', el: 'daysUpsc' },
-            { id: 'neet', label: 'NEET PG 2026', date: '2026-06-23', el: 'daysNeet' },
-            { id: 'ini_jan', label: 'INICET JAN 27', date: '2026-11-15', el: 'daysIniJan' },
-            { id: 'fmge_jun', label: 'FMGE JUNE 26', date: '2026-06-18', el: 'daysFmgeJun' },
-            { id: 'fmge_dec', label: 'FMGE DEC 26', date: '2026-12-20', el: 'daysFmgeDec' }
+
+        const SUBJECTS_19 = [
+            'Anatomy', 'Physiology', 'Biochemistry', 'Pathology', 'Microbiology', 
+            'Pharmacology', 'FMT', 'PSM', 'Ophthalmology', 'ENT', 'Medicine', 
+            'Surgery', 'OBG', 'Pediatrics', 'Anaesthesia', 'Dermatology', 
+            'Orthopedics', 'Psychiatry', 'Radiology'
         ];
-        /* --- MAIN NAVIGATION --- */
-        function switchMainSection(section, btn) {
+
+        // --- 2. NAVIGATION LOGIC ---
+        function navigate(sectionId, btn) {
+            document.querySelectorAll('.section-container').forEach(s => s.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
             document.querySelectorAll('.main-nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Hide all main sections
-            document.getElementById('section-quant').classList.remove('active');
-            document.getElementById('section-quant').style.display = 'none';
-            document.getElementById('section-qual').classList.remove('active');
-            document.getElementById('section-qual').style.display = 'none';
-            
-            // Show target
-            const target = document.getElementById('section-' + section);
-            target.classList.add('active');
-            target.style.display = 'block';
-            window.scrollTo(0,0);
+            // Re-render specific logic when switching main sections
+            if(sectionId === 'section-quant') renderCharts();
+            if(sectionId === 'section-qual') showRandomFact();
         }
 
-        /* --- QUANTITATIVE TAB SWITCHING (Rounded Blue Tabs) --- */
         function switchTab(tabId, btn) {
-            // Update buttons
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const container = btn.closest('.section-container');
+            container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(c => {
-                if(c.parentElement.id === 'section-quant') c.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
+            if(tabId === 'tab-rank') fetchLeaderboard(currentRankCat, currentRankSub);
+            if(tabId === 'tab-swt') renderSWTMatrix();
         }
-
-        function switchGTMode(mode, btn) {
-            currentGTMode = mode;
-            document.querySelectorAll('.gt-tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateUI();
-        }
-
-        /* --- EXAM TRACKER LOGIC (Days Remaining Fix) --- */
+        /* --- 3. COUNTDOWN & GOALS LOGIC --- */
         function updateCountdowns() {
+            const exams = {
+                neet: new Date('2026-03-01T09:00:00'),
+                ini_jul: new Date('2026-05-10T09:00:00'),
+                fmge_jun: new Date('2026-06-18T09:00:00'),
+                upsc: new Date('2026-07-20T09:00:00')
+            };
+
             const now = new Date();
-            EXAMS_CONFIG.forEach(exam => {
-                const examDate = new Date(exam.date);
-                const diffTime = examDate - now;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const el = document.getElementById(exam.el);
-                const card = document.getElementById('dash_' + exam.id);
-                
+            for (let key in exams) {
+                const diff = exams[key] - now;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                const el = document.getElementById('days' + key.charAt(0).toUpperCase() + key.slice(1).replace('_', ''));
                 if (el) {
-                    if (diffDays > 0) {
-                        el.innerText = diffDays;
-                        if(card) card.style.opacity = "1";
-                    } else if (diffDays === 0) {
-                        el.innerText = "TODAY";
-                        el.style.fontSize = "14px";
-                    } else {
-                        el.innerText = "DONE";
-                        if(card) card.style.opacity = "0.3";
-                    }
+                    el.innerText = days > 0 ? days : "LIVE";
+                    if (days <= 30 && days > 0) el.style.color = "#ef5350";
                 }
-            });
+            }
         }
 
-        /* --- GOAL & PYQ MANAGEMENT --- */
         function saveGoals() {
-            const goals = {};
-            EXAMS_CONFIG.forEach(ex => {
-                const chk = document.getElementById('goal_' + ex.id);
-                if(chk) goals[ex.id] = chk.checked;
-            });
+            const goals = {
+                neet: document.getElementById('goal_neet').checked,
+                ini_jul: document.getElementById('goal_ini_jul').checked,
+                fmge_jun: document.getElementById('goal_fmge_jun').checked,
+                upsc: document.getElementById('goal_upsc').checked
+            };
             localStorage.setItem(KEYS.GOALS, JSON.stringify(goals));
             renderGoalHTML();
-            if(window.syncToCloud) window.syncToCloud();
         }
 
         function renderGoalHTML() {
             const goals = JSON.parse(localStorage.getItem(KEYS.GOALS) || "{}");
-            EXAMS_CONFIG.forEach(ex => {
-                const card = document.getElementById('dash_' + ex.id);
-                if(card) {
-                    card.style.display = goals[ex.id] ? "flex" : "none";
-                }
-            });
+            document.getElementById('dash_neet').style.display = goals.neet ? 'flex' : 'none';
+            document.getElementById('dash_ini_jul').style.display = goals.ini_jul ? 'flex' : 'none';
+            document.getElementById('dash_fmge_jun').style.display = goals.fmge_jun ? 'flex' : 'none';
+            document.getElementById('dash_upsc').style.display = goals.upsc ? 'flex' : 'none';
         }
 
         function loadGoalsToUI() {
             const goals = JSON.parse(localStorage.getItem(KEYS.GOALS) || "{}");
-            EXAMS_CONFIG.forEach(ex => {
-                const chk = document.getElementById('goal_' + ex.id);
-                if(chk) chk.checked = !!goals[ex.id];
-            });
+            document.getElementById('goal_neet').checked = !!goals.neet;
+            document.getElementById('goal_ini_jul').checked = !!goals.ini_jul;
+            document.getElementById('goal_fmge_jun').checked = !!goals.fmge_jun;
+            document.getElementById('goal_upsc').checked = !!goals.upsc;
         }
 
-        function lockExamGoals() {
-            toggleAccordion('acc_exams', document.querySelector('#tab-goal .accordion-header'));
-            alert("Targets Locked. Focus on the mission! 🎯");
-        }
-        /* --- PYQ TRACKER LOGIC --- */
+        /* --- 4. PYQ TRACKER LOGIC --- */
         let currentPyqCat = 'neet';
         function switchPyq(cat, btn) {
             currentPyqCat = cat;
@@ -1179,29 +1080,54 @@
             const data = JSON.parse(localStorage.getItem(KEYS.PYQ) || "{}");
             const catData = data[currentPyqCat] || {};
             
-            // Generate years based on category
             let years = [];
             if(currentPyqCat === 'neet') years = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
             else if(currentPyqCat === 'ini') years = ["Nov 25", "May 25", "Nov 24", "May 24", "Nov 23", "May 23"];
+            else if(currentPyqCat === 'fmge') years = ["Jan 26", "July 25", "Jan 25", "July 24", "Jan 24"];
             else years = [2025, 2024, 2023, 2022];
 
             container.innerHTML = years.map(yr => `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05);">
                     <span style="font-size:12px; font-weight:bold;">${currentPyqCat.toUpperCase()} ${yr}</span>
-                    <input type="checkbox" ${catData[yr] ? 'checked' : ''} onchange="togglePyq('${yr}', this.checked)" style="width:18px; height:18px;">
+                    <input type="checkbox" ${catData[yr] ? 'checked' : ''} onchange="togglePyq('${yr}', this.checked)" style="width:18px; height:18px; margin:0;">
                 </div>
             `).join('');
         }
-
         function togglePyq(yr, val) {
             const data = JSON.parse(localStorage.getItem(KEYS.PYQ) || "{}");
             if(!data[currentPyqCat]) data[currentPyqCat] = {};
             data[currentPyqCat][yr] = val;
             localStorage.setItem(KEYS.PYQ, JSON.stringify(data));
-            if(window.syncToCloud) window.syncToCloud();
+            window.syncToCloud();
         }
 
-        /* --- THE HEARTBEAT: SESSION TIMER --- */
+        /* --- 5. TOUGH SUBJECTS LOGIC --- */
+        function renderToughSubjects() {
+            const container = document.getElementById('tough-subject-selector');
+            const dash = document.getElementById('tough-dashboard');
+            const tough = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "[]");
+            
+            container.innerHTML = SUBJECTS_19.map(s => `
+                <label style="display:flex; align-items:center; gap:5px;">
+                    <input type="checkbox" ${tough.includes(s) ? 'checked' : ''} onchange="toggleTough('${s}', this.checked)" style="width:12px; margin:0;"> ${s}
+                </label>
+            `).join('');
+
+            dash.innerHTML = tough.map(s => `
+                <span class="badge" style="background:rgba(231, 76, 60, 0.2); color:#ef5350; border:1px solid #ef5350; margin-bottom:5px; display:inline-block;">${s}</span>
+            `).join(' ') || '<span style="font-size:10px; opacity:0.5;">No subjects marked as tough yet.</span>';
+        }
+
+        function toggleTough(sub, val) {
+            let tough = JSON.parse(localStorage.getItem(KEYS.TOUGH) || "[]");
+            if(val) tough.push(sub);
+            else tough = tough.filter(s => s !== sub);
+            localStorage.setItem(KEYS.TOUGH, JSON.stringify([...new Set(tough)]));
+            renderToughSubjects();
+            window.syncToCloud();
+        }
+
+        /* --- 6. SESSION TIMER ENGINE --- */
         let timerInterval;
         let totalSeconds = 0;
         let isPaused = false;
@@ -1235,7 +1161,6 @@
                 }
             }, 1000);
         }
-
         function updateTimerDisplay() {
             const h = Math.floor(totalSeconds / 3600);
             const m = Math.floor((totalSeconds % 3600) / 60);
@@ -1246,8 +1171,9 @@
 
         function togglePause() {
             isPaused = !isPaused;
-            document.getElementById('pauseBtn').innerText = isPaused ? "Resume" : "Pause";
-            document.getElementById('pauseBtn').style.background = isPaused ? "#2ecc71" : "#f39c12";
+            const btn = document.getElementById('pauseBtn');
+            btn.innerText = isPaused ? "Resume" : "Pause";
+            btn.style.background = isPaused ? "#2ecc71" : "#f39c12";
         }
 
         function handleTransition() {
@@ -1255,15 +1181,13 @@
             document.getElementById('popup-overlay').style.display = 'flex';
             document.getElementById('mcq-popup').style.display = 'block';
         }
-        /* --- SESSION & BREAK LOGIC --- */
+
         function startBreak() {
             const mcqs = parseInt(document.getElementById('cycleMcqs').value) || 0;
             saveCycleData(mcqs);
-            
             document.getElementById('mcq-popup').style.display = 'none';
             document.getElementById('break-popup').style.display = 'block';
-            
-            // Optional: Start a secondary break timer here if you wish
+            // Simple break timer logic can be added here
         }
 
         function continueNextCycle() {
@@ -1271,374 +1195,157 @@
             document.getElementById('break-popup').style.display = 'none';
             document.getElementById('startBtn').style.display = 'block';
             document.getElementById('timer-controls').style.display = 'none';
-            document.getElementById('timer-display').innerText = "Ready ⚡";
+            document.getElementById('timer-display').innerText = "00:00:00";
+            document.getElementById('cycleMcqs').value = "";
         }
 
         function stopEntireSession() {
             const mcqs = parseInt(document.getElementById('cycleMcqs').value) || 0;
             saveCycleData(mcqs);
-            location.reload(); // Refresh to reset state and update UI
+            location.reload();
         }
 
-        /* --- DATA PERSISTENCE: LOGS & STREAKS --- */
+        /* --- 7. DATA PERSISTENCE: LOGS & STREAKS --- */
         function saveCycleData(mcqCount) {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             const today = new Date().toISOString().split('T')[0];
             const sub = document.getElementById('subject').value || "Mixed Bag";
-            
-            // Calculate elapsed time (minimum 1 min for testing)
+            const phase = document.getElementById('studyPhase').value;
+
             const endTime = new Date();
-            const hrs = Math.max(0.1, (endTime - sessionStartTime) / (1000 * 60 * 60));
+            const hrs = Math.max(0.01, (endTime - sessionStartTime) / (1000 * 60 * 60));
 
             const entry = {
                 date: today,
                 hrs: parseFloat(hrs.toFixed(2)),
                 mcqs: mcqCount,
                 subject: sub,
+                phase: phase,
                 timestamp: Date.now()
             };
 
             logs.push(entry);
             localStorage.setItem(KEYS.LOGS, JSON.stringify(logs));
             updateStreak();
-            if(window.syncToCloud) window.syncToCloud();
+            window.syncToCloud();
         }
 
         function updateStreak() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             if (logs.length === 0) return;
-
-            // Group by date
             const dailyStats = {};
-            logs.forEach(log => {
-                dailyStats[log.date] = (dailyStats[log.date] || 0) + log.mcqs;
-            });
-
+            logs.forEach(log => { dailyStats[log.date] = (dailyStats[log.date] || 0) + log.mcqs; });
             const dates = Object.keys(dailyStats).sort().reverse();
-            let streak = 0;
-            let streakVol = 0;
-            let today = new Date().toISOString().split('T')[0];
-            
-            // A "Valid Day" for a streak = 50+ MCQs
+            let streak = 0, vol = 0;
             for (let i = 0; i < dates.length; i++) {
-                if (dailyStats[dates[i]] >= 50) {
-                    streak++;
-                    streakVol += dailyStats[dates[i]];
-                } else {
-                    break; 
-                }
+                if (dailyStats[dates[i]] >= 50) { streak++; vol += dailyStats[dates[i]]; }
+                else break;
             }
-
             document.getElementById('streakText').innerText = `Consistency: ${streak} Days`;
             renderStreakIcons(streak);
-            
-            // Push to Leaderboard logic
-            if(window.pushToLeaderboard) {
-                window.pushToLeaderboard({ streak: streak, streakVol: streakVol, neet: 0, ini: 0, fmge: 0, swt: {} });
-            }
+            if(window.pushToLeaderboard) window.pushToLeaderboard({ streak, streakVol: vol, neet: 0, ini: 0, fmge: 0, swt: {} });
         }
 
         function renderStreakIcons(count) {
             const container = document.getElementById('streakIcons');
-            const fires = Math.floor(count / 25);
-            const medals = Math.floor(count / 75);
+            const fires = Math.floor(count / 10);
+            const medals = Math.floor(count / 50);
             container.innerHTML = "🔥".repeat(fires) + "🥇".repeat(medals) || "🌑";
         }
-
-        /* --- ANALYTICS: CHART RENDERING --- */
+        /* --- 8. ANALYTICS & CHART RENDERING --- */
         let hrsChart, mcqChart;
         function renderCharts() {
             const logs = JSON.parse(localStorage.getItem(KEYS.LOGS) || "[]");
             const ctxHrs = document.getElementById('hoursChart').getContext('2d');
             const ctxMcq = document.getElementById('mcqChart').getContext('2d');
-
-            // Process last 7 days of data
-            const labels = [];
-            const hrData = [];
-            const mcqData = [];
-
+            const labels = []; const hrData = []; const mcqData = [];
             for(let i=6; i>=0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
+                const d = new Date(); d.setDate(d.getDate() - i);
                 const ds = d.toISOString().split('T')[0];
                 labels.push(ds.split('-').slice(1).join('/'));
-                
                 const dayLogs = logs.filter(l => l.date === ds);
                 hrData.push(dayLogs.reduce((acc, curr) => acc + curr.hrs, 0));
                 mcqData.push(dayLogs.reduce((acc, curr) => acc + curr.mcqs, 0));
             }
-
-            if(hrsChart) hrsChart.destroy();
-            if(mcqChart) mcqChart.destroy();
-
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { 
-                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#888' } },
-                    x: { ticks: { color: '#888' } }
-                },
-                plugins: { legend: { display: false } }
-            };
-
-            hrsChart = new Chart(ctxHrs, {
-                type: 'line',
-                data: { labels, datasets: [{ label: 'Hours', data: hrData, borderColor: '#5288c1', tension: 0.3, fill: true, backgroundColor: 'rgba(82,136,193,0.1)' }]},
-                options: chartOptions
-            });
-
-            mcqChart = new Chart(ctxMcq, {
-                type: 'bar',
-                data: { labels, datasets: [{ label: 'MCQs', data: mcqData, backgroundColor: '#2ecc71', borderRadius: 5 }]},
-                options: chartOptions
-            });
+            if(hrsChart) hrsChart.destroy(); if(mcqChart) mcqChart.destroy();
+            const cfg = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } } } };
+            hrsChart = new Chart(ctxHrs, { type: 'line', data: { labels, datasets: [{ data: hrData, borderColor: '#5288c1', tension: 0.3, fill: true, backgroundColor: 'rgba(82,136,193,0.1)' }]}, options: cfg });
+            mcqChart = new Chart(ctxMcq, { type: 'bar', data: { labels, datasets: [{ data: mcqData, backgroundColor: '#2ecc71', borderRadius: 5 }]}, options: cfg });
+            
+            const logBody = document.getElementById('dailyLogBody');
+            logBody.innerHTML = logs.slice(-10).reverse().map(l => `<tr><td>${l.date.split('-').slice(1).join('/')}${(l.phase === 'r3' || l.phase === 'r4') ? '🔥' : ''}</td><td>${l.hrs}h</td><td>1</td><td>${l.mcqs}</td><td>${l.subject}</td></tr>`).join('');
         }
-        /* --- SWT MASTERY MATRIX & PHASE CHARTS --- */
+
+        /* --- 9. SWT & MASTERY MATRIX --- */
+        function calculateSWTPerc() {
+            const c = parseInt(document.getElementById('swtCorrect').value) || 0;
+            const t = parseInt(document.getElementById('swtTotal').value) || 0;
+            document.getElementById('swtAccPreview').innerText = t > 0 ? Math.round((c/t)*100) + "%" : "0%";
+        }
+
+        function saveSWT() {
+            const sub = document.getElementById('swtSubject').value;
+            const correct = parseInt(document.getElementById('swtCorrect').value) || 0;
+            const total = parseInt(document.getElementById('swtTotal').value) || 0;
+            const phase = document.getElementById('swtPhase').value;
+            if(total <= 0) return;
+            const data = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
+            data.push({ subject: sub, correct, total, phase, date: new Date().toISOString().split('T')[0] });
+            localStorage.setItem(KEYS.SWT, JSON.stringify(data));
+            renderSWTMatrix(); window.syncToCloud();
+            alert("SWT Logged! 🧠");
+        }
+
         function renderSWTMatrix() {
-            const swtData = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
-            const body = document.getElementById('swtMatrixBody');
-            if(!body) return;
-
-            const summary = {};
-            SUBJECTS_19.forEach(s => summary[s] = { total: 0, correct: 0 });
-
-            swtData.forEach(entry => {
-                if(summary[entry.subject]) {
-                    summary[entry.subject].total += entry.total;
-                    summary[entry.subject].correct += entry.correct;
-                }
-            });
-
-            body.innerHTML = SUBJECTS_19.map(s => {
-                const total = summary[s].total;
-                const acc = total > 0 ? Math.round((summary[s].correct / total) * 100) : 0;
-                let status = "⚪";
-                if(total > 0) {
-                    if(acc >= 80) status = "🟢";
-                    else if(acc >= 60) status = "🟡";
-                    else status = "🔴";
-                }
-                return `<tr>
-                    <td style="text-align:left;">${s}</td>
-                    <td>${total}</td>
-                    <td style="font-weight:bold; color:${acc >= 60 ? '#2ecc71' : '#ef5350'}">${acc}%</td>
-                    <td>${status}</td>
-                </tr>`;
+            const data = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
+            const summary = {}; SUBJECTS_19.forEach(s => summary[s] = { t: 0, c: 0 });
+            data.forEach(d => { if(summary[d.subject]) { summary[d.subject].t += d.total; summary[d.subject].c += d.correct; } });
+            document.getElementById('swtMatrixBody').innerHTML = SUBJECTS_19.map(s => {
+                const acc = summary[s].t > 0 ? Math.round((summary[s].c / summary[s].t) * 100) : 0;
+                let icon = acc >= 80 ? '🟢' : (acc >= 60 ? '🟡' : (summary[s].t > 0 ? '🔴' : '⚪'));
+                return `<tr><td style="text-align:left;">${s}</td><td>${summary[s].t}</td><td style="font-weight:bold; color:${acc>=60?'#2ecc71':'#ef5350'}">${acc}%</td><td>${icon}</td></tr>`;
             }).join('');
         }
 
-        /* --- GT TREND ANALYTICS --- */
-        let gtNeetChart, gtIniChart, gtFmgeChart;
-        function renderGTCharts() {
-            const neetData = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]");
-            const iniData = JSON.parse(localStorage.getItem(KEYS.INI) || "[]");
-            const fmgeData = JSON.parse(localStorage.getItem(KEYS.FMGE) || "[]");
-
-            const process = (data) => ({
-                labels: data.map(d => d.date.split('-').slice(1).join('/')),
-                scores: data.map(d => d.score)
-            });
-
-            const n = process(neetData);
-            const i = process(iniData);
-            const f = process(fmgeData);
-
-            const cfg = (labels, scores, color) => ({
-                type: 'line',
-                data: { labels, datasets: [{ data: scores, borderColor: color, tension: 0.2, pointRadius: 4, fill: false }] },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: false, grid: { color: 'rgba(255,255,255,0.05)' } } }
-                }
-            });
-
-            if(gtNeetChart) gtNeetChart.destroy();
-            gtNeetChart = new Chart(document.getElementById('gtNeetChart'), cfg(n.labels, n.scores, '#5288c1'));
-            
-            if(gtIniChart) gtIniChart.destroy();
-            gtIniChart = new Chart(document.getElementById('gtIniChart'), cfg(i.labels, i.scores, '#8e44ad'));
-            
-            if(gtFmgeChart) gtFmgeChart.destroy();
-            gtFmgeChart = new Chart(document.getElementById('gtFmgeChart'), cfg(f.labels, f.scores, '#2ecc71'));
-        }
-
-        /* --- QUALITATIVE: FACT SALAD SLIDESHOW --- */
-        let slideInterval;
-        let isSlidePlaying = false;
-
-        function toggleSlideShow() {
-            const btn = document.getElementById('slideShowBtn');
-            if(isSlidePlaying) {
-                clearInterval(slideInterval);
-                btn.innerText = "⏯ Play Slideshow (30s)";
-                btn.style.background = "#f39c12";
-            } else {
-                showRandomFact();
-                slideInterval = setInterval(showRandomFact, 30000); // 30 second rotation
-                btn.innerText = "⏸ Pause Slideshow";
-                btn.style.background = "#ef5350";
-            }
-            isSlidePlaying = !isSlidePlaying;
-        }
-
-        function showRandomFact() {
-            const facts = JSON.parse(localStorage.getItem(KEYS.FACTS) || "[]");
-            const display = document.getElementById('fact-slideshow');
-            if(facts.length === 0) {
-                display.innerHTML = "Bowl is empty! Add your first fact below.";
-                return;
-            }
-            const rand = facts[Math.floor(Math.random() * facts.length)];
-            display.style.opacity = 0;
-            setTimeout(() => {
-                display.innerHTML = `
-                    <div style="font-size:10px; text-transform:uppercase; color:var(--accent); margin-bottom:10px;">${rand.subject}</div>
-                    <div style="font-size:16px; font-weight:bold; margin-bottom:15px;">${rand.q}</div>
-                    <div id="fact-ans" style="display:none; color:#2ecc71; font-weight:bold; border-top:1px dashed #444; pt-10;">${rand.a}</div>
-                    <button class="btn" style="padding:5px 10px; font-size:9px; margin-top:10px;" onclick="document.getElementById('fact-ans').style.display='block'">Show Answer</button>
-                `;
-                display.style.opacity = 1;
-            }, 300);
-        }
-
-        function saveFact() {
-            const sub = document.getElementById('factSubject').value;
-            const q = document.getElementById('factQuestion').value;
-            const a = document.getElementById('factAnswer').value;
-            if(!q || !a) return;
-
-            const facts = JSON.parse(localStorage.getItem(KEYS.FACTS) || "[]");
-            facts.push({ subject: sub, q, a, id: Date.now() });
-            localStorage.setItem(KEYS.FACTS, JSON.stringify(facts));
-            
-            document.getElementById('factQuestion').value = "";
-            document.getElementById('factAnswer').value = "";
-            alert("Fact tossed into the bowl! 🥗");
-            if(window.syncToCloud) window.syncToCloud();
-        }
-        /* --- REVISION REPORTS (PDF GENERATION) --- */
-        function generatePDF(type) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const today = new Date().toLocaleDateString();
-            
-            doc.setFont("helvetica", "bold");
-            doc.text(`Scalpel Study Squad - ${type.toUpperCase()} REPORT`, 10, 10);
-            doc.setFontSize(10);
-            doc.text(`Generated on: ${today} | User ID: ${window.userId}`, 10, 16);
-            doc.line(10, 18, 200, 18);
-
-            let yPos = 25;
-
-            if(type === 'daily') {
-                const facts = JSON.parse(localStorage.getItem(KEYS.FACTS) || "[]");
-                doc.text("TODAY'S FACT BOWL", 10, yPos);
-                yPos += 7;
-                facts.slice(-20).forEach(f => {
-                    if(yPos > 280) { doc.addPage(); yPos = 20; }
-                    doc.setFont("helvetica", "bold");
-                    doc.text(`${f.subject}: ${f.q}`, 12, yPos, { maxWidth: 180 });
-                    yPos += 6;
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`Ans: ${f.a}`, 15, yPos, { maxWidth: 170 });
-                    yPos += 10;
-                });
-            } else {
-                const swtM = JSON.parse(localStorage.getItem(KEYS.SWT_MISTAKES) || "[]");
-                doc.text("MONTHLY MISTAKE AUTOPSY", 10, yPos);
-                yPos += 7;
-                swtM.forEach(m => {
-                    if(yPos > 270) { doc.addPage(); yPos = 20; }
-                    doc.setFont("helvetica", "bold");
-                    doc.text(`[${m.subject}] Q: ${m.q}`, 12, yPos, { maxWidth: 180 });
-                    yPos += 6;
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`Correct: ${m.a} | My Error: ${m.wrong}`, 12, yPos);
-                    yPos += 5;
-                    doc.text(`Reason: ${m.reason}`, 12, yPos, { maxWidth: 180 });
-                    yPos += 10;
-                });
-            }
-
-            doc.save(`SSS_Report_${type}_${today.replace(/\//g,'-')}.pdf`);
-        }
-
-        /* --- THEME TOGGLE --- */
+        /* --- 10. SYSTEM & UTILS --- */
         function toggleTheme() {
-            const body = document.body;
-            const current = body.getAttribute('data-theme');
-            const target = current === 'light' ? 'dark' : 'light';
-            body.setAttribute('data-theme', target);
-            localStorage.setItem(prefix + 'THEME', target);
+            const b = document.body;
+            const t = b.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            b.setAttribute('data-theme', t);
+            localStorage.setItem(prefix + 'THEME', t);
         }
 
-        /* --- DATA MIGRATION --- */
         function exportData() {
-            const backup = {};
-            Object.keys(KEYS).forEach(k => {
-                backup[k] = localStorage.getItem(KEYS[k]);
-            });
-            const code = btoa(JSON.stringify(backup));
-            navigator.clipboard.writeText(code);
-            alert("Backup Code Copied! Save this in your Telegram Saved Messages.");
+            const b = {}; Object.keys(KEYS).forEach(k => b[k] = localStorage.getItem(KEYS[k]));
+            navigator.clipboard.writeText(btoa(JSON.stringify(b))); alert("Backup Code Copied! 📤");
         }
 
         function importData() {
             try {
-                const code = document.getElementById('restoreCode').value;
-                const data = JSON.parse(atob(code));
-                Object.keys(data).forEach(k => {
-                    if(data[k]) localStorage.setItem(KEYS[k], data[k]);
-                });
-                alert("Restoration Successful! Reloading...");
-                location.reload();
-            } catch(e) {
-                alert("Invalid Backup Code.");
-            }
+                const d = JSON.parse(atob(document.getElementById('restoreCode').value));
+                Object.keys(d).forEach(k => { if(d[k]) localStorage.setItem(KEYS[k], d[k]); });
+                alert("Restored! Reloading..."); location.reload();
+            } catch(e) { alert("Invalid Code!"); }
         }
 
-        /* --- UI HELPERS --- */
-        function toggleAccordion(id, header) {
-            const content = document.getElementById(id);
-            content.classList.toggle('open');
-            header.classList.toggle('active');
+        function clearAllData() {
+            if(confirm("Wipe local data? This cannot be undone.")) { localStorage.clear(); location.reload(); }
         }
 
-        function openPopup(id) {
-            document.getElementById('popup-overlay').style.display = 'flex';
-            document.getElementById(id).style.display = 'block';
+        function toggleAccordion(id, head) {
+            document.getElementById(id).classList.toggle('open');
+            head.classList.toggle('active');
         }
 
-        function closePopup() {
-            document.getElementById('popup-overlay').style.display = 'none';
-            document.querySelectorAll('.popup-card').forEach(p => p.style.display = 'none');
-        }
-
-        /* --- INITIALIZATION --- */
+        /* --- 11. INITIALIZATION --- */
         window.onload = () => {
-            // Set Theme
             const savedTheme = localStorage.getItem(prefix + 'THEME');
             if(savedTheme) document.body.setAttribute('data-theme', savedTheme);
-            
-            // Initialize Systems
-            updateCountdowns();
-            loadGoalsToUI();
-            renderGoalHTML();
-            renderPyq();
-            updateStreak();
-            renderCharts();
-            renderSWTMatrix();
-            renderGTCharts();
-            showRandomFact();
-
-            // Setup Leaderboard Default
-            if(typeof window.fetchLeaderboard === 'function') {
-                window.fetchLeaderboard('streak');
-            }
+            document.getElementById('uFullName').innerText = window.userName;
+            document.getElementById('uID').innerText = "ID: " + window.userId;
+            updateCountdowns(); loadGoalsToUI(); renderGoalHTML(); renderToughSubjects(); renderPyq(); updateStreak();
         };
     </script>
 </body>
 </html>
-
 
