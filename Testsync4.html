@@ -10,9 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      // This includes the critical 'onValue' and 'onDisconnect' tools
-      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+              import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
@@ -30,111 +29,53 @@
       const userId = tgUser.id;
       const userName = tgUser.first_name || "Doctor";
 
-      // --- 1. PERSONAL BACKUP SYNC ---
+      // --- 1. CLOUD SYNC LOGIC ---
       window.syncToCloud = function() {
           const dataToSync = {};
           const keysToBackup = ['LOGS', 'NEET', 'INI', 'FMGE', 'SWT', 'GOALS', 'PYQ', 'TOUGH'];
-          
           keysToBackup.forEach(key => {
               const prefix = `SSS_PRO_V3_${userId}_`;
               const localVal = localStorage.getItem(prefix + key);
               if (localVal) dataToSync[key] = JSON.parse(localVal);
           });
-
           if (userId !== "OFFLINE") {
-              const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              const statusEl = document.getElementById('cloud-sync-status');
-              if(statusEl) statusEl.innerText = "Syncing...";
-
-              set(ref(db, 'users/' + userId), dataToSync)
-              .then(() => {
-                  console.log("Auto-Sync Successful: " + now);
-                  if(statusEl) {
-                      statusEl.innerText = "Cloud: Online " + now + " ✅";
-                      statusEl.style.color = "#2ecc71";
-                  }
-                  // Trigger Leaderboard Update after successful backup
-                  if(typeof window.calculateAndPushLeaderboard === 'function') {
-                      window.calculateAndPushLeaderboard();
-                  }
-              })
-              .catch((error) => {
-                  console.error("Cloud Sync Failed", error);
-                  if(statusEl) {
-                      statusEl.innerText = "Sync Failed (Offline)";
-                      statusEl.style.color = "#ef5350";
-                  }
-              });
+              set(ref(db, 'users/' + userId), dataToSync).catch(e => console.error(e));
           }
       };
 
-      // --- 2. LEADERBOARD WRITE FUNCTION (The "Notice Board") ---
-      // REFACTORED: Now calculates Arithmetic Mean & Enforces Min 3 GTs
+      // --- 2. LEADERBOARD PUSH ---
       window.pushToLeaderboard = function(stats) {
           if (userId === "OFFLINE") return;
-          
           const updates = {};
-          // Update Streak Board
           if(stats.streak > 0) updates['/leaderboard/streak/' + userId] = { name: userName, score: stats.streak, vol: stats.streakVol };
-          
-          // Update GT Boards (ONLY IF valid > 0, which implies min 3 requirement met in calc function)
-          if(stats.neet > 0) updates['/leaderboard/neet/' + userId] = { name: userName, score: stats.neet };
-          if(stats.ini > 0) updates['/leaderboard/ini/' + userId] = { name: userName, score: stats.ini };
-          if(stats.fmge > 0) updates['/leaderboard/fmge/' + userId] = { name: userName, score: stats.fmge };
-
-          // Update SWT Boards (Subject Wise)
-          Object.keys(stats.swt).forEach(sub => {
-              if(stats.swt[sub] > 0) {
-                  updates[`/leaderboard/swt/${sub}/${userId}`] = { name: userName, accuracy: stats.swt[sub] };
-              }
-          });
-
-          update(ref(db), updates).catch(e => console.error("LB Update Error", e));
+          update(ref(db), updates).catch(e => console.error(e));
       };
 
-      // --- 3. LEADERBOARD READ FUNCTION (The "Top 50") ---
-      window.fetchLeaderboard = function(category, subject) {
-          let path = `leaderboard/${category}`;
-          if (category === 'swt' && subject) path += `/${subject}`;
-          
-          // Logic: Sort by score/accuracy, get last 50 (highest), then reverse in UI
-          const qKey = category === 'swt' ? 'accuracy' : 'score';
-          const lbQuery = query(ref(db, path), orderByChild(qKey), limitToLast(50));
-          
-          get(lbQuery).then((snapshot) => {
-              if (snapshot.exists()) {
-                  const data = [];
-                  snapshot.forEach((child) => { data.push(child.val()); });
-                  // Firebase gives ascending order (Low -> High), we need High -> Low
-                  if(typeof window.renderLeaderboardUI === 'function') {
-                      window.renderLeaderboardUI(data.reverse(), category);
-                  }
-              } else {
-                  if(typeof window.renderLeaderboardUI === 'function') window.renderLeaderboardUI([], category);
-              }
-          }).catch((error) => console.error(error));
-      };
+      // --- 3. VIRTUAL LIBRARY (PRESENCE) ---
+      const onlineRef = ref(db, 'online/' + userId);
+      const connectedRef = ref(db, '.info/connected');
+      const allOnlineRef = ref(db, 'online');
 
-      // --- 4. PULL FUNCTION ---
-      window.pullFromCloud = function() {
-          if (userId === "OFFLINE") return;
-          const dbRef = ref(db);
-          get(child(dbRef, `users/${userId}`)).then((snapshot) => {
-              if (snapshot.exists()) {
-                  const cloudData = snapshot.val();
-                  const prefix = `SSS_PRO_V3_${userId}_`;
-                  Object.keys(cloudData).forEach(key => {
-                      localStorage.setItem(prefix + key, JSON.stringify(cloudData[key]));
-                  });
-                  console.log("Data Restored from Cloud");
-                  if(typeof updateUI === 'function') updateUI();
-              }
-          }).catch((error) => console.error(error));
-      };
+      onValue(connectedRef, (snap) => {
+          if (snap.val() === true) {
+              onDisconnect(onlineRef).remove();
+              set(onlineRef, { name: userName, status: "studying", lastSeen: Date.now() });
+          }
+      });
 
-      window.pullFromCloud();
-      setTimeout(() => { window.syncToCloud(); }, 3000); 
-      setInterval(() => { window.syncToCloud(); }, 600000);
+      onValue(allOnlineRef, (snap) => {
+          const el = document.getElementById('lib-count');
+          if(el) {
+              const count = snap.exists() ? snap.size : 1;
+              el.innerText = `${count} DOCTORS ONLINE`;
+              el.style.color = "#ffffff";
+              const dot = document.querySelector('.live-dot');
+              if(dot) { dot.style.background = "#e74c3c"; dot.style.boxShadow = "0 0 8px #e74c3c"; }
+          }
+      });
+
+      // --- 4. INITIALIZATION ---
+      setTimeout(() => { window.syncToCloud(); }, 3000);          
     </script>
     <style>
         /* CSS VARIABLES */
