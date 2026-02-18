@@ -405,30 +405,6 @@
         /* SCROLLER FOR CHARTS */
         .chart-scroller { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; border: 1px solid rgba(128,128,128,0.2); border-radius: 10px; background: rgba(0,0,0,0.1); }
         .chart-scroll-content { height: 250px; position: relative; }
-                /* BOTTOM NAV BAR */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
-        .nav-item { flex: 1; padding: 12px; text-align: center; font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border-top: 3px solid transparent; }
-        .nav-item.active { color: var(--accent); border-top-color: var(--accent); background: rgba(82, 136, 193, 0.1); }
-        .nav-icon { font-size: 18px; display: block; margin-bottom: 4px; }
-        
-        /* QUALITATIVE SECTION STYLES */
-        .qual-container { display: none; padding-bottom: 80px; animation: fadeIn 0.3s; }
-        .qual-container.active { display: block; }
-        .qual-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .qual-header { font-family: 'Oswald', sans-serif; color: var(--accent); font-size: 16px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 5px; }
-        
-        .q-input-group { margin-bottom: 10px; text-align: left; }
-        .q-label { font-size: 10px; color: #888; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .q-input { width: 100%; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 12px; font-family: inherit; resize: vertical; }
-        
-        .mistake-log-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent); text-align: left; }
-        [data-theme="light"] .mistake-log-item { background: rgba(0,0,0,0.05); }
-        .m-subject { font-size: 9px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
-        .m-question { font-size: 11px; font-weight: bold; margin: 4px 0; display: block; line-height: 1.4; }
-        .m-answer { font-size: 11px; color: #2ecc71; }
-        .m-reason { font-size: 10px; color: #e74c3c; font-style: italic; margin-top: 2px; display: block; }
-        
-        .pdf-download-btn { background: #e74c3c; color: white; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 13px; border: none; margin-top: 20px; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); }
     </style>
 </head>
 <body data-active-tab="tab-daily">
@@ -895,106 +871,6 @@
             <button class="clear-btn" onclick="clearData()" style="margin-top:10px;">Clear All Local Data</button>
         </div>
     </div>
-        <div id="view-qual" class="qual-container">
-        <div class="header-ui">
-            <span>🧠 QUALITATIVE REVISION</span>
-        </div>
-
-        <div class="nav-tabs" style="margin-bottom: 15px;">
-            <button class="tab-btn active" onclick="switchQualTab('fact', this)">Fact Salad</button>
-            <button class="tab-btn" onclick="switchQualTab('swt', this)">SWT Mistakes</button>
-            <button class="tab-btn" onclick="switchQualTab('gt', this)">GT Mistakes</button>
-        </div>
-
-        <div id="q-tab-fact" class="qual-tab-content active">
-            <div class="qual-card">
-                <div class="qual-header">🥗 Add Volatile Fact</div>
-                <div class="q-input-group">
-                    <span class="q-label">Subject</span>
-                    <select id="fs_sub" class="q-input">
-                        </select>
-                </div>
-                <div class="q-input-group">
-                    <span class="q-label">Question / Fact</span>
-                    <textarea id="fs_q" class="q-input" rows="2" placeholder="e.g., Most common cause of..."></textarea>
-                </div>
-                <div class="q-input-group">
-                    <span class="q-label">Answer (Will be Bold in PDF)</span>
-                    <textarea id="fs_a" class="q-input" rows="2" placeholder="The high yield answer..." style="font-weight:bold; color:#2ecc71;"></textarea>
-                </div>
-                <button class="btn" onclick="saveQualitative('fact')" style="width:100%; margin-top:5px;">Add to Salad</button>
-            </div>
-            <div id="list-fact"></div>
-        </div>
-
-        <div id="q-tab-swt" class="qual-tab-content" style="display:none;">
-            <div class="qual-card">
-                <div class="qual-header">🩸 SWT Mistake Log</div>
-                <div class="q-input-group"><span class="q-label">Subject</span><select id="ms_sub" class="q-input"></select></div>
-                <div class="q-input-group"><span class="q-label">Question Topic</span><textarea id="ms_q" class="q-input" rows="2"></textarea></div>
-                <div class="q-input-group"><span class="q-label">Correct Answer</span><textarea id="ms_a" class="q-input" rows="1" style="color:#2ecc71;"></textarea></div>
-                <div class="q-input-group">
-                    <span class="q-label">Your Wrong Answer</span>
-                    <input type="text" id="ms_wrong" class="q-input" placeholder="What did you mark?">
-                </div>
-                <div class="q-input-group">
-                    <span class="q-label">Reason for Mistake</span>
-                    <select id="ms_reason" class="q-input">
-                        <option>Conceptual Gap</option>
-                        <option>Silly Mistake / Misread</option>
-                        <option>Factual / Recall Error</option>
-                        <option>Guessed Wrong</option>
-                        <option>Time Pressure</option>
-                    </select>
-                </div>
-                <button class="btn" onclick="saveQualitative('swt')" style="width:100%; margin-top:5px;">Log Mistake</button>
-            </div>
-            <div id="list-swt"></div>
-        </div>
-
-        <div id="q-tab-gt" class="qual-tab-content" style="display:none;">
-            <div class="qual-card">
-                <div class="qual-header">🏆 GT Mistake Log</div>
-                <div class="q-input-group"><span class="q-label">Subject</span><select id="mg_sub" class="q-input"></select></div>
-                <div class="q-input-group"><span class="q-label">Question Topic</span><textarea id="mg_q" class="q-input" rows="2"></textarea></div>
-                <div class="q-input-group"><span class="q-label">Correct Answer</span><textarea id="mg_a" class="q-input" rows="1" style="color:#2ecc71;"></textarea></div>
-                <div class="q-input-group">
-                    <span class="q-label">Your Wrong Answer</span>
-                    <input type="text" id="mg_wrong" class="q-input">
-                </div>
-                 <div class="q-input-group">
-                    <span class="q-label">Reason for Mistake</span>
-                    <select id="mg_reason" class="q-input">
-                        <option>Conceptual Gap</option>
-                        <option>Silly Mistake / Misread</option>
-                        <option>Factual / Recall Error</option>
-                        <option>Guessed Wrong</option>
-                        <option>Time Pressure</option>
-                    </select>
-                </div>
-                <button class="btn" onclick="saveQualitative('gt')" style="width:100%; margin-top:5px;">Log GT Mistake</button>
-            </div>
-            <div id="list-gt"></div>
-        </div>
-
-        <div style="padding: 0 15px;">
-            <button class="pdf-download-btn" onclick="downloadRevisionPDF()">
-                📥 Download Monthly Revision PDF
-                <br><span style="font-size:9px; font-weight:normal; opacity:0.8;">(Downloads & Clears Logs for Fresh Start)</span>
-            </button>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active" id="nav-btn-quant" onclick="switchMainView('quant')">
-            <span class="nav-icon">📊</span> Quantitative
-        </div>
-        <div class="nav-item" id="nav-btn-qual" onclick="switchMainView('qual')">
-            <span class="nav-icon">🧠</span> Qualitative
-        </div>
-    </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
         const tgUser = tg.initDataUnsafe?.user || { id: "OFFLINE", first_name: "Local", last_name: "User" };
@@ -1057,27 +933,18 @@
             }
 
             // 2. Calculate Top GT Scores
-                        // 2. Calculate GT Scores (Updated: Average of all tests, Min 3 required)
             const neetLogs = JSON.parse(localStorage.getItem(KEYS.NEET) || "[]");
             const iniLogs = JSON.parse(localStorage.getItem(KEYS.INI) || "[]");
             const fmgeLogs = JSON.parse(localStorage.getItem(KEYS.FMGE) || "[]");
             
-            // Helper: Calculate Average if tests >= 3
-            const calcAvg = (logs) => {
-                if (!logs || logs.length < 3) return { s: 0, p: "" };
-                const total = logs.reduce((sum, l) => sum + (parseFloat(l.score) || 0), 0);
-                // Return Average fixed to 2 decimals, and the Platform of the latest test
-                return { s: parseFloat((total / logs.length).toFixed(2)), p: logs[logs.length-1]?.platform || "Multiple" };
-            };
-
-            const nStat = calcAvg(neetLogs);
-            const iStat = calcAvg(iniLogs);
-            const fStat = calcAvg(fmgeLogs);
-
-            // Mapping to existing variables so pushToLeaderboard works without changes
-            let maxNeet = nStat.s, platNeet = nStat.p;
-            let maxIni = iStat.s, platIni = iStat.p;
-            let maxFmge = fStat.s, platFmge = fStat.p;
+            let maxNeet = 0, platNeet = "";
+            neetLogs.forEach(l => { if(l.score > maxNeet) { maxNeet = l.score; platNeet = l.platform || "Unknown"; } });
+            
+            let maxIni = 0, platIni = "";
+            iniLogs.forEach(l => { if(l.score > maxIni) { maxIni = l.score; platIni = l.platform || "Unknown"; } });
+            
+            let maxFmge = 0, platFmge = "";
+            fmgeLogs.forEach(l => { if(l.score > maxFmge) { maxFmge = l.score; platFmge = l.platform || "Unknown"; } });
 
             // 3. Calculate SWT Accuracy (>300 Qs threshold)
             const swtLogs = JSON.parse(localStorage.getItem(KEYS.SWT) || "[]");
@@ -1665,123 +1532,7 @@
             el.innerText = diff === 0 ? "✅ BACKED UP TODAY" : `⚠️ LAST BACKUP: ${diff} DAYS AGO`;
             el.style.color = diff > 7 ? "#ef5350" : (diff > 0 ? "#f1c40f" : "#2ecc71");
         }
-                /* --- QUALITATIVE LOGIC --- */
-        const QUAL_KEYS = { FACT: 'SSS_QUAL_FACT', SWT: 'SSS_QUAL_SWT', GT: 'SSS_QUAL_GT' };
-
-        function switchMainView(view) {
-            const quantBtn = document.getElementById('nav-btn-quant');
-            const qualBtn = document.getElementById('nav-btn-qual');
-            const quantView = document.querySelector('.container');
-            const qualView = document.getElementById('view-qual');
-            if (view === 'quant') {
-                quantView.style.display = 'block';
-                qualView.classList.remove('active');
-                quantBtn.classList.add('active');
-                qualBtn.classList.remove('active');
-            } else {
-                quantView.style.display = 'none';
-                qualView.classList.add('active');
-                qualBtn.classList.add('active');
-                quantBtn.classList.remove('active');
-                renderQualLists();
-            }
-            window.scrollTo(0, 0);
-        }
-
-        function switchQualTab(tab, btn) {
-            document.querySelectorAll('.qual-tab-content').forEach(c => c.style.display = 'none');
-            document.querySelectorAll('#view-qual .tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`q-tab-${tab}`).style.display = 'block';
-            btn.classList.add('active');
-        }
-
-        function saveQualitative(type) {
-            const prefix = type === 'fact' ? 'fs' : (type === 'swt' ? 'ms' : 'mg');
-            const q = document.getElementById(`${prefix}_q`).value;
-            const a = document.getElementById(`${prefix}_a`).value;
-            if (!q || !a) { alert("Please fill both Question and Answer."); return; }
-            const key = type === 'fact' ? QUAL_KEYS.FACT : (type === 'swt' ? QUAL_KEYS.SWT : QUAL_KEYS.GT);
-            const data = JSON.parse(localStorage.getItem(key) || "[]");
-            const entry = { 
-                sub: document.getElementById(`${prefix}_sub`).value, 
-                q, a, 
-                date: new Date().toLocaleDateString('en-GB') 
-            };
-            if (type !== 'fact') {
-                entry.wrong = document.getElementById(`${prefix}_wrong`).value;
-                entry.reason = document.getElementById(`${prefix}_reason`).value;
-            }
-            data.push(entry);
-            localStorage.setItem(key, JSON.stringify(data));
-            document.getElementById(`${prefix}_q`).value = "";
-            document.getElementById(`${prefix}_a`).value = "";
-            renderQualLists();
-            alert("Entry Saved!");
-            if(typeof window.syncToCloud === 'function') window.syncToCloud();
-        }
-
-        function renderQualLists() {
-            ['fact', 'swt', 'gt'].forEach(type => {
-                const key = type === 'fact' ? QUAL_KEYS.FACT : (type === 'swt' ? QUAL_KEYS.SWT : QUAL_KEYS.GT);
-                const data = JSON.parse(localStorage.getItem(key) || "[]");
-                const container = document.getElementById(`list-${type}`);
-                container.innerHTML = data.reverse().map(item => `
-                    <div class="mistake-log-item">
-                        <div class="m-subject">${item.sub} | ${item.date}</div>
-                        <span class="m-question">Q: ${item.q}</span>
-                        <span class="m-answer">A: <b>${item.a}</b></span>
-                        ${item.wrong ? `<div style="font-size:10px; margin-top:5px; opacity:0.8;">❌ Marked: ${item.wrong}</div>` : ''}
-                        ${item.reason ? `<span class="m-reason">Reason: ${item.reason}</span>` : ''}
-                    </div>
-                `).join('');
-            });
-        }
-
-        async function downloadRevisionPDF() {
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            const month = monthNames[new Date().getMonth()];
-            const year = new Date().getFullYear();
-            const factData = JSON.parse(localStorage.getItem(QUAL_KEYS.FACT) || "[]");
-            const swtData = JSON.parse(localStorage.getItem(QUAL_KEYS.SWT) || "[]");
-            const gtData = JSON.parse(localStorage.getItem(QUAL_KEYS.GT) || "[]");
-            if (!factData.length && !swtData.length && !gtData.length) { alert("No data to download!"); return; }
-            const element = document.createElement('div');
-            element.style.padding = '40px';
-            element.style.color = '#000';
-            let html = `<h1 style="text-align:center;">SCALPEL STUDY SQUAD</h1>`;
-            html += `<h2 style="text-align:center;">${month} ${year} Revision Booklet</h2>`;
-            const addSec = (t, d, m) => {
-                if(!d.length) return;
-                html += `<h3 style="background:#eee; padding:10px; margin-top:20px;">${t}</h3>`;
-                d.forEach((item, i) => {
-                    html += `<div style="margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:10px;">
-                        <p><strong>${i+1}. [${item.sub}]</strong> ${item.q}</p>
-                        <p>Correct Answer: <strong>${item.a}</strong></p>
-                        ${m ? `<p style="font-size:12px; color:#555;">Wrong: ${item.wrong} | Reason: ${item.reason}</p>` : ''}
-                    </div>`;
-                });
-            };
-            addSec("FACT SALAD", factData, false);
-            addSec("SWT MISTAKES", swtData, true);
-            addSec("GT MISTAKES", gtData, true);
-            element.innerHTML = html;
-            const opt = { margin: 0.5, filename: `Scalpel_Squad_${month}_Revision.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter' } };
-            try {
-                await html2pdf().set(opt).from(element).save();
-                if (confirm("Download complete! Delete these logs to clear space?")) {
-                    localStorage.removeItem(QUAL_KEYS.FACT); localStorage.removeItem(QUAL_KEYS.SWT); localStorage.removeItem(QUAL_KEYS.GT);
-                    renderQualLists(); if(typeof window.syncToCloud === 'function') window.syncToCloud();
-                }
-            } catch (e) { alert("Error generating PDF"); }
-        }
-
-        window.addEventListener('load', () => {
-            const subs = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "FMT", "PSM", "Ophthalmology", "ENT", "Medicine", "Surgery", "OBG", "Pediatrics", "Anesthesia", "Radiology", "Dermatology", "Psychiatry", "Orthopedics"];
-            ['fs_sub', 'ms_sub', 'mg_sub'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) subs.forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
-            });
-                function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderQualLists(); renderPYQ(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
+        function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         updateUI(); setInterval(updateCountdowns, 60000);
     </script>
 </body>
