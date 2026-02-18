@@ -7,32 +7,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* RESTORED THEMES */
         :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --primary: #38bdf8; --accent: #f43f5e; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        [data-theme='light'] { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --primary: #0284c7; --accent: #e11d48; }
+        
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
         .header { text-align: center; margin-bottom: 20px; }
         .logo-img { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
-        #slideshow-box { background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; border-left: 5px solid var(--accent); text-align: center; min-height: 60px; font-style: italic; }
+        
+        /* RESTORED SLIDESHOW */
+        #slideshow-box { 
+            background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; 
+            border-left: 5px solid var(--accent); text-align: center; min-height: 60px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
         .tabs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; background: #334155; color: #94a3b8; font-weight: bold; }
+        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 20px; background: var(--card); color: var(--text); font-weight: bold; cursor: pointer; }
         .tab-btn.active { background: var(--primary); color: white; }
+
         .section { display: none; background: var(--card); padding: 15px; border-radius: 12px; }
         .section.active { display: block; }
-        select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; background: #0f172a; color: #fff; border: 1px solid #334155; }
-        .save-btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; }
+        
+        select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; background: rgba(0,0,0,0.2); color: inherit; border: 1px solid rgba(255,255,255,0.1); font-size: 14px; }
+        .save-btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; cursor: pointer; }
+        
         .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
         .pdf-btn { padding: 14px; border-radius: 10px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; }
+        .theme-toggle { position: absolute; top: 10px; left: 15px; padding: 6px 10px; border-radius: 15px; background: var(--card); color: var(--text); border: 1px solid var(--primary); cursor: pointer; font-size: 11px; }
     </style>
 </head>
 <body data-theme="dark">
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 THEME</button>
     <div id="user-display" style="position: absolute; top: 10px; right: 15px; font-size: 10px; text-align: right;"></div>
+    
     <div class="container">
         <div class="header">
             <img src="https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg" class="logo-img">
             <h2 style="margin:10px 0 0;">Scalpel Study Squad</h2>
-            <p style="color:var(--accent); font-weight: bold;">QUALITATIVE REVISION REPORT</p>
+            <p style="color:var(--accent); font-weight: bold; letter-spacing: 1px;">QUALITATIVE REVISION REPORT</p>
         </div>
 
-        <div id="slideshow-box">Add your facts! 🥗</div>
+        <div id="slideshow-box">No facts yet! 🥗</div>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('fact-salad', this)">Fact Salad</button>
@@ -42,27 +58,31 @@
 
         <div id="fact-salad" class="section active">
             <select id="fs-sub" class="sub-list"></select>
-            <textarea id="fs-q" placeholder="Topic"></textarea>
-            <textarea id="fs-a" placeholder="Answer"></textarea>
+            <textarea id="fs-q" placeholder="High-yield topic..."></textarea>
+            <textarea id="fs-a" placeholder="The gold key..."></textarea>
             <button class="save-btn" onclick="saveData('factSalad')">SAVE FACT</button>
         </div>
 
         <div id="swt" class="section">
             <select id="swt-sub" class="sub-list"></select>
-            <textarea id="swt-q" placeholder="Question"></textarea>
-            <textarea id="swt-a" placeholder="Correct Answer"></textarea>
-            <textarea id="swt-w" placeholder="Incorrect Answer"></textarea>
-            <select id="swt-r"><option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option></select>
+            <textarea id="swt-q" placeholder="SWT Question"></textarea>
+            <textarea id="swt-a" placeholder="Correct Ans"></textarea>
+            <textarea id="swt-w" placeholder="Your Incorrect Ans"></textarea>
+            <select id="swt-r">
+                <option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option>
+            </select>
             <button class="save-btn" onclick="saveData('swt')">LOG SWT</button>
         </div>
 
         <div id="gt" class="section">
             <select id="gt-type"><option>NEET PG</option><option>INICET</option><option>FMGE</option></select>
             <select id="gt-sub" class="sub-list"></select>
-            <textarea id="gt-q" placeholder="Question"></textarea>
-            <textarea id="gt-a" placeholder="Correct Answer"></textarea>
-            <textarea id="gt-w" placeholder="Incorrect Answer"></textarea>
-            <select id="gt-r"><option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option></select>
+            <textarea id="gt-q" placeholder="GT Question"></textarea>
+            <textarea id="gt-a" placeholder="Correct Ans"></textarea>
+            <textarea id="gt-w" placeholder="Your Incorrect Ans"></textarea>
+            <select id="gt-r">
+                <option>Silly Mistake</option><option>Concept Gap</option><option>Recall Failure</option>
+            </select>
             <button class="save-btn" onclick="saveData('gt')">LOG GT</button>
         </div>
 
@@ -76,13 +96,18 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         const user = tg.initDataUnsafe?.user || { first_name: "Doctor", last_name: "", id: "0000" };
-        const fullName = `${user.first_name} ${user.last_name}`.trim();
-        document.getElementById('user-display').innerHTML = `<b>Dr. ${fullName}</b><br>ID: ${user.id}`;
+        const fullName = `Dr. ${user.first_name} ${user.last_name}`.trim();
+        document.getElementById('user-display').innerHTML = `<b>${fullName}</b><br>ID: ${user.id}`;
 
         const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "Forensic", "PSM", "ENT", "Ophthalmology", "Medicine", "Surgery", "OBG", "Paediatrics", "Radiology", "Dermatology", "Psychiatry", "Orthopaedics", "Anesthesia"];
         document.querySelectorAll('.sub-list').forEach(s => subjects.forEach(sub => s.innerHTML += `<option>${sub}</option>`));
 
         let db = JSON.parse(localStorage.getItem('Scalpel_Squad_Permanent_v1')) || { factSalad: [], swt: [], gt: [] };
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        }
 
         function showTab(id, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -95,6 +120,7 @@
             const entry = { date: new Date().toLocaleDateString(), sub: document.getElementById(type==='factSalad'?'fs-sub':type+'-sub').value, q: document.getElementById(type==='factSalad'?'fs-q':type+'-q').value, a: document.getElementById(type==='factSalad'?'fs-a':type+'-a').value, r: document.getElementById(type==='factSalad'?null:type+'-r')?.value };
             db[type].push(entry);
             localStorage.setItem('Scalpel_Squad_Permanent_v1', JSON.stringify(db));
+            tg.HapticFeedback.notificationOccurred('success');
             alert("Saved!");
         }
 
@@ -108,16 +134,17 @@
             }
         }, 30000);
 
-        // --- THE "SURGICAL" PDF STREAM FIX ---
+        // --- NEW NO-BLANK-PAGE PDF METHOD ---
         async function exportPDF(mode) {
+            const btn = document.getElementById(mode==='daily'?'pdf-d':'pdf-m');
+            btn.innerText = "PREPARING...";
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // Header
                 doc.setFont("helvetica", "bold"); doc.setFontSize(22);
                 doc.text("Scalpel Study Squad", 105, 25, { align: "center" });
-                doc.setFontSize(10); doc.text(`Dr. ${fullName} | ID: ${user.id}`, 200, 15, { align: "right" });
+                doc.setFontSize(10); doc.text(`${fullName} | ID: ${user.id}`, 200, 15, { align: "right" });
                 
                 let y = 60;
                 const process = (title, key) => {
@@ -135,16 +162,15 @@
                     y += 8;
                 };
 
-                process("FACT SALAD", "factSalad");
-                process("SWT MISTAKES", "swt");
-                process("GT MISTAKES", "gt");
+                process("I. FACT SALAD", "factSalad");
+                process("II. SWT MISTAKES", "swt");
+                process("III. GT MISTAKES", "gt");
 
-                // THE FIX: Open as a Data Stream
-                const dataUri = doc.output('datauristring');
-                const win = window.open();
-                win.document.write('<iframe width="100%" height="100%" src="' + dataUri + '"></iframe>');
+                // BYPASS BLANK PAGE: Direct Save Trigger
+                doc.save(`Scalpel_${mode}_Report.pdf`);
                 
-            } catch (e) { alert("Diagnostic Error: " + e.message); }
+                btn.innerText = mode.toUpperCase() + " PDF";
+            } catch (e) { alert("Error: " + e.message); btn.innerText = "RETRY"; }
         }
     </script>
 </body>
