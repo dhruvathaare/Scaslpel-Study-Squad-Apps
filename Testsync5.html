@@ -7,103 +7,150 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #ffffff; --text: #333333; --card: #f8f9fa; --primary: #2c3e50; --accent: #e74c3c; }
-        [data-theme='dark'] { --bg: #1a1a1a; --text: #f0f0f0; --card: #2d2d2d; --primary: #3498db; }
+        :root { --bg: #ffffff; --text: #333333; --card: #f8f9fa; --primary: #2c3e50; --accent: #e74c3c; --logo-bg: #2c3e50; }
+        [data-theme='dark'] { --bg: #1a1a1a; --text: #f0f0f0; --card: #2d2d2d; --primary: #3498db; --logo-bg: #3498db; }
         
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: background 0.3s; }
         
-        /* Branding Header */
-        .header { text-align: center; margin-bottom: 20px; }
-        .logo { width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: inline-block; }
-        .user-info { position: absolute; top: 10px; right: 10px; text-align: right; font-size: 11px; }
+        /* Large Branding Header */
+        .header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
+        .logo-circle { 
+            width: 120px; height: 120px; background: var(--logo-bg); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); border: 4px solid white;
+        }
+        .logo-text { color: white; font-size: 50px; font-weight: 900; letter-spacing: -2px; }
+        
+        .user-info { position: absolute; top: 10px; right: 15px; text-align: right; font-size: 12px; font-weight: bold; }
 
-        /* Responsive Layout */
-        .container { max-width: 800px; margin: 0 auto; }
-        @media (orientation: landscape) { .tabs { flex-wrap: nowrap; } .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } }
+        /* Responsive Container */
+        .container { max-width: 900px; margin: 0 auto; }
+        @media (orientation: landscape) { 
+            .sections-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } 
+        }
 
-        /* Centered Tabs */
-        .tabs { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 25px; background: var(--card); color: var(--text); cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-btn.active { background: var(--primary); color: white; }
+        /* Centered Navigation */
+        .tabs { display: flex; justify-content: center; gap: 8px; margin: 25px 0; }
+        .tab-btn { flex: 1; padding: 14px; border: none; border-radius: 30px; background: var(--card); color: var(--text); cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; border: 1px solid rgba(0,0,0,0.1); }
+        .tab-btn.active { background: var(--primary); color: white; transform: scale(1.05); }
 
-        /* Slideshow */
-        #slideshow-box { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; border-left: 5px solid var(--accent); text-align: center; min-height: 60px; }
+        /* Floating Slideshow */
+        #slideshow-box { 
+            background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 25px; 
+            border-left: 6px solid var(--accent); text-align: center; min-height: 80px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); animation: fadeIn 0.5s;
+        }
 
-        .section { display: none; }
+        .section { display: none; background: var(--card); padding: 20px; border-radius: 15px; }
         .section.active { display: block; }
 
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; }
-        .save-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: var(--accent); }
+        input, textarea, select { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ccc; border-radius: 10px; background: var(--bg); color: var(--text); box-sizing: border-box; font-size: 15px; }
         
-        .pdf-section { display: flex; gap: 10px; margin-top: 20px; }
-        .pdf-btn { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: bold; }
-        .theme-toggle { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 15px; border: none; cursor: pointer; }
+        .save-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 16px; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        
+        /* PDF Buttons */
+        .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .pdf-btn { padding: 15px; border-radius: 12px; border: 2px solid var(--primary); background: transparent; color: var(--text); font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .theme-toggle { position: absolute; top: 10px; left: 15px; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; background: var(--card); color: var(--text); cursor: pointer; font-size: 12px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">🌓 Mode</button>
-    <div class="user-info" id="user-display">Loading User...</div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 THEME</button>
+    <div class="user-info" id="user-display">Connecting...</div>
 
     <div class="container">
         <div class="header">
-            <div class="logo"></div>
-            <h2 style="margin:5px 0;">Scalpel Study Squad</h2>
-            <p style="font-weight:bold; color:var(--accent);">Qualitative Revision Report</p>
+            <div class="logo-circle"><span class="logo-text">S</span></div>
+            <h1 style="margin:0; font-weight: 900; letter-spacing: -1px;">Scalpel Study Squad</h1>
+            <h3 style="margin:5px 0; color:var(--accent); text-transform: uppercase; letter-spacing: 2px;">Qualitative Revision Report</h3>
         </div>
 
-        <div id="slideshow-box">Add facts to start the slideshow! 🥗</div>
+        <div id="slideshow-box">Your high-yield Fact Salad will appear here... 🥗</div>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="showSection('fact-salad', this)">Fact Salad</button>
-            <button class="tab-btn" onclick="showSection('swt', this)">SWT</button>
-            <button class="tab-btn" onclick="showSection('gt', this)">GT</button>
+            <button class="tab-btn" onclick="showSection('swt', this)">SWT Mistake</button>
+            <button class="tab-btn" onclick="showSection('gt', this)">GT Mistake</button>
         </div>
 
-        <div id="fact-salad" class="section active">
-            <select id="fs-sub" class="sub-list"></select>
-            <textarea id="fs-q" placeholder="Question/Topic"></textarea>
-            <textarea id="fs-a" placeholder="Answer/Key Fact"></textarea>
-            <button class="save-btn" onclick="save('factSalad')">SAVE FACT</button>
+        <div class="sections-wrapper">
+            <div id="fact-salad" class="section active">
+                <label>Subject</label>
+                <select id="fs-sub" class="sub-list"></select>
+                <label>Question / Topic</label>
+                <textarea id="fs-q" rows="3"></textarea>
+                <label>The Answer / Key Fact</label>
+                <textarea id="fs-a" rows="2"></textarea>
+                <button class="save-btn" onclick="saveData('factSalad')">SAVE TO SALAD</button>
+            </div>
+
+            <div id="swt" class="section">
+                <label>Subject</label>
+                <select id="swt-sub" class="sub-list"></select>
+                <label>Question</label>
+                <textarea id="swt-q"></textarea>
+                <label>Correct Answer</label>
+                <textarea id="swt-a"></textarea>
+                <label>Your Incorrect Answer</label>
+                <textarea id="swt-w"></textarea>
+                <label>Reason for Error</label>
+                <select id="swt-r">
+                    <option>Silly Mistake</option>
+                    <option>Concept Gap</option>
+                    <option>Recall Failure</option>
+                    <option>Out of Syllabus</option>
+                </select>
+                <button class="save-btn" onclick="saveData('swt')">LOG SWT ERROR</button>
+            </div>
+
+            <div id="gt" class="section">
+                <label>Exam Type</label>
+                <select id="gt-type"><option>NEET PG</option><option>INICET</option><option>FMGE</option></select>
+                <label>Subject</label>
+                <select id="gt-sub" class="sub-list"></select>
+                <label>Question</label>
+                <textarea id="gt-q"></textarea>
+                <label>Correct Answer</label>
+                <textarea id="gt-a"></textarea>
+                <label>Your Incorrect Answer</label>
+                <textarea id="gt-w"></textarea>
+                <label>Reason for marking it wrong</label>
+                <textarea id="gt-r" placeholder="Describe clinical reasoning gap..."></textarea>
+                <button class="save-btn" onclick="saveData('gt')">LOG GT ERROR</button>
+            </div>
         </div>
 
-        <div id="swt" class="section">
-            <select id="swt-sub" class="sub-list"></select>
-            <textarea id="swt-q" placeholder="Question"></textarea>
-            <textarea id="swt-a" placeholder="Correct Answer"></textarea>
-            <textarea id="swt-w" placeholder="Your Incorrect Answer"></textarea>
-            <textarea id="swt-r" placeholder="Reason for marking wrong"></textarea>
-            <button class="save-btn" onclick="save('swt')">SAVE SWT ENTRY</button>
+        <div class="pdf-grid">
+            <button class="pdf-btn" onclick="exportPDF('daily')">Daily Report</button>
+            <button class="pdf-btn" onclick="exportPDF('monthly')">Monthly Report</button>
         </div>
-
-        <div id="gt" class="section">
-            <select id="gt-exam"><option>NEET PG</option><option>INICET</option><option>FMGE</option></select>
-            <select id="gt-sub" class="sub-list"></select>
-            <textarea id="gt-q" placeholder="Question"></textarea>
-            <textarea id="gt-a" placeholder="Correct Answer"></textarea>
-            <textarea id="gt-w" placeholder="Your Incorrect Answer"></textarea>
-            <textarea id="gt-r" placeholder="Reason for marking wrong"></textarea>
-            <button class="save-btn" onclick="save('gt')">SAVE GT ENTRY</button>
-        </div>
-
-        <div class="pdf-section">
-            <button class="pdf-btn" onclick="downloadPDF('daily')">Daily PDF</button>
-            <button class="pdf-btn" onclick="downloadPDF('monthly')">Monthly PDF</button>
-        </div>
-        <p style="text-align:center; font-size:10px; color:red; font-weight:bold;">⚠️ DATA WIPED ON LAST DAY OF MONTH. DOWNLOAD PDF!</p>
+        <p style="text-align:center; font-size:11px; color:var(--accent); font-weight:bold; margin-top:20px;">
+            ⚠️ WARNING: DATA WIPES ON THE LAST DAY OF THE MONTH! DOWNLOAD NOW.
+        </p>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const user = tg.initDataUnsafe?.user || { username: "Guest", id: "0000" };
-        document.getElementById('user-display').innerHTML = `<b>${user.username}</b><br>ID: ${user.id}`;
+        
+        // Use First Name and Last Name instead of Username
+        const firstName = tg.initDataUnsafe?.user?.first_name || "Doctor";
+        const lastName = tg.initDataUnsafe?.user?.last_name || "";
+        const fullName = `${firstName} ${lastName}`.trim();
+        const userId = tg.initDataUnsafe?.user?.id || "N/A";
+
+        document.getElementById('user-display').innerHTML = `Dr. ${fullName}<br>ID: ${userId}`;
 
         const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Microbiology", "Pharmacology", "Forensic", "PSM", "ENT", "Ophthalmology", "Medicine", "Surgery", "OBG", "Paediatrics", "Radiology", "Dermatology", "Psychiatry", "Orthopaedics", "Anesthesia"];
         document.querySelectorAll('.sub-list').forEach(select => {
             subjects.forEach(sub => select.innerHTML += `<option>${sub}</option>`);
         });
 
-        let data = JSON.parse(localStorage.getItem('scalpelQual')) || { factSalad: [], swt: [], gt: [] };
+        let database = JSON.parse(localStorage.getItem('scalpelQualData')) || { factSalad: [], swt: [], gt: [] };
 
         function toggleTheme() {
             const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -117,42 +164,86 @@
             btn.classList.add('active');
         }
 
-        function save(type) {
-            const entry = { date: new Date().toLocaleDateString(), timestamp: Date.now() };
-            if(type === 'factSalad') { entry.sub = document.getElementById('fs-sub').value; entry.q = document.getElementById('fs-q').value; entry.a = document.getElementById('fs-a').value; }
-            // Logic for SWT/GT similarly...
-            data[type].push(entry);
-            localStorage.setItem('scalpelQual', JSON.stringify(data));
+        function saveData(type) {
+            const entry = { date: new Date().toLocaleDateString(), timestamp: new Date().toLocaleString() };
+            if(type === 'factSalad') {
+                entry.sub = document.getElementById('fs-sub').value;
+                entry.q = document.getElementById('fs-q').value;
+                entry.a = document.getElementById('fs-a').value;
+            } else if(type === 'swt') {
+                entry.sub = document.getElementById('swt-sub').value;
+                entry.q = document.getElementById('swt-q').value;
+                entry.a = document.getElementById('swt-a').value;
+                entry.w = document.getElementById('swt-w').value;
+                entry.r = document.getElementById('swt-r').value;
+            } else {
+                entry.type = document.getElementById('gt-type').value;
+                entry.sub = document.getElementById('gt-sub').value;
+                entry.q = document.getElementById('gt-q').value;
+                entry.a = document.getElementById('gt-a').value;
+                entry.w = document.getElementById('gt-w').value;
+                entry.r = document.getElementById('gt-r').value;
+            }
+            database[type].push(entry);
+            localStorage.setItem('scalpelQualData', JSON.stringify(database));
             tg.HapticFeedback.notificationOccurred('success');
-            alert("Entry Saved!");
+            alert("Entry Saved Successfully!");
         }
 
-        // Sync every 10 mins (Simulated for this No-Code setup)
-        setInterval(() => { localStorage.setItem('scalpelQual', JSON.stringify(data)); console.log("Data Synced"); }, 600000);
-
-        // Slideshow: 30s
-        let sIdx = 0;
+        // Sync every 10 minutes
         setInterval(() => {
-            const box = document.getElementById('slideshow-box');
-            if(data.factSalad.length > 0) {
-                const f = data.factSalad[sIdx];
-                box.innerHTML = `<b>${f.sub}</b><br>${f.q}<br><span style="color:#27ae60">Ans: ${f.a}</span>`;
-                sIdx = (sIdx + 1) % data.factSalad.length;
-            }
-        }, 30000);
+            localStorage.setItem('scalpelQualData', JSON.stringify(database));
+            console.log("Data auto-synced to local storage.");
+        }, 600000);
 
-        async function downloadPDF(mode) {
+        // 30-Second Slideshow Logic
+        let currentSlide = 0;
+        function updateSlideshow() {
+            const box = document.getElementById('slideshow-box');
+            if(database.factSalad.length > 0) {
+                const f = database.factSalad[currentSlide];
+                box.innerHTML = `<strong>${f.sub}</strong><br>${f.q}<br><span style="color:#27ae60; font-weight:bold;">Ans: ${f.a}</span>`;
+                currentSlide = (currentSlide + 1) % database.factSalad.length;
+            }
+        }
+        setInterval(updateSlideshow, 30000);
+        updateSlideshow();
+
+        // PDF ENGINE
+        async function exportPDF(mode) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            // Header Logic with Centered Branding
+            
+            // Header with center branding
             doc.setFont("helvetica", "bold");
-            doc.text("Scalpel Study Squad", 105, 20, { align: "center" });
+            doc.setFontSize(22);
+            doc.text("Scalpel Study Squad", 105, 25, { align: "center" });
+            
             doc.setFontSize(10);
-            doc.text(`${user.username} | ${user.id}`, 200, 15, { align: "right" });
+            doc.text(`${fullName} | ID: ${userId}`, 200, 15, { align: "right" });
+            
             doc.setFontSize(14);
-            doc.text("Scalpel Squad Revision Report", 105, 30, { align: "center" });
-            // Add grouped data logic here...
-            doc.save(`Scalpel_Revision_${mode}.pdf`);
+            doc.text("Scalpel Squad Revision Report", 105, 35, { align: "center" });
+            
+            const dateStr = mode === 'daily' ? new Date().toLocaleDateString() : `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`;
+            doc.text(dateStr, 105, 45, { align: "center" });
+
+            // Content Logic (Subjects Bold)
+            doc.setFontSize(12);
+            let y = 60;
+            
+            // Example Section Header
+            doc.setFont("helvetica", "bold");
+            doc.text("FACT SALAD REVISION", 10, y);
+            y += 10;
+            
+            database.factSalad.forEach(item => {
+                doc.setFont("helvetica", "bold"); doc.text(`[${item.sub}]`, 10, y);
+                doc.setFont("helvetica", "normal"); doc.text(`${item.q} -> Ans: ${item.a}`, 10, y + 5);
+                y += 15;
+            });
+
+            doc.save(`Scalpel_Revision_${mode}_${dateStr}.pdf`);
         }
     </script>
 </body>
