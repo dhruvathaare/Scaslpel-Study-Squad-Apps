@@ -10,8 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      // We are adding 'onValue' and 'onDisconnect' here for the Live Library
       import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+      // --- END OF IMPORTS ---
 
       const firebaseConfig = {
         apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
@@ -1547,42 +1550,41 @@
         }
         function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         updateUI(); setInterval(updateCountdowns, 60000);
-          // --- REALTIME "VIRTUAL LIBRARY" PRESENCE ---
-      // 1. Reference to where we store online users
-      const onlineRef = ref(db, 'online/' + userId);
-      const connectedRef = ref(db, '.info/connected');
-      
-      // 2. Monitor connection state
-      onValue(connectedRef, (snap) => {
-        if (snap.val() === true) {
-          // We are connected! 
-          // A. Tell Firebase: "If I disconnect, remove my ID from the list"
-          onDisconnect(onlineRef).remove();
-          
-          // B. Add myself to the online list NOW
-          set(onlineRef, { 
-              name: userName, 
-              status: "studying",
-              lastSeen: Date.now() 
-          });
-        }
-      });
+              // --- REALTIME VIRTUAL LIBRARY (SAFE MODE) ---
+      try {
+          const onlineRef = ref(db, 'online/' + userId);
+          const connectedRef = ref(db, '.info/connected');
+          const allOnlineRef = ref(db, 'online');
 
-      // 3. Count how many doctors are online right now
-      // This listener runs automatically whenever someone joins or leaves
-      const allOnlineRef = ref(db, 'online');
-      onValue(allOnlineRef, (snap) => {
-        const count = snap.size; // 'size' counts the number of keys (doctors)
-        const el = document.getElementById('lib-count');
-        
-        // Update the UI text
-        if(el) {
-            // If count is 0 or 1, we show "1" (yourself)
-            const displayCount = count > 0 ? count : 1;
-            el.innerText = `● ${displayCount} DOCTORS ONLINE`;
-            el.style.color = "#ffffff"; // Keep text white/clear
-        }
-      });         
+          // 1. Connection Monitor
+          onValue(connectedRef, (snap) => {
+              if (snap.val() === true) {
+                  // If we disconnect, remove me
+                  onDisconnect(onlineRef).remove();
+                  // Add me to the list
+                  set(onlineRef, { 
+                      status: "online", 
+                      time: Date.now() 
+                  });
+              }
+          });
+
+          // 2. Count Monitor
+          onValue(allOnlineRef, (snap) => {
+              const el = document.getElementById('lib-count');
+              if(el) {
+                  const count = snap.exists() ? snap.size : 1;
+                  el.innerText = `● ${count} DOCTORS ONLINE`;
+                  el.style.color = "#ffffff";
+                  // Add the red glowing dot back if lost
+                  if(el.previousElementSibling) el.previousElementSibling.style.background = "#e74c3c"; 
+              }
+          });
+      } catch (error) {
+          console.error("Library Error:", error);
+          const el = document.getElementById('lib-count');
+          if(el) el.innerText = "Offline Mode";
+      }     
     </script>
 </body>
 </html>
