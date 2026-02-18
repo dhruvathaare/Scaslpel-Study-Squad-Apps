@@ -11,7 +11,7 @@
     
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+      import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
@@ -1547,16 +1547,42 @@
         }
         function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         updateUI(); setInterval(updateCountdowns, 60000);
-              // --- VIRTUAL LIBRARY LOGIC ---
-      function updateVirtualLibrary() {
-          const baseCount = 800; 
-          const fluctuation = Math.floor(Math.random() * 600); 
-          const total = baseCount + fluctuation;
-          const el = document.getElementById('lib-count');
-          if(el) el.innerText = `${total.toLocaleString()} STUDYING NOW`;
-      }
-      updateVirtualLibrary();
-      setInterval(updateVirtualLibrary, 5000);
+          // --- REALTIME "VIRTUAL LIBRARY" PRESENCE ---
+      // 1. Reference to where we store online users
+      const onlineRef = ref(db, 'online/' + userId);
+      const connectedRef = ref(db, '.info/connected');
+      
+      // 2. Monitor connection state
+      onValue(connectedRef, (snap) => {
+        if (snap.val() === true) {
+          // We are connected! 
+          // A. Tell Firebase: "If I disconnect, remove my ID from the list"
+          onDisconnect(onlineRef).remove();
+          
+          // B. Add myself to the online list NOW
+          set(onlineRef, { 
+              name: userName, 
+              status: "studying",
+              lastSeen: Date.now() 
+          });
+        }
+      });
+
+      // 3. Count how many doctors are online right now
+      // This listener runs automatically whenever someone joins or leaves
+      const allOnlineRef = ref(db, 'online');
+      onValue(allOnlineRef, (snap) => {
+        const count = snap.size; // 'size' counts the number of keys (doctors)
+        const el = document.getElementById('lib-count');
+        
+        // Update the UI text
+        if(el) {
+            // If count is 0 or 1, we show "1" (yourself)
+            const displayCount = count > 0 ? count : 1;
+            el.innerText = `● ${displayCount} DOCTORS ONLINE`;
+            el.style.color = "#ffffff"; // Keep text white/clear
+        }
+      });         
     </script>
 </body>
 </html>
