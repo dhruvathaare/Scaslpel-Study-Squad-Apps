@@ -9,14 +9,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
     
-    <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      // We are adding 'onValue' and 'onDisconnect' here for the Live Library
+        <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
       import { getDatabase, ref, set, get, child, update, query, orderByChild, limitToLast, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-      // --- END OF IMPORTS ---
-
       const firebaseConfig = {
+        apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
+        authDomain: "scalpel-pro.firebaseapp.com",
+        projectId: "scalpel-pro",
+        storageBucket: "scalpel-pro.firebasestorage.app",
+        messagingSenderId: "244026009766",
+        appId: "1:244026009766:web:3299c2dfa37cf378d1ac67"
+      };
+
+      const app = initializeApp(firebaseConfig);
+    
         apiKey: "AIzaSyAmv7mm6rjaGPNx4IK9LXl3fO61uXxZgCQ",
         authDomain: "scalpel-pro.firebaseapp.com",
         projectId: "scalpel-pro",
@@ -1550,18 +1557,19 @@
         }
         function updateUI() { renderBackupStatus(); renderData(); renderSWT(); renderGT(); updateConsistency(); renderMatrix(); renderGoalHTML(); renderPYQ(); updateCountdowns(); renderMonthlyTable(); populateGTHistory(); renderToughSubjectsSelector(); renderToughDashboard(); loadGoalsToUI(); }
         updateUI(); setInterval(updateCountdowns, 60000);
-              // --- REALTIME VIRTUAL LIBRARY (SAFE MODE) ---
+          // --- REALTIME VIRTUAL LIBRARY (FINAL) ---
       try {
+          // 1. Define References
           const onlineRef = ref(db, 'online/' + userId);
           const connectedRef = ref(db, '.info/connected');
           const allOnlineRef = ref(db, 'online');
 
-          // 1. Connection Monitor
+          // 2. Monitor My Connection
           onValue(connectedRef, (snap) => {
               if (snap.val() === true) {
-                  // If we disconnect, remove me
+                  // If I disconnect, remove me
                   onDisconnect(onlineRef).remove();
-                  // Add me to the list
+                  // Add me to the list now
                   set(onlineRef, { 
                       status: "online", 
                       time: Date.now() 
@@ -1569,22 +1577,24 @@
               }
           });
 
-          // 2. Count Monitor
+          // 3. Count Everyone Else
           onValue(allOnlineRef, (snap) => {
               const el = document.getElementById('lib-count');
               if(el) {
                   const count = snap.exists() ? snap.size : 1;
                   el.innerText = `● ${count} DOCTORS ONLINE`;
                   el.style.color = "#ffffff";
-                  // Add the red glowing dot back if lost
-                  if(el.previousElementSibling) el.previousElementSibling.style.background = "#e74c3c"; 
+                  // Make the dot glow red
+                  if(el.previousElementSibling) el.previousElementSibling.style.background = "#e74c3c";
               }
           });
+
       } catch (error) {
+          // If this runs, it means 'onValue' is still missing from the top imports
           console.error("Library Error:", error);
           const el = document.getElementById('lib-count');
-          if(el) el.innerText = "Offline Mode";
-      }     
+          if(el) el.innerText = "Import Error";
+      }       
     </script>
 </body>
 </html>
