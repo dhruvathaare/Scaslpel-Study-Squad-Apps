@@ -256,7 +256,6 @@ input[type="number"]{text-align:center;}
 .chart-sh{font-size:11px;font-weight:700;text-transform:uppercase;
   letter-spacing:.5px;margin:12px 0 4px;}
 
-/* ═══ LOG TABLE ═══ */
 .log-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-radius:8px;border:1px solid rgba(128,128,128,.12);}
 .log-table{width:100%;min-width:380px;font-size:11px;border-collapse:collapse;table-layout:fixed;}
 .log-table th,.log-table td{padding:8px 6px;border-bottom:1px solid rgba(128,128,128,.1);overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
@@ -378,7 +377,6 @@ input[type="number"]{text-align:center;}
   animation:pls 2s infinite;}
 @keyframes pls{0%,100%{box-shadow:none}50%{box-shadow:0 0 8px rgba(224,92,122,.4)}}
 
-/* ═══ SLIDESHOW (upgraded) ═══ */
 .slideshow{background:var(--card);border-radius:14px;border:1px solid var(--border);
   border-left:4px solid var(--accent2);padding:15px 16px 44px;margin-bottom:14px;
   min-height:110px;box-shadow:var(--shadow);position:relative;
@@ -390,12 +388,10 @@ input[type="number"]{text-align:center;}
 .ss-sub{font-weight:800;color:var(--primary);margin-bottom:4px;font-size:13px;}
 .ss-q{color:var(--text);font-size:13px;line-height:1.5;}
 .ss-a{color:var(--green);font-weight:700;margin-top:5px;font-size:13px;}
-/* progress bar */
 .ss-prog-bar{position:absolute;bottom:36px;left:16px;right:16px;
   height:3px;background:rgba(128,128,128,.2);border-radius:3px;overflow:hidden;}
 .ss-prog-fill{height:100%;background:var(--accent2);border-radius:3px;
   transition:width 1s linear;}
-/* nav row */
 .ss-nav{position:absolute;bottom:8px;left:16px;right:16px;
   display:flex;align-items:center;justify-content:space-between;}
 .ss-nav-btn{background:rgba(255,255,255,.07);border:1px solid var(--border);
@@ -404,86 +400,93 @@ input[type="number"]{text-align:center;}
 .ss-nav-btn:active{background:var(--primary);border-color:var(--primary);color:#fff;}
 .ss-timer{font-size:10px;color:var(--muted);font-weight:700;}
 
-/* ═══ PDF PROGRESS OVERLAY ═══ */
-.pdf-progress-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
-  z-index:99999;justify-content:center;align-items:center;flex-direction:column;gap:16px;
-}
-.pdf-progress-overlay.open{display:flex;}
-.pdf-spinner{width:48px;height:48px;border:4px solid rgba(79,142,247,.3);
-  border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.pdf-prog-text{color:#fff;font-weight:800;font-size:14px;font-family:'Rajdhani',sans-serif;
-  letter-spacing:1px;text-align:center;}
-.pdf-prog-sub{color:var(--muted);font-size:11px;}
-.pdf-share-card{
-  background:var(--card);border-radius:16px;border:2px solid var(--primary);
-  padding:22px 20px;width:88%;max-width:360px;text-align:center;
-}
-.pdf-share-card h3{color:var(--primary);margin-bottom:6px;
-  font-family:'Rajdhani',sans-serif;font-size:20px;letter-spacing:1px;}
-.pdf-share-card .pdf-method-badge{
-  display:inline-block;background:var(--green);color:#fff;
-  font-size:10px;font-weight:800;padding:2px 10px;border-radius:20px;
-  margin-bottom:12px;letter-spacing:1px;
-}
-.pdf-share-card p{color:var(--muted);font-size:11px;margin-bottom:14px;line-height:1.6;}
-.pdf-share-btns{display:flex;flex-direction:column;gap:9px;}
-
-/* ═══ PRINT VIEWER OVERLAY ═══ */
+/* ═══════════════════════════════════════
+   PRINT / VIEWER OVERLAY — FIXED VERSION
+═══════════════════════════════════════ */
 .print-overlay{
   display:none;position:fixed;inset:0;z-index:100000;
   flex-direction:column;background:#f0f2f8;
 }
 .print-overlay.open{display:flex;}
 .print-bar{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 14px;background:#1a1a2a;border-bottom:2px solid var(--primary);
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:10px 12px;background:#1a1a2a;border-bottom:2px solid var(--primary);
   flex-shrink:0;
 }
 .print-bar-title{
-  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;
-  letter-spacing:1px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#fff;
+  letter-spacing:1px;flex:1;min-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.print-bar-btns{display:flex;gap:7px;flex-shrink:0;}
-.pb-btn{padding:9px 14px;border-radius:8px;border:none;
-  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;cursor:pointer;
-  letter-spacing:.5px;}
-.pb-print{background:var(--green);color:#fff;}
-.pb-share{background:var(--primary);color:#fff;}
-.pb-close{background:var(--accent);color:#fff;}
-.print-body{flex:1;overflow-y:auto;padding:14px 10px;}
-.print-hint{
-  background:#fff3cd;border:1px solid #ffc107;border-radius:8px;
-  padding:10px 12px;margin-bottom:12px;font-size:11px;color:#856404;
-  font-weight:700;line-height:1.5;text-align:center;
+.print-bar-btns{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;}
+.pb-btn{padding:8px 11px;border-radius:7px;border:none;
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;cursor:pointer;
+  letter-spacing:.4px;white-space:nowrap;}
+.pb-print{background:#27ae60;color:#fff;}
+.pb-share{background:#4f8ef7;color:#fff;}
+.pb-dl{background:#f7a94f;color:#fff;}
+.pb-close{background:#e05c7a;color:#fff;}
+/* PDF build status strip */
+.pdf-status-strip{
+  padding:8px 14px;background:#0f0f20;border-bottom:1px solid #2a2a42;
+  flex-shrink:0;display:flex;align-items:center;gap:8px;
+  font-size:11px;color:#aaa;font-family:'Nunito',sans-serif;
 }
-@media print{
-  body > *{display:none !important;}
-  .print-overlay,.print-overlay.open{display:block !important;position:static !important;}
-  .print-bar,.print-hint{display:none !important;}
-  .print-body{overflow:visible !important;padding:0 !important;}
-  .rpt{box-shadow:none !important;}
+.pdf-status-dot{
+  width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;
 }
+.pdf-status-dot.building{background:#f7a94f;animation:pulse-dot 1s infinite;}
+.pdf-status-dot.ready{background:#3ecf7c;}
+.pdf-status-dot.failed{background:#e05c7a;}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+.print-hint-bar{
+  background:#fff3cd;border-bottom:1px solid #ffc107;
+  padding:8px 14px;font-size:11px;color:#856404;
+  font-weight:700;line-height:1.5;flex-shrink:0;
+}
+.print-body{flex:1;overflow-y:auto;padding:12px 8px;}
 
-/* ═══ REPORT OVERLAY ═══ */
-.roverlay{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;}
-.roverlay.open{display:flex;}
-.roverlay-bar{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;background:#0f0f14;border-bottom:2px solid var(--primary);
-  gap:8px;flex-shrink:0;}
-.rov-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;
-  color:#fff;letter-spacing:1px;flex:1;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap;}
-.rov-btns{display:flex;gap:7px;flex-shrink:0;}
-.rbtn{padding:9px 14px;border-radius:8px;border:none;
-  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer;}
-.rbtn-dl{background:var(--green);color:#fff;}
-.rbtn-dl:disabled{background:#555;cursor:wait;}
-.rbtn-cl{background:var(--accent);color:#fff;}
-.roverlay-body{flex:1;overflow-y:auto;padding:14px;background:#f0f2f8;}
+/* ═══ POPUP OVERLAY ═══ */
+.pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);
+  z-index:2000;justify-content:center;align-items:center;flex-direction:column;}
+.pop-overlay.open{display:flex;}
+.pop-card{background:var(--card);padding:22px;border-radius:18px;
+  border:2px solid var(--primary);width:85%;max-width:320px;
+  text-align:center;overflow-y:auto;max-height:82vh;color:var(--text);display:none;}
+.sb-row{display:grid;grid-template-columns:1fr 48px 48px 48px;
+  gap:5px;align-items:center;margin-bottom:5px;font-size:10px;}
 
-/* ═══ REPORT HTML STYLES ═══ */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:var(--green);color:#fff;padding:11px 22px;border-radius:28px;
+  font-weight:800;font-size:12px;letter-spacing:1px;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);opacity:0;transition:opacity .3s;
+  z-index:99999;pointer-events:none;white-space:nowrap;
+  max-width:90vw;text-align:center;}
+.toast.show{opacity:1;}
+
+.danger-zone{margin-top:26px;padding:16px;border-top:1px dashed rgba(128,128,128,.2);}
+.row2{display:flex;gap:8px;}
+.row2>*{flex:1;}
+.info-box{background:var(--pglow);padding:11px 13px;border-radius:9px;
+  margin-top:12px;font-size:11px;line-height:1.5;border-left:3px solid var(--primary);}
+.perf-row{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 10px;background:rgba(0,0,0,.15);border-radius:8px;
+  margin-bottom:6px;font-size:13px;font-weight:800;}
+.p-strong{color:var(--green);}.p-weak{color:var(--accent);}
+.monthly-table{width:100%;font-size:11px;border-collapse:collapse;}
+.monthly-table th,.monthly-table td{padding:8px 5px;border-bottom:1px solid rgba(128,128,128,.08);text-align:center;}
+.monthly-table th{color:var(--accent);font-weight:800;font-size:10px;text-transform:uppercase;}
+.divider{border:0;border-top:1px solid rgba(128,128,128,.12);margin:14px 0;}
+
+/* PDF SECTION */
+.pdf-card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);margin-top:14px;}
+.pdf-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;text-align:center;}
+.warn-box{background:rgba(247,169,79,.1);border:1px solid var(--accent2);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:11px;line-height:1.5;color:var(--accent2);}
+.pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pdf-btn{padding:14px 8px;border-radius:11px;border:2px solid var(--primary);background:transparent;color:var(--text);font-weight:800;font-size:12px;letter-spacing:1px;cursor:pointer;font-family:'Rajdhani',sans-serif;text-transform:uppercase;transition:all .2s;}
+.pdf-btn.mo{border-color:var(--accent2);}
+.pdf-btn:active{transform:scale(.97);}
+
+/* REPORT HTML STYLES */
 .rpt{max-width:660px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
 .rpt-hd{background:#1a1a2a;padding:20px;text-align:center;position:relative;}
 .rpt-u{position:absolute;top:10px;right:14px;text-align:right;font-size:10px;color:#aaccee;line-height:1.6;}
@@ -507,45 +510,13 @@ input[type="number"]{text-align:center;}
 .rpt-empty{text-align:center;padding:25px;font-size:13px;color:#999;}
 .rpt-foot{background:#f0f2f8;padding:9px;text-align:center;font-size:9px;color:#aaa;border-top:1px solid #e0e4f0;}
 
-.pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);
-  z-index:2000;justify-content:center;align-items:center;flex-direction:column;}
-.pop-overlay.open{display:flex;}
-.pop-card{background:var(--card);padding:22px;border-radius:18px;
-  border:2px solid var(--primary);width:85%;max-width:320px;
-  text-align:center;overflow-y:auto;max-height:82vh;color:var(--text);display:none;}
-.sb-row{display:grid;grid-template-columns:1fr 48px 48px 48px;
-  gap:5px;align-items:center;margin-bottom:5px;font-size:10px;}
-
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
-  background:var(--green);color:#fff;padding:11px 22px;border-radius:28px;
-  font-weight:800;font-size:12px;letter-spacing:1px;
-  box-shadow:0 8px 30px rgba(0,0,0,.4);opacity:0;transition:opacity .3s;
-  z-index:99999;pointer-events:none;white-space:nowrap;
-  max-width:90vw;text-align:center;}
-.toast.show{opacity:1;}
-
-.danger-zone{margin-top:26px;padding:16px;border-top:1px dashed rgba(128,128,128,.2);}
-
-.row2{display:flex;gap:8px;}
-.row2>*{flex:1;}
-.info-box{background:var(--pglow);padding:11px 13px;border-radius:9px;
-  margin-top:12px;font-size:11px;line-height:1.5;border-left:3px solid var(--primary);}
-.perf-row{display:flex;justify-content:space-between;align-items:center;
-  padding:8px 10px;background:rgba(0,0,0,.15);border-radius:8px;
-  margin-bottom:6px;font-size:13px;font-weight:800;}
-.p-strong{color:var(--green);}.p-weak{color:var(--accent);}
-.monthly-table{width:100%;font-size:11px;border-collapse:collapse;}
-.monthly-table th,.monthly-table td{padding:8px 5px;border-bottom:1px solid rgba(128,128,128,.08);text-align:center;}
-.monthly-table th{color:var(--accent);font-weight:800;font-size:10px;text-transform:uppercase;}
-.divider{border:0;border-top:1px solid rgba(128,128,128,.12);margin:14px 0;}
-
-/* PDF section */
-.pdf-card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);margin-top:14px;}
-.pdf-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;text-align:center;}
-.warn-box{background:rgba(247,169,79,.1);border:1px solid var(--accent2);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:11px;line-height:1.5;color:var(--accent2);}
-.pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.pdf-btn{padding:14px 8px;border-radius:11px;border:2px solid var(--primary);background:transparent;color:var(--text);font-weight:800;font-size:12px;letter-spacing:1px;cursor:pointer;font-family:'Rajdhani',sans-serif;text-transform:uppercase;transition:all .2s;}
-.pdf-btn.mo{border-color:var(--accent2);}
+@media print{
+  body > *{display:none !important;}
+  .print-overlay,.print-overlay.open{display:block !important;position:static !important;}
+  .print-bar,.pdf-status-strip,.print-hint-bar{display:none !important;}
+  .print-body{overflow:visible !important;padding:0 !important;}
+  .rpt{box-shadow:none !important;}
+}
 </style>
 </head>
 <body data-theme="dark">
@@ -583,50 +554,33 @@ input[type="number"]{text-align:center;}
   </div>
 </div>
 
-<!-- PDF PROGRESS OVERLAY -->
-<div class="pdf-progress-overlay" id="pdf-progress-overlay">
-  <div id="pdf-spinner-wrap" style="display:flex;flex-direction:column;align-items:center;gap:12px">
-    <div class="pdf-spinner"></div>
-    <div class="pdf-prog-text" id="pdf-prog-text">Building PDF…</div>
-    <div class="pdf-prog-sub">Please wait, do not close</div>
-  </div>
-  <div class="pdf-share-card" id="pdf-share-card" style="display:none">
-    <h3>📄 PDF Ready!</h3>
-    <div class="pdf-method-badge" id="pdf-method-badge">SHARE</div>
-    <p id="pdf-share-desc">Choose how to save your report:</p>
-    <div class="pdf-share-btns" id="pdf-share-btns"></div>
-    <button class="btn btn-ol" style="margin-top:10px;width:100%;padding:10px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:transparent;border:1px solid var(--border);color:var(--text)" onclick="closePdfOverlay()">Close</button>
-  </div>
-</div>
-
-<!-- PRINT / SCREENSHOT VIEWER OVERLAY -->
+<!-- ═══════════════════════════════════════════════════════
+     PRINT / VIEWER OVERLAY — COMPLETELY REWRITTEN
+     Works in Telegram via: Share API → Direct DL → Print
+════════════════════════════════════════════════════════ -->
 <div class="print-overlay" id="print-overlay">
+  <!-- Top bar -->
   <div class="print-bar">
     <div class="print-bar-title" id="print-bar-title">📄 Report Viewer</div>
     <div class="print-bar-btns">
-      <button class="pb-btn pb-print" onclick="doPrint()">🖨️ Print/Save</button>
-      <button class="pb-btn pb-share" id="pb-native-share" style="display:none" onclick="doNativeShare()">📤 Share</button>
-      <button class="pb-btn pb-close" onclick="closePrintOverlay()">✕</button>
+      <button class="pb-btn pb-print" onclick="doPrint()">🖨️ Print</button>
+      <button class="pb-btn pb-share" id="pb-share-btn" style="display:none" onclick="doShare()">📤 Share PDF</button>
+      <button class="pb-btn pb-dl"   id="pb-dl-btn"    style="display:none" onclick="doDirectDL()">⬇️ DL PDF</button>
+      <button class="pb-btn pb-close" onclick="closePrintOverlay()">✕ Close</button>
     </div>
+  </div>
+  <!-- PDF build status strip -->
+  <div class="pdf-status-strip" id="pdf-status-strip">
+    <div class="pdf-status-dot building" id="pdf-status-dot"></div>
+    <span id="pdf-status-text">Building PDF in background…</span>
+  </div>
+  <!-- Telegram tip -->
+  <div class="print-hint-bar" id="print-hint-bar">
+    📱 <strong>Telegram:</strong> Tap <strong>🖨️ Print</strong> → <em>Save as PDF</em>. On Android, <strong>📤 Share PDF</strong> appears when ready.
   </div>
   <div class="print-body">
-    <div class="print-hint" id="print-hint">
-      📱 <strong>Telegram Tip:</strong> Tap <strong>🖨️ Print/Save</strong> → select <em>"Save as PDF"</em> from the printer options. Or take screenshots of each page.
-    </div>
     <div id="print-content"></div>
   </div>
-</div>
-
-<!-- REPORT OVERLAY -->
-<div class="roverlay" id="roverlay">
-  <div class="roverlay-bar">
-    <div class="rov-title" id="rov-title">📄 Report</div>
-    <div class="rov-btns">
-      <button class="rbtn rbtn-dl" id="dl-btn" onclick="downloadPDF()">⬇️ PDF</button>
-      <button class="rbtn rbtn-cl" onclick="closeOverlay()">✕</button>
-    </div>
-  </div>
-  <div class="roverlay-body" id="roverlay-body"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -708,7 +662,6 @@ input[type="number"]{text-align:center;}
           <button class="btn btn-p" style="margin-top:10px" onclick="lockExams()">Lock &amp; Let's Go! 🚀</button>
         </div>
       </div>
-
       <div class="card">
         <div class="acc-hdr" onclick="toggleAcc('a_tough',this)">
           <div class="card-h">My Tough Subjects</div><span class="acc-arr">▼</span>
@@ -718,7 +671,6 @@ input[type="number"]{text-align:center;}
           <div id="tough-selector" class="sub-grid"></div>
         </div>
       </div>
-
       <div class="card">
         <div class="acc-hdr" onclick="toggleAcc('a_pyq',this)">
           <div class="card-h">PYQ Papers Goal</div><span class="acc-arr">▼</span>
@@ -733,7 +685,6 @@ input[type="number"]{text-align:center;}
           <div id="pyq-root"></div>
         </div>
       </div>
-
       <div class="card">
         <div class="acc-hdr" onclick="toggleAcc('a_monthly',this)">
           <div class="card-h">Monthly Goals Reached</div><span class="acc-arr">▼</span>
@@ -747,7 +698,6 @@ input[type="number"]{text-align:center;}
           </div>
         </div>
       </div>
-
       <div class="card">
         <div class="acc-hdr" onclick="toggleAcc('a_phases',this)">
           <div class="card-h">Reading Phases</div><span class="acc-arr">▼</span>
@@ -817,7 +767,6 @@ input[type="number"]{text-align:center;}
         <div class="chart-wrap"><canvas id="hoursChart"></canvas></div>
         <div class="chart-h" style="color:var(--primary)">MCQs Solved Trend</div>
         <div class="chart-wrap"><canvas id="mcqChart"></canvas></div>
-
         <div class="chart-sh" style="color:var(--accent2);margin-top:12px">📋 Study Log</div>
         <div class="log-table-wrap">
           <table class="log-table">
@@ -835,7 +784,6 @@ input[type="number"]{text-align:center;}
             <tbody id="logBody"></tbody>
           </table>
         </div>
-
         <div class="chart-sh" style="color:var(--primary);border-top:1px solid rgba(128,128,128,.1);padding-top:10px;margin-top:10px">Phase Matrix — Days</div>
         <div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th style="text-align:left">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead><tbody id="matrixBody"></tbody></table></div>
         <div class="chart-sh" style="color:var(--green);margin-top:12px">Phase Matrix — MCQs</div>
@@ -962,7 +910,6 @@ input[type="number"]{text-align:center;}
           <div class="chart-wrap"><canvas id="neetPhaseAvgChart"></canvas></div>
           <div id="neetStats"></div>
         </div>
-
         <div id="ini-area" style="display:none">
           <div class="chart-sh" style="color:var(--green)">INICET Progress</div>
           <div class="chart-scroll"><div class="chart-scroll-inner" id="ini-scroll-inner"><canvas id="gtIniChart"></canvas></div></div>
@@ -972,7 +919,6 @@ input[type="number"]{text-align:center;}
           <div class="chart-wrap"><canvas id="iniPhaseAvgChart"></canvas></div>
           <div id="iniStats"></div>
         </div>
-
         <div id="fmge-area" style="display:none">
           <div class="chart-sh" style="color:var(--accent2)">FMGE Total Progress</div>
           <div class="chart-scroll"><div class="chart-scroll-inner" id="fmge-scroll-inner"><canvas id="gtFmgeChart"></canvas></div></div>
@@ -1031,20 +977,16 @@ input[type="number"]{text-align:center;}
         </div>
       </div>
     </div>
-
   </div><!-- /pane-quant -->
 
   <!-- QUALITATIVE PANE -->
   <div id="pane-qual" class="main-pane">
 
-    <!-- SLIDESHOW (upgraded: 10s timer, prev/next, swipe) -->
     <div class="slideshow" id="slideshow-card">
       <div class="ss-lbl">📌 High-Yield Fact Slideshow</div>
       <div class="ss-counter" id="ss-counter"></div>
       <div id="ss-box">Add facts in the <strong>Fact Salad</strong> tab to see them here!</div>
-      <!-- progress bar -->
       <div class="ss-prog-bar"><div class="ss-prog-fill" id="ss-prog-fill" style="width:100%"></div></div>
-      <!-- nav row -->
       <div class="ss-nav">
         <button class="ss-nav-btn" onclick="slideNav(-1)" title="Previous">‹</button>
         <div class="ss-timer" id="ss-timer"></div>
@@ -1110,7 +1052,9 @@ input[type="number"]{text-align:center;}
       </div>
     </div>
 
-    <!-- PDF SECTION -->
+    <!-- ══════════════════════════════════════════
+         PDF SECTION — FIXED & TELEGRAM-OPTIMIZED
+    ═══════════════════════════════════════════ -->
     <div class="pdf-card">
       <div class="pdf-title">📄 Download Reports</div>
       <div class="warn-box">
@@ -1961,125 +1905,105 @@ function saveQual(type){
   updateSlideshow();
 }
 
-/* ═══════════════════════════════════════════════════
-   SLIDESHOW — 10-second auto-advance, ‹ › navigation,
-   touch swipe, animated progress bar
-═══════════════════════════════════════════════════ */
-const SLIDE_DURATION = 10; // seconds
-let curSlide = 0;
-let slideCountdown = SLIDE_DURATION;
-let slideIval = null;
-let ssSwipeX = 0;
-
-function slideNav(dir) {
-  const db  = getQualDB();
-  const len = db.factSalad.length;
-  if (!len) return;
-  curSlide = (curSlide + dir + len) % len;
+/* ═══ SLIDESHOW ═══ */
+const SLIDE_DURATION = 10;
+let curSlide = 0, slideCountdown = SLIDE_DURATION, slideIval = null, ssSwipeX = 0;
+function slideNav(dir){
+  const db=getQualDB(), len=db.factSalad.length;
+  if(!len) return;
+  curSlide=(curSlide+dir+len)%len;
   showSlide();
 }
-
-function showSlide() {
-  const db  = getQualDB();
-  const box = document.getElementById('ss-box');
-  const ctr = document.getElementById('ss-counter');
-  const tmr = document.getElementById('ss-timer');
-  const fill= document.getElementById('ss-prog-fill');
-
-  if (!db.factSalad.length) {
-    box.innerHTML = 'Add facts in the <strong>Fact Salad</strong> tab to see them here!';
-    ctr.textContent = ''; tmr.textContent = '';
-    if (fill) fill.style.width = '0%';
+function showSlide(){
+  const db=getQualDB();
+  const box=document.getElementById('ss-box');
+  const ctr=document.getElementById('ss-counter');
+  const tmr=document.getElementById('ss-timer');
+  const fill=document.getElementById('ss-prog-fill');
+  if(!db.factSalad.length){
+    box.innerHTML='Add facts in the <strong>Fact Salad</strong> tab to see them here!';
+    ctr.textContent=''; tmr.textContent='';
+    if(fill) fill.style.width='0%';
     return;
   }
-
-  if (curSlide >= db.factSalad.length) curSlide = 0;
-  const f = db.factSalad[curSlide];
-  box.innerHTML = `<div class="ss-sub">📚 ${f.sub}</div>
-    <div class="ss-q">❓ ${f.q}</div>
-    <div class="ss-a">✅ ${f.a}</div>`;
-  ctr.textContent = `${curSlide + 1} / ${db.factSalad.length}`;
-
-  // Reset countdown & progress bar
-  slideCountdown = SLIDE_DURATION;
-  if (fill) fill.style.transition = 'none';
-  if (fill) fill.style.width = '100%';
-  // Trigger reflow so transition restarts
-  if (fill) fill.getBoundingClientRect();
-  if (fill) fill.style.transition = `width ${SLIDE_DURATION}s linear`;
-  if (fill) fill.style.width = '0%';
-
+  if(curSlide>=db.factSalad.length) curSlide=0;
+  const f=db.factSalad[curSlide];
+  box.innerHTML=`<div class="ss-sub">📚 ${f.sub}</div><div class="ss-q">❓ ${f.q}</div><div class="ss-a">✅ ${f.a}</div>`;
+  ctr.textContent=`${curSlide+1} / ${db.factSalad.length}`;
+  slideCountdown=SLIDE_DURATION;
+  if(fill){ fill.style.transition='none'; fill.style.width='100%'; fill.getBoundingClientRect(); fill.style.transition=`width ${SLIDE_DURATION}s linear`; fill.style.width='0%'; }
   clearInterval(slideIval);
-  slideIval = setInterval(() => {
+  slideIval=setInterval(()=>{
     slideCountdown--;
-    if (tmr) tmr.textContent = `Next in ${slideCountdown}s`;
-    if (slideCountdown <= 0) {
-      clearInterval(slideIval);
-      curSlide = (curSlide + 1) % db.factSalad.length;
-      showSlide();
-    }
-  }, 1000);
+    if(tmr) tmr.textContent=`Next in ${slideCountdown}s`;
+    if(slideCountdown<=0){ clearInterval(slideIval); curSlide=(curSlide+1)%db.factSalad.length; showSlide(); }
+  },1000);
 }
-
-function updateSlideshow() {
-  const db = getQualDB();
-  if (!db.factSalad.length) {
-    document.getElementById('ss-box').innerHTML = 'Add facts in the <strong>Fact Salad</strong> tab to see them here!';
-    document.getElementById('ss-counter').textContent = '';
-    document.getElementById('ss-timer').textContent   = '';
-    const fill = document.getElementById('ss-prog-fill');
-    if (fill) fill.style.width = '0%';
+function updateSlideshow(){
+  const db=getQualDB();
+  if(!db.factSalad.length){
+    document.getElementById('ss-box').innerHTML='Add facts in the <strong>Fact Salad</strong> tab to see them here!';
+    document.getElementById('ss-counter').textContent='';
+    document.getElementById('ss-timer').textContent='';
+    const fill=document.getElementById('ss-prog-fill');
+    if(fill) fill.style.width='0%';
     clearInterval(slideIval);
     return;
   }
   showSlide();
 }
-
-/* Touch swipe support for slideshow */
 (function(){
-  const el = document.getElementById('slideshow-card');
-  if (!el) return;
-  el.addEventListener('touchstart', e => {
-    ssSwipeX = e.touches[0].clientX;
-  }, { passive: true });
-  el.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - ssSwipeX;
-    if (Math.abs(dx) > 40) slideNav(dx < 0 ? 1 : -1);
-  }, { passive: true });
+  const el=document.getElementById('slideshow-card');
+  if(!el) return;
+  el.addEventListener('touchstart',e=>{ ssSwipeX=e.touches[0].clientX; },{passive:true});
+  el.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-ssSwipeX; if(Math.abs(dx)>40) slideNav(dx<0?1:-1); },{passive:true});
 })();
-
 updateSlideshow();
 
 
-/* ═══════════════════════════════════════════════════
-   PDF — Telegram-compatible: Share API → Print → Screenshot
-═══════════════════════════════════════════════════ */
-let _pdfMode = 'daily';
-let _pdfBlob = null;
-let _pdfFileName = '';
-let _pdfShareFile = null;
+/* ═══════════════════════════════════════════════════════════════
+   PDF SYSTEM — COMPLETELY REWRITTEN FOR TELEGRAM WEBAPP
+   
+   ARCHITECTURE:
+   ┌──────────────────────────────────────────────────────────┐
+   │ openReport(mode)                                          │
+   │   → Show HTML viewer INSTANTLY (no wait, always works)   │
+   │   → Build PDF asynchronously in background               │
+   │   → Show delivery buttons as each method becomes ready   │
+   └──────────────────────────────────────────────────────────┘
+   
+   DELIVERY PRIORITY (Telegram-optimized):
+   1. 📤 Share PDF  – navigator.share({files}) – Android/iOS native
+   2. ⬇️ Direct DL  – Object URL anchor click – Desktop / some mobile  
+   3. 🖨️ Print      – window.print() → "Save as PDF" – ALWAYS works
+   
+   ELIMINATED:
+   ✗ Logo network fetch (CORS blocker in Telegram)
+   ✗ Blocking progress overlay
+   ✗ Broken download-only approach
+   ✗ Stuck overlays with no escape
+═══════════════════════════════════════════════════════════════ */
 
-function closePdfOverlay() {
-  document.getElementById('pdf-progress-overlay').classList.remove('open');
-  document.getElementById('pdf-spinner-wrap').style.display = 'flex';
-  document.getElementById('pdf-share-card').style.display   = 'none';
-  _pdfBlob = null; _pdfShareFile = null;
+let _pdfMode       = 'daily';
+let _pdfBlob       = null;
+let _pdfFileName   = '';
+let _pdfShareFile  = null;
+let _pdfBuilding   = false;
+
+/* ── Helpers ─────────────────────────────────────────────── */
+function setPdfStatus(state, text) {
+  const dot  = document.getElementById('pdf-status-dot');
+  const span = document.getElementById('pdf-status-text');
+  if (!dot || !span) return;
+  dot.className = 'pdf-status-dot ' + state; // building | ready | failed
+  span.textContent = text;
 }
 
-function closePrintOverlay() {
-  document.getElementById('print-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function doPrint() { window.print(); }
-
-async function doNativeShare() {
-  if (!_pdfShareFile) { showToast('No file ready','#e05c7a'); return; }
-  try {
-    await navigator.share({ files:[_pdfShareFile], title:_pdfFileName });
-  } catch(e) {
-    if (e.name !== 'AbortError') showToast('Share failed: '+e.message,'#e05c7a');
-  }
+function getReportLabel(mode) {
+  const now = new Date();
+  return mode === 'daily'
+    ? `Daily – ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`
+    : `Monthly – ${now.toLocaleString('default',{month:'long',year:'numeric'})}`;
 }
 
 function getFiltered(mode) {
@@ -2087,26 +2011,44 @@ function getFiltered(mode) {
   const now = new Date();
   const todayStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
   const mStr     = now.toLocaleString('default',{month:'long',year:'numeric'});
-  const fn = mode==='daily' ? i=>i.date===todayStr : i=>i.month===mStr;
-  return { fs:db.factSalad.filter(fn), swt:db.swt.filter(fn), gt:db.gt.filter(fn) };
+  const fn = mode === 'daily' ? i => i.date === todayStr : i => i.month === mStr;
+  return { fs: db.factSalad.filter(fn), swt: db.swt.filter(fn), gt: db.gt.filter(fn) };
 }
 
+/* ── HTML report builder (unchanged, always works) ────────── */
 function buildReportHTML(mode) {
   const now   = new Date();
-  const rtype = mode==='daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
-  const dstr  = mode==='daily'
+  const rtype = mode === 'daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
+  const dstr  = mode === 'daily'
     ? now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
     : now.toLocaleString('default',{month:'long',year:'numeric'});
   const {fs,swt,gt} = getFiltered(mode);
   const noData = !fs.length && !swt.length && !gt.length;
-  const grp = items => { const g={}; items.forEach(i=>{ const s=i.sub||'General'; (g[s]=g[s]||[]).push(i); }); return g; };
-  const fields = (e,arr) => arr.map(({lbl,key})=>e[key]?`<div class="rpt-fl-lbl">${lbl}</div><div class="rpt-fl-val">${e[key]}</div>`:'').join('');
-  const section = (hCls,label,items,flds) => {
-    if(!items.length) return '';
-    const grps=grp(items);
-    return `<div class="rpt-sec"><div class="rpt-sec-h ${hCls}">${label}</div>${Object.entries(grps).map(([sub,entries])=>`<div class="rpt-sub-h">Subject: ${sub}</div>${entries.map((e,i)=>`<div class="rpt-entry"><div class="rpt-enum">ENTRY ${i+1} | ${e.date||''}</div>${fields(e,flds)}</div>`).join('')}`).join('')}</div>`;
+  const grp = items => {
+    const g = {};
+    items.forEach(i => { const s = i.sub || 'General'; (g[s] = g[s] || []).push(i); });
+    return g;
   };
-  const LOGO='https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg';
+  const fields = (e, arr) => arr.map(({lbl,key}) =>
+    e[key] ? `<div class="rpt-fl-lbl">${lbl}</div><div class="rpt-fl-val">${e[key]}</div>` : ''
+  ).join('');
+  const section = (hCls, label, items, flds) => {
+    if (!items.length) return '';
+    const grps = grp(items);
+    return `<div class="rpt-sec">
+      <div class="rpt-sec-h ${hCls}">${label}</div>
+      ${Object.entries(grps).map(([sub,entries]) =>
+        `<div class="rpt-sub-h">Subject: ${sub}</div>
+        ${entries.map((e,i) =>
+          `<div class="rpt-entry">
+            <div class="rpt-enum">ENTRY ${i+1} | ${e.date||''}</div>
+            ${fields(e,flds)}
+          </div>`
+        ).join('')}`
+      ).join('')}
+    </div>`;
+  };
+  const LOGO = 'https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg';
   return `<div class="rpt">
     <div class="rpt-hd">
       <div class="rpt-u"><b>Dr. ${fullName}</b><br>ID: ${userId}</div>
@@ -2115,9 +2057,12 @@ function buildReportHTML(mode) {
       <div class="rpt-hd-t">Qualitative Revision Report</div>
     </div>
     <div class="rpt-stripe"></div>
-    <div class="rpt-meta"><div class="rpt-rtype">${rtype}</div><div class="rpt-rdate">${dstr}</div></div>
+    <div class="rpt-meta">
+      <div class="rpt-rtype">${rtype}</div>
+      <div class="rpt-rdate">${dstr}</div>
+    </div>
     <div class="rpt-body">
-      ${noData?'<div class="rpt-empty">📭 No entries for this period.</div>':`
+      ${noData ? '<div class="rpt-empty">📭 No entries for this period.</div>' : `
         ${section('sh-g','1. Fact Salad',fs,[{lbl:'Question / Topic',key:'q'},{lbl:'Answer / Key Fact',key:'a'}])}
         ${section('sh-b','2. SWT Mistake Checkpoint',swt,[{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}])}
         ${section('sh-r','3. GT Mistake Checkpoint',gt,[{lbl:'Exam Type',key:'examType'},{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}])}`}
@@ -2126,58 +2071,40 @@ function buildReportHTML(mode) {
   </div>`;
 }
 
-/* Opens the HTML report in the print overlay (viewer + print/share) */
+/* ── MAIN ENTRY POINT ──────────────────────────────────────── */
 function openReport(mode) {
   _pdfMode = mode;
-  const now   = new Date();
-  const label = mode==='daily'
-    ? `Daily – ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`
-    : `Monthly – ${now.toLocaleString('default',{month:'long',year:'numeric'})}`;
 
-  document.getElementById('print-bar-title').textContent = '📄 ' + label;
+  /* 1. Immediately show HTML viewer — NO WAITING */
+  document.getElementById('print-bar-title').textContent = '📄 ' + getReportLabel(mode);
   document.getElementById('print-content').innerHTML     = buildReportHTML(mode);
-
-  // Also fill the old roverlay in case user taps the PDF button there
-  if (document.getElementById('rov-title'))
-    document.getElementById('rov-title').textContent = '📄 ' + label;
-  if (document.getElementById('roverlay-body'))
-    document.getElementById('roverlay-body').innerHTML = buildReportHTML(mode);
-
-  // Show/hide native share button in print bar
-  const shareBarBtn = document.getElementById('pb-native-share');
-  if (shareBarBtn) shareBarBtn.style.display = 'none'; // will show after PDF is built
-
+  document.getElementById('pb-share-btn').style.display  = 'none';
+  document.getElementById('pb-dl-btn').style.display     = 'none';
+  setPdfStatus('building', 'Building PDF in background…');
   document.getElementById('print-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  /* 2. Build PDF asynchronously without blocking UI */
+  _pdfBlob = null; _pdfShareFile = null;
+  setTimeout(() => _buildPDFInBackground(mode), 100);
 }
 
-function closeOverlay() {
-  document.getElementById('roverlay').classList.remove('open');
+function closePrintOverlay() {
+  document.getElementById('print-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-/* Main PDF build & Telegram-safe delivery */
-async function downloadPDF() {
-  const btn  = document.getElementById('dl-btn');
-  const orig = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = '⏳ Building…'; btn.disabled = true; }
-
-  document.getElementById('pdf-prog-text').textContent = 'Building PDF…';
-  document.getElementById('pdf-spinner-wrap').style.display = 'flex';
-  document.getElementById('pdf-share-card').style.display   = 'none';
-  document.getElementById('pdf-progress-overlay').classList.add('open');
-
-  // Hide report overlay so progress overlay is visible
-  if (document.getElementById('roverlay'))
-    document.getElementById('roverlay').classList.remove('open');
-  // Hide print overlay too
-  document.getElementById('print-overlay').classList.remove('open');
-
+/* ── PDF Builder (no network fetch, no blocking) ─────────── */
+async function _buildPDFInBackground(mode) {
+  if (_pdfBuilding) return;
+  _pdfBuilding = true;
   try {
+    if (!window.jspdf) throw new Error('jsPDF not loaded');
     const {jsPDF} = window.jspdf;
-    const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
     const W=210, H=297, M=15; let y=0;
 
+    // Color palette (no external images needed)
     const Cdk=[30,30,42], Cbl=[52,152,219], Cac=[224,92,122],
           Cgn=[26,122,72], Cbu=[37,88,176], Crd=[154,37,64],
           Ctx=[40,40,60],  Cmt=[130,130,160], Cwh=[255,255,255], Clb=[240,242,248];
@@ -2191,188 +2118,146 @@ async function downloadPDF() {
     const nPage = () => { doc.addPage(); y=20; addFoot(); };
     const chk   = (n=15) => { if (y+n > H-22) nPage(); };
 
-    // Load logo (non-blocking, 5s timeout)
-    let logo = null;
-    try {
-      document.getElementById('pdf-prog-text').textContent = 'Loading logo…';
-      const blob = await Promise.race([
-        fetch('https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg').then(r=>r.blob()),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
-      ]);
-      logo = await new Promise(res=>{ const fr=new FileReader(); fr.onload=e=>res(e.target.result); fr.readAsDataURL(blob); });
-    } catch(e) { logo = null; }
-
-    document.getElementById('pdf-prog-text').textContent = 'Generating pages…';
-
-    // Cover page
+    /* ── Cover page ── */
     doc.setFillColor(...Cdk); doc.rect(0,0,W,72,'F');
     doc.setFillColor(...Cac); doc.rect(0,70,W,3,'F');
-    if (logo) doc.addImage(logo,'JPEG',W/2-17,8,34,34);
-    doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(...Cwh);
-    doc.text('Scalpel Study Squad',W/2,52,{align:'center'});
+
+    // Header text (no image fetch — avoids CORS hang)
+    doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(...Cwh);
+    doc.text('Scalpel Study Squad', W/2, 38, {align:'center'});
     doc.setFontSize(10); doc.setTextColor(...Cac);
-    doc.text('QUALITATIVE REVISION REPORT',W/2,62,{align:'center'});
-    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(180,210,255);
-    doc.text(`Dr. ${fullName}`,W-M,12,{align:'right'});
+    doc.text('QUALITATIVE REVISION REPORT', W/2, 52, {align:'center'});
+    doc.setFontSize(8); doc.setTextColor(180,210,255);
+    doc.text(`Dr. ${fullName}`, W-M, 12, {align:'right'});
     doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(140,170,220);
-    doc.text(`ID: ${userId}`,W-M,19,{align:'right'});
+    doc.text(`ID: ${userId}`, W-M, 19, {align:'right'});
     y = 82;
 
-    const now   = new Date();
-    const rtype = _pdfMode==='daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
-    const dstr  = _pdfMode==='daily'
+    const now    = new Date();
+    const rtype  = mode==='daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
+    const dstr   = mode==='daily'
       ? now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
       : now.toLocaleString('default',{month:'long',year:'numeric'});
 
     doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...Cbl);
-    doc.text(rtype,W/2,y,{align:'center'}); y+=8;
+    doc.text(rtype, W/2, y, {align:'center'}); y+=8;
     doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(...Ctx);
-    doc.text(dstr,W/2,y,{align:'center'}); y+=12;
+    doc.text(dstr, W/2, y, {align:'center'}); y+=12;
     doc.setDrawColor(...Cbl); doc.setLineWidth(0.7);
-    doc.line(M,y,W-M,y); y+=12;
+    doc.line(M, y, W-M, y); y+=12;
 
-    const {fs,swt,gt} = getFiltered(_pdfMode);
+    const {fs, swt, gt} = getFiltered(mode);
 
-    function pdfSection(title,clr,items,flds) {
+    function pdfSection(title, clr, items, flds) {
       if (!items.length) return;
       chk(20);
-      doc.setFillColor(...clr); doc.rect(M,y-4,W-M*2,11,'F');
+      doc.setFillColor(...clr); doc.rect(M, y-4, W-M*2, 11, 'F');
       doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...Cwh);
-      doc.text(title,M+4,y+4); y+=14;
+      doc.text(title, M+4, y+4); y+=14;
       const grps={};
-      items.forEach(i=>{ const s=i.sub||'General'; (grps[s]=grps[s]||[]).push(i); });
-      Object.entries(grps).forEach(([sub,entries])=>{
+      items.forEach(i => { const s=i.sub||'General'; (grps[s]=grps[s]||[]).push(i); });
+      Object.entries(grps).forEach(([sub, entries]) => {
         chk(14);
-        doc.setFillColor(...Clb); doc.rect(M+4,y-3,W-M*2-8,9,'F');
+        doc.setFillColor(...Clb); doc.rect(M+4, y-3, W-M*2-8, 9, 'F');
         doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(...Cdk);
-        doc.text(`Subject: ${sub}`,M+8,y+3); y+=11;
-        entries.forEach((item,idx)=>{
+        doc.text(`Subject: ${sub}`, M+8, y+3); y+=11;
+        entries.forEach((item, idx) => {
           chk(12);
           doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...Cbl);
-          doc.text(`Entry ${idx+1}  |  ${item.date||''}`,M+10,y); y+=5;
-          flds.forEach(({lbl,key})=>{
-            const val=item[key]; if(!val) return; chk(8);
+          doc.text(`Entry ${idx+1}  |  ${item.date||''}`, M+10, y); y+=5;
+          flds.forEach(({lbl,key}) => {
+            const val = item[key]; if (!val) return; chk(8);
             doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...Cac);
-            doc.text(`${lbl}:`,M+12,y);
+            doc.text(`${lbl}:`, M+12, y);
             doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...Ctx);
-            const lines=doc.splitTextToSize(val,W-M*2-30);
-            doc.text(lines,M+12,y+5); y+=5+lines.length*5; chk(6);
+            const lines = doc.splitTextToSize(String(val), W-M*2-30);
+            doc.text(lines, M+12, y+5); y+=5+lines.length*5; chk(6);
           });
           doc.setDrawColor(210,215,235); doc.setLineWidth(0.2);
-          doc.line(M+10,y+2,W-M-10,y+2); y+=7;
+          doc.line(M+10, y+2, W-M-10, y+2); y+=7;
         });
         y+=3;
       });
       y+=6;
     }
 
-    pdfSection('1. FACT SALAD',          Cgn, fs,  [{lbl:'Question / Topic',key:'q'},{lbl:'Answer / Key Fact',key:'a'}]);
-    pdfSection('2. SWT MISTAKE CHECKPOINT', Cbu, swt, [{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
-    pdfSection('3. GT MISTAKE CHECKPOINT',  Crd, gt,  [{lbl:'Exam Type',key:'examType'},{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
+    pdfSection('1. FACT SALAD',            Cgn, fs,  [{lbl:'Question / Topic',key:'q'},{lbl:'Answer / Key Fact',key:'a'}]);
+    pdfSection('2. SWT MISTAKE CHECKPOINT',Cbu, swt, [{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
+    pdfSection('3. GT MISTAKE CHECKPOINT', Crd, gt,  [{lbl:'Exam Type',key:'examType'},{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
 
     if (!fs.length && !swt.length && !gt.length) {
       doc.setFont('helvetica','italic'); doc.setFontSize(12); doc.setTextColor(...Cmt);
-      doc.text('No entries found for this period.',W/2,y+20,{align:'center'});
+      doc.text('No entries found for this period.', W/2, y+20, {align:'center'});
     }
     addFoot();
 
-    // Filename
-    _pdfFileName = _pdfMode==='daily'
+    /* ── Store blob & filename ── */
+    _pdfFileName  = mode==='daily'
       ? `Scalpel_Daily_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.pdf`
       : `Scalpel_Monthly_${now.toLocaleString('default',{month:'long',year:'numeric'}).replace(' ','_')}.pdf`;
-
-    document.getElementById('pdf-prog-text').textContent = 'Finalizing…';
-
     _pdfBlob      = doc.output('blob');
     _pdfShareFile = new File([_pdfBlob], _pdfFileName, {type:'application/pdf'});
 
-    // Capability detection → choose best delivery method
+    /* ── Show delivery buttons based on capability ── */
+    setPdfStatus('ready', `✅ PDF ready — ${_pdfFileName}`);
+
+    // Button 1: Share (native share sheet — best on Android/iOS)
     const canShare = !!(navigator.canShare && navigator.canShare({files:[_pdfShareFile]}));
-    const btnsEl   = document.getElementById('pdf-share-btns');
-    const badgeEl  = document.getElementById('pdf-method-badge');
-    const descEl   = document.getElementById('pdf-share-desc');
-    btnsEl.innerHTML = '';
+    document.getElementById('pb-share-btn').style.display = canShare ? 'inline-block' : 'none';
 
-    if (canShare) {
-      // ── BEST: Android native share sheet ──
-      badgeEl.textContent         = '✅ NATIVE SHARE';
-      badgeEl.style.background    = 'var(--green)';
-      descEl.textContent          = 'Tap below to save or share your PDF via Files, Drive, Telegram, etc.';
-      const shareBtn              = document.createElement('button');
-      shareBtn.className          = 'btn btn-g';
-      shareBtn.style.padding      = '14px';
-      shareBtn.textContent        = '📤 Share / Save PDF';
-      shareBtn.onclick            = doNativeShare;
-      btnsEl.appendChild(shareBtn);
-      // Print fallback
-      const printBtn              = document.createElement('button');
-      printBtn.className          = 'btn btn-p';
-      printBtn.style.padding      = '12px';
-      printBtn.textContent        = '🖨️ Print / Save as PDF';
-      printBtn.onclick            = () => { closePdfOverlay(); openViewerForPrint(); };
-      btnsEl.appendChild(printBtn);
-    } else {
-      // ── FALLBACK: Print → Save as PDF ──
-      badgeEl.textContent         = '🖨️ PRINT METHOD';
-      badgeEl.style.background    = 'var(--primary)';
-      descEl.innerHTML            = '<strong>Telegram blocks direct downloads.</strong><br>Use <em>Print → Save as PDF</em>, or take screenshots of the viewer.';
-      const printBtn              = document.createElement('button');
-      printBtn.className          = 'btn btn-g';
-      printBtn.style.padding      = '14px';
-      printBtn.textContent        = '🖨️ Open Print / Save as PDF';
-      printBtn.onclick            = () => { closePdfOverlay(); openViewerForPrint(); };
-      btnsEl.appendChild(printBtn);
-      // Direct download attempt (works on desktop)
-      const dlBtn                 = document.createElement('button');
-      dlBtn.className             = 'btn btn-p';
-      dlBtn.style.padding         = '12px';
-      dlBtn.textContent           = '⬇️ Try Direct Download';
-      dlBtn.onclick               = () => {
-        try {
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(_pdfBlob);
-          a.download = _pdfFileName;
-          document.body.appendChild(a); a.click();
-          setTimeout(()=>document.body.removeChild(a), 1000);
-        } catch(e) { showToast('❌ Blocked. Use Print instead.','#e05c7a'); }
-      };
-      btnsEl.appendChild(dlBtn);
-    }
-
-    document.getElementById('pdf-spinner-wrap').style.display = 'none';
-    document.getElementById('pdf-share-card').style.display   = 'block';
-
-    // Also update the print-bar native share btn visibility
-    const shareBarBtn = document.getElementById('pb-native-share');
-    if (shareBarBtn) shareBarBtn.style.display = canShare ? 'inline-block' : 'none';
+    // Button 2: Direct download (works on desktop, some mobile)
+    document.getElementById('pb-dl-btn').style.display = 'inline-block';
 
   } catch(err) {
-    console.error('PDF error:', err);
-    closePdfOverlay();
-    showToast('⚠️ PDF failed: '+err.message, '#e05c7a');
+    console.error('PDF build error:', err);
+    setPdfStatus('failed', '⚠️ PDF failed — use 🖨️ Print instead');
+    document.getElementById('pb-dl-btn').style.display = 'none';
+    document.getElementById('pb-share-btn').style.display = 'none';
   }
-
-  if (btn) { btn.textContent = orig; btn.disabled = false; }
+  _pdfBuilding = false;
 }
 
-/* Opens HTML report in print overlay (for print / screenshot delivery) */
-function openViewerForPrint() {
-  const now   = new Date();
-  const label = _pdfMode==='daily'
-    ? `Daily – ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`
-    : `Monthly – ${now.toLocaleString('default',{month:'long',year:'numeric'})}`;
+/* ── Delivery Methods ────────────────────────────────────── */
 
-  document.getElementById('print-bar-title').textContent = '📄 ' + label;
-  document.getElementById('print-content').innerHTML     = buildReportHTML(_pdfMode);
+/** 🖨️ Always-works: system print dialog → Save as PDF */
+function doPrint() { window.print(); }
 
-  const shareBarBtn = document.getElementById('pb-native-share');
-  if (shareBarBtn) {
-    const canShare = !!(navigator.canShare && _pdfShareFile && navigator.canShare({files:[_pdfShareFile]}));
-    shareBarBtn.style.display = canShare ? 'inline-block' : 'none';
+/** 📤 Native Share Sheet (Android/iOS Chrome) */
+async function doShare() {
+  if (!_pdfShareFile) {
+    showToast('⏳ PDF still building, please wait…', '#f7a94f');
+    return;
   }
+  try {
+    await navigator.share({ files:[_pdfShareFile], title: _pdfFileName });
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      showToast('Share failed — try 🖨️ Print or ⬇️ DL', '#e05c7a');
+    }
+  }
+}
 
-  document.getElementById('print-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+/** ⬇️ Direct download via Object URL */
+function doDirectDL() {
+  if (!_pdfBlob) {
+    showToast('⏳ PDF still building, please wait…', '#f7a94f');
+    return;
+  }
+  try {
+    const url = URL.createObjectURL(_pdfBlob);
+    const a   = document.createElement('a');
+    a.href     = url;
+    a.download = _pdfFileName;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+    showToast('✅ Download started!');
+  } catch(e) {
+    // Telegram blocks object URL downloads → guide to print
+    showToast('⚠️ Blocked — tap 🖨️ Print → Save as PDF', '#f7a94f');
+  }
 }
 
 /* ═══ MASTER UPDATE ═══ */
