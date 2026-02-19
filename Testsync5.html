@@ -32,7 +32,6 @@
   const userId  = tgUser.id;
   const userName = tgUser.first_name || "Doctor";
 
-  /* ─── SYNC TO CLOUD (all keys including QUAL) ─── */
   window.syncToCloud = function() {
     const ALL_KEYS = ['LOGS','NEET','INI','FMGE','SWT','GOALS','PYQ','TOUGH','QUAL'];
     const prefix   = `SSS_PRO_V3_${userId}_`;
@@ -56,7 +55,6 @@
       });
   };
 
-  /* ─── LEADERBOARD WRITE ─── */
   window.pushToLeaderboard = function(stats) {
     if (userId === "OFFLINE") return;
     const updates = {};
@@ -72,7 +70,6 @@
     update(ref(db), updates).catch(e => console.error("LB Error", e));
   };
 
-  /* ─── LEADERBOARD READ ─── */
   window.fetchLeaderboard = function(category, subject) {
     let path = `leaderboard/${category}`;
     if (category === 'swt' && subject) path += `/${subject}`;
@@ -86,7 +83,6 @@
     }).catch(console.error);
   };
 
-  /* ─── PULL FROM CLOUD ─── */
   window.pullFromCloud = function() {
     if (userId === "OFFLINE") return;
     const prefix = `SSS_PRO_V3_${userId}_`;
@@ -125,7 +121,6 @@
   --inp:#ffffff;
 }
 
-/* ═══════════════ RESET & BASE ═══════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{min-height:100vh;background:var(--bg);color:var(--text);
   font-family:'Nunito',sans-serif;transition:background .3s,color .3s;
@@ -133,7 +128,6 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);
 body{padding:12px 12px 50px;}
 .wrap{max-width:540px;margin:0 auto;}
 
-/* ═══════════════ TOPBAR ═══════════════ */
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .theme-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);
   background:var(--card);color:var(--text);cursor:pointer;font-size:12px;
@@ -143,7 +137,6 @@ body{padding:12px 12px 50px;}
 .u-sync{font-size:9px;color:var(--accent2);display:block;}
 .u-id{font-size:9px;color:var(--muted);font-family:monospace;}
 
-/* ═══════════════ HEADER ═══════════════ */
 .hdr{text-align:center;padding:20px 16px 14px;background:var(--card);
   border-radius:20px;border:1px solid var(--border);box-shadow:var(--shadow);
   position:relative;overflow:hidden;margin-bottom:14px;}
@@ -156,7 +149,6 @@ body{padding:12px 12px 50px;}
 .hdr-sub{font-size:10px;font-weight:800;letter-spacing:3px;color:var(--accent);
   text-transform:uppercase;margin-top:2px;}
 
-/* ═══════════════ STREAK ═══════════════ */
 .streak-wrap{text-align:center;padding:8px 0 3px;}
 .streak-num{font-size:18px;font-weight:800;color:var(--accent2);display:block;}
 .streak-ico{font-size:20px;margin:4px 0;}
@@ -165,7 +157,6 @@ body{padding:12px 12px 50px;}
   font-size:13px;text-transform:uppercase;text-align:center;margin:10px 0 14px;
   line-height:1.4;}
 
-/* ═══════════════ EXAM DASH ═══════════════ */
 .exam-dash{background:var(--card);border:1px solid var(--border);border-radius:16px;
   padding:12px;margin-bottom:14px;}
 .exam-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
@@ -178,7 +169,6 @@ body{padding:12px 12px 50px;}
 .exam-lbl{font-size:9px;font-weight:800;text-transform:uppercase;
   opacity:.85;letter-spacing:.5px;margin-top:2px;display:block;}
 
-/* ═══════════════ MAIN TABS ═══════════════ */
 .main-tabs{display:flex;gap:6px;margin-bottom:14px;background:var(--card);
   border-radius:14px;padding:5px;border:1px solid var(--border);}
 .m-tab{flex:1;padding:13px 6px;border:none;border-radius:10px;background:transparent;
@@ -190,7 +180,6 @@ body{padding:12px 12px 50px;}
 .main-pane{display:none;}
 .main-pane.active{display:block;}
 
-/* ═══════════════ QUANT SUB-TABS ═══════════════ */
 .sub-tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
 .s-tab{flex:1;min-width:0;padding:9px 3px;border:1px solid var(--border);
   border-radius:10px;background:var(--card);color:var(--muted);cursor:pointer;
@@ -203,7 +192,6 @@ body{padding:12px 12px 50px;}
 .sub-pane{display:none;}
 .sub-pane.active{display:block;}
 
-/* ═══════════════ QUAL TABS ═══════════════ */
 .qual-tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--card);
   border-radius:12px;padding:5px;border:1px solid var(--border);}
 .q-tab{flex:1;padding:11px 5px;border:none;border-radius:9px;background:transparent;
@@ -213,7 +201,6 @@ body{padding:12px 12px 50px;}
 .qual-pane{display:none;}
 .qual-pane.active{display:block;}
 
-/* ═══════════════ CARDS ═══════════════ */
 .card{background:var(--card);padding:14px;border-radius:16px;
   border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:13px;}
 .card-h{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;
@@ -225,7 +212,6 @@ body{padding:12px 12px 50px;}
 .acc-body{display:none;margin-top:12px;}
 .acc-body.open{display:block;}
 
-/* ═══════════════ FORMS ═══════════════ */
 .lbl{display:block;font-size:10px;font-weight:800;letter-spacing:1.5px;
   color:var(--accent);text-transform:uppercase;margin-bottom:5px;margin-top:10px;}
 .hint{font-size:9px;color:var(--muted);margin-top:2px;}
@@ -241,7 +227,6 @@ input[type="checkbox"]{width:18px;height:18px;cursor:pointer;
   accent-color:var(--primary);-webkit-appearance:checkbox;appearance:checkbox;}
 input[type="number"]{text-align:center;}
 
-/* ═══════════════ BUTTONS ═══════════════ */
 .btn{padding:13px;border:none;border-radius:11px;font-family:'Rajdhani',sans-serif;
   font-size:15px;font-weight:700;letter-spacing:1.5px;cursor:pointer;
   width:100%;text-transform:uppercase;transition:all .2s;}
@@ -254,7 +239,6 @@ input[type="number"]{text-align:center;}
 .btn-ol{background:transparent;border:1px solid var(--border);color:var(--text);}
 .btn-danger{background:none;border:1px solid var(--accent);color:var(--accent);}
 
-/* ═══════════════ TIMER ═══════════════ */
 #timer-display{font-size:58px;font-weight:800;margin:10px 0;
   font-variant-numeric:tabular-nums;letter-spacing:2px;
   text-align:center;color:var(--primary);}
@@ -263,7 +247,6 @@ input[type="number"]{text-align:center;}
   #study-timer-card{min-height:85vh;display:flex;flex-direction:column;justify-content:center;}
 }
 
-/* ═══════════════ CHARTS ═══════════════ */
 .chart-wrap{width:100%;height:200px;position:relative;margin:12px 0;}
 .chart-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
   border-radius:10px;background:rgba(0,0,0,.1);
@@ -273,14 +256,34 @@ input[type="number"]{text-align:center;}
 .chart-sh{font-size:11px;font-weight:700;text-transform:uppercase;
   letter-spacing:.5px;margin:12px 0 4px;}
 
-/* ═══════════════ TABLES ═══════════════ */
-.log-table{width:100%;font-size:10px;border-collapse:collapse;
-  margin-top:8px;table-layout:fixed;}
-.log-table th,.log-table td{padding:8px 4px;
+/* ═══ FIXED LOG TABLE ═══ */
+.log-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-radius:8px;border:1px solid rgba(128,128,128,.12);}
+.log-table{width:100%;min-width:380px;font-size:11px;border-collapse:collapse;table-layout:fixed;}
+.log-table th,.log-table td{
+  padding:8px 6px;
   border-bottom:1px solid rgba(128,128,128,.1);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.log-table th{font-size:9px;font-weight:800;color:var(--accent);
-  text-transform:uppercase;letter-spacing:.5px;}
+  overflow:hidden;text-overflow:ellipsis;
+  vertical-align:middle;
+}
+.log-table th{
+  font-size:9px;font-weight:800;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.5px;
+  background:rgba(79,142,247,.08);
+  position:sticky;top:0;
+  white-space:nowrap;
+  text-align:center;
+}
+.log-table td{text-align:center;}
+.log-table td.td-date{text-align:left;font-size:10px;font-weight:700;color:var(--accent2);}
+.log-table td.td-subs{text-align:left;font-size:10px;color:var(--muted);white-space:normal;word-break:break-word;}
+.log-table tr:hover td{background:rgba(79,142,247,.05);}
+/* Column widths */
+.log-table .col-date{width:22%;}
+.log-table .col-hrs{width:13%;}
+.log-table .col-cyc{width:11%;}
+.log-table .col-mcq{width:13%;}
+.log-table .col-sub{width:41%;}
+
 .matrix-table{width:100%;font-size:10px;border-collapse:collapse;}
 .matrix-table th,.matrix-table td{border:1px solid rgba(128,128,128,.12);
   padding:5px 3px;text-align:center;}
@@ -288,7 +291,6 @@ input[type="number"]{text-align:center;}
 .m-row-h{text-align:left !important;font-weight:700;background:rgba(0,0,0,.1);}
 .m-total{font-weight:800;color:var(--accent2);background:rgba(247,169,79,.08);}
 
-/* ═══════════════ PHASE / GOALS ═══════════════ */
 .phase-blk{background:var(--bg2);border-radius:12px;padding:12px;
   margin-bottom:12px;border:1px solid var(--border);transition:all .3s;}
 .phase-blk.done{border-color:var(--green);background:rgba(62,207,124,.08);
@@ -314,7 +316,6 @@ input[type="number"]{text-align:center;}
   width:100%;margin-top:8px;border-radius:8px;font-size:12px;font-weight:800;
   cursor:pointer;font-family:'Rajdhani',sans-serif;}
 
-/* ═══════════════ PYQ ═══════════════ */
 .pyq-nav{display:flex;gap:5px;overflow-x:auto;margin-bottom:12px;padding-bottom:3px;}
 .pyq-tab{background:rgba(0,0,0,.2);border:1px solid var(--border);color:var(--muted);
   padding:9px 14px;font-size:11px;border-radius:8px;cursor:pointer;
@@ -330,12 +331,10 @@ input[type="number"]{text-align:center;}
 .pyq-cup.show{display:block;}
 @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
 
-/* ═══════════════ CALC PREVIEW ═══════════════ */
 .calc-prev{background:var(--pglow);padding:10px;border-radius:8px;
   margin-top:6px;font-size:12px;border:1px dashed var(--primary);
   display:flex;justify-content:space-around;font-weight:800;}
 
-/* ═══════════════ GT ═══════════════ */
 .gt-types{display:flex;margin-bottom:10px;border-radius:8px;
   overflow:hidden;border:1px solid var(--border);}
 .gt-type-btn{flex:1;padding:10px;text-align:center;background:var(--bg2);
@@ -344,7 +343,6 @@ input[type="number"]{text-align:center;}
 .gt-type-btn:last-child{border-right:none;}
 .gt-type-btn.active{background:var(--primary);color:#fff;}
 
-/* ═══════════════ MONTH NAV ═══════════════ */
 .month-nav{display:flex;justify-content:space-between;align-items:center;
   background:var(--pglow);border:1px solid var(--border);border-radius:10px;
   padding:8px 12px;margin-bottom:12px;}
@@ -353,7 +351,6 @@ input[type="number"]{text-align:center;}
 .month-lbl{font-family:'Rajdhani',sans-serif;font-size:15px;
   font-weight:700;color:var(--primary);text-transform:uppercase;}
 
-/* ═══════════════ GT STATS ═══════════════ */
 .gt-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
 .gt-stat-box{background:var(--bg2);padding:10px;border-radius:8px;text-align:center;}
 .gs-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;
@@ -361,7 +358,6 @@ input[type="number"]{text-align:center;}
 .gs-val{font-size:16px;font-weight:800;}
 .v-good{color:var(--green);}.v-bad{color:var(--accent);}
 
-/* ═══════════════ LEADERBOARD ═══════════════ */
 .rank-nav{display:flex;gap:4px;margin-bottom:14px;
   background:rgba(0,0,0,.2);padding:4px;border-radius:10px;}
 .rank-nav-btn{flex:1;border:none;background:none;color:var(--muted);
@@ -386,7 +382,6 @@ input[type="number"]{text-align:center;}
 .elite-tag{background:var(--primary);color:#fff;font-size:8px;
   padding:1px 5px;border-radius:4px;margin-left:4px;}
 
-/* ═══════════════ TOUGH SUBJECTS ═══════════════ */
 .alert-item{display:flex;justify-content:space-between;align-items:center;
   padding:10px 13px;margin-bottom:5px;border-radius:10px;
   font-size:12px;font-weight:700;border:1px solid transparent;}
@@ -397,7 +392,6 @@ input[type="number"]{text-align:center;}
   animation:pls 2s infinite;}
 @keyframes pls{0%,100%{box-shadow:none}50%{box-shadow:0 0 8px rgba(224,92,122,.4)}}
 
-/* ═══════════════ QUAL: SLIDESHOW ═══════════════ */
 .slideshow{background:var(--card);border-radius:14px;border:1px solid var(--border);
   border-left:4px solid var(--accent2);padding:15px 16px;margin-bottom:14px;
   min-height:100px;box-shadow:var(--shadow);position:relative;}
@@ -410,7 +404,7 @@ input[type="number"]{text-align:center;}
 .ss-a{color:var(--green);font-weight:700;margin-top:5px;font-size:13px;}
 .ss-timer{position:absolute;bottom:9px;right:13px;font-size:10px;color:var(--muted);}
 
-/* ═══════════════ PDF SECTION ═══════════════ */
+/* ═══ PDF SECTION ═══ */
 .pdf-card{background:var(--card);border-radius:14px;padding:18px;
   border:1px solid var(--border);margin-top:14px;}
 .pdf-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
@@ -426,7 +420,7 @@ input[type="number"]{text-align:center;}
   text-transform:uppercase;transition:all .2s;}
 .pdf-btn.mo{border-color:var(--accent2);}
 
-/* ═══════════════ REPORT OVERLAY ═══════════════ */
+/* ═══ REPORT OVERLAY ═══ */
 .roverlay{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;}
 .roverlay.open{display:flex;}
 .roverlay-bar{display:flex;align-items:center;justify-content:space-between;
@@ -475,7 +469,6 @@ input[type="number"]{text-align:center;}
 .rpt-foot{background:#f0f2f8;padding:9px;text-align:center;
   font-size:9px;color:#aaa;border-top:1px solid #e0e4f0;}
 
-/* ═══════════════ POPUP ═══════════════ */
 .pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);
   z-index:2000;justify-content:center;align-items:center;flex-direction:column;}
 .pop-overlay.open{display:flex;}
@@ -485,7 +478,6 @@ input[type="number"]{text-align:center;}
 .sb-row{display:grid;grid-template-columns:1fr 48px 48px 48px;
   gap:5px;align-items:center;margin-bottom:5px;font-size:10px;}
 
-/* ═══════════════ TOAST ═══════════════ */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
   background:var(--green);color:#fff;padding:11px 22px;border-radius:28px;
   font-weight:800;font-size:12px;letter-spacing:1px;
@@ -494,11 +486,9 @@ input[type="number"]{text-align:center;}
   max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
 
-/* ═══════════════ DANGER ZONE ═══════════════ */
 .danger-zone{margin-top:26px;padding:16px;
   border-top:1px dashed rgba(128,128,128,.2);}
 
-/* ═══════════════ MISC ═══════════════ */
 .row2{display:flex;gap:8px;}
 .row2>*{flex:1;}
 .info-box{background:var(--pglow);padding:11px 13px;border-radius:9px;
@@ -512,11 +502,29 @@ input[type="number"]{text-align:center;}
   border-bottom:1px solid rgba(128,128,128,.08);text-align:center;}
 .monthly-table th{color:var(--accent);font-weight:800;font-size:10px;text-transform:uppercase;}
 .divider{border:0;border-top:1px solid rgba(128,128,128,.12);margin:14px 0;}
+
+/* ═══ PDF PROGRESS OVERLAY ═══ */
+.pdf-progress-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);
+  z-index:99999;justify-content:center;align-items:center;flex-direction:column;gap:16px;
+}
+.pdf-progress-overlay.open{display:flex;}
+.pdf-spinner{width:48px;height:48px;border:4px solid rgba(79,142,247,.3);
+  border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pdf-prog-text{color:#fff;font-weight:800;font-size:14px;font-family:'Rajdhani',sans-serif;
+  letter-spacing:1px;text-align:center;}
+.pdf-prog-sub{color:var(--muted);font-size:11px;}
+.pdf-share-card{background:var(--card);border-radius:16px;border:2px solid var(--primary);
+  padding:20px;width:85%;max-width:340px;text-align:center;}
+.pdf-share-card h3{color:var(--primary);margin-bottom:8px;font-family:'Rajdhani',sans-serif;font-size:18px;}
+.pdf-share-card p{color:var(--muted);font-size:11px;margin-bottom:14px;line-height:1.5;}
+.pdf-share-btns{display:flex;flex-direction:column;gap:8px;}
 </style>
 </head>
 <body data-theme="dark">
 
-<!-- ═══════ POPUP OVERLAY ═══════ -->
+<!-- POPUP OVERLAY -->
 <div class="pop-overlay" id="pop-overlay">
   <div class="pop-card" id="pop-mcq">
     <h3 style="color:var(--primary)">Cycle Complete!</h3>
@@ -549,7 +557,26 @@ input[type="number"]{text-align:center;}
   </div>
 </div>
 
-<!-- ═══════ REPORT OVERLAY ═══════ -->
+<!-- ═══ PDF PROGRESS OVERLAY ═══ -->
+<div class="pdf-progress-overlay" id="pdf-progress-overlay">
+  <div id="pdf-spinner-wrap" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div class="pdf-spinner"></div>
+    <div class="pdf-prog-text" id="pdf-prog-text">Building PDF…</div>
+    <div class="pdf-prog-sub">Please wait, do not close</div>
+  </div>
+  <div class="pdf-share-card" id="pdf-share-card" style="display:none">
+    <h3>📄 PDF Ready!</h3>
+    <p>Your report has been generated. Choose how to get it:</p>
+    <div class="pdf-share-btns">
+      <button class="btn btn-g" id="pdf-open-btn">🌐 Open in Browser</button>
+      <button class="btn btn-p" id="pdf-download-btn">⬇️ Download File</button>
+      <button class="btn btn-o" id="pdf-copy-btn">📋 Copy Link</button>
+      <button class="btn btn-ol" style="margin-top:4px" onclick="closePdfOverlay()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT OVERLAY -->
 <div class="roverlay" id="roverlay">
   <div class="roverlay-bar">
     <div class="rov-title" id="rov-title">📄 Report</div>
@@ -563,7 +590,7 @@ input[type="number"]{text-align:center;}
 
 <div class="toast" id="toast"></div>
 
-<!-- ═══════════════════════ APP ═══════════════════════ -->
+<!-- APP -->
 <div class="wrap">
 
   <!-- TOPBAR -->
@@ -604,7 +631,7 @@ input[type="number"]{text-align:center;}
     </div>
   </div>
 
-  <!-- ═══ MAIN TAB BAR ═══ -->
+  <!-- MAIN TAB BAR -->
   <div class="main-tabs">
     <button class="m-tab active" onclick="switchMain('quant',this)">
       <span class="ico">📊</span>QUANTITATIVE
@@ -614,9 +641,7 @@ input[type="number"]{text-align:center;}
     </button>
   </div>
 
-  <!-- ════════════════════════════════════════ -->
-  <!--         QUANTITATIVE PANE              -->
-  <!-- ════════════════════════════════════════ -->
+  <!-- QUANTITATIVE PANE -->
   <div id="pane-quant" class="main-pane active">
 
     <div class="sub-tabs">
@@ -627,9 +652,8 @@ input[type="number"]{text-align:center;}
       <div class="s-tab" onclick="switchSub('sq-rank',this)"><span class="sico">🏆</span>Ranks</div>
     </div>
 
-    <!-- ── GOAL TAB ── -->
+    <!-- GOAL TAB -->
     <div id="sq-goal" class="sub-pane active">
-
       <div class="card">
         <div class="acc-hdr" onclick="toggleAcc('a_exams',this)">
           <div class="card-h">My Target Exams</div><span class="acc-arr">▼</span>
@@ -697,9 +721,9 @@ input[type="number"]{text-align:center;}
           </div>
         </div>
       </div>
-    </div><!-- /sq-goal -->
+    </div>
 
-    <!-- ── DAILY TAB ── -->
+    <!-- DAILY TAB -->
     <div id="sq-daily" class="sub-pane">
       <div id="tough-dash" style="margin-bottom:12px"></div>
 
@@ -754,24 +778,39 @@ input[type="number"]{text-align:center;}
         <div class="chart-wrap"><canvas id="hoursChart"></canvas></div>
         <div class="chart-h" style="color:var(--primary)">MCQs Solved Trend</div>
         <div class="chart-wrap"><canvas id="mcqChart"></canvas></div>
-        <div style="overflow-x:auto">
+
+        <!-- ═══ FIXED TABLE ═══ -->
+        <div class="chart-sh" style="color:var(--accent2);margin-top:12px">📋 Study Log</div>
+        <div class="log-table-wrap">
           <table class="log-table">
-            <thead><tr>
-              <th style="width:23%">Date</th><th style="width:14%">Hrs</th>
-              <th style="width:12%">Cyc</th><th style="width:15%">MCQ</th>
-              <th style="width:36%">Subjects</th>
-            </tr></thead>
+            <colgroup>
+              <col class="col-date">
+              <col class="col-hrs">
+              <col class="col-cyc">
+              <col class="col-mcq">
+              <col class="col-sub">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="col-date">Date</th>
+                <th class="col-hrs">Hours</th>
+                <th class="col-cyc">Cycles</th>
+                <th class="col-mcq">MCQs</th>
+                <th class="col-sub">Subjects</th>
+              </tr>
+            </thead>
             <tbody id="logBody"></tbody>
           </table>
         </div>
+
         <div class="chart-sh" style="color:var(--primary);border-top:1px solid rgba(128,128,128,.1);padding-top:10px;margin-top:10px">Phase Matrix — Days</div>
         <div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th style="text-align:left">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead><tbody id="matrixBody"></tbody></table></div>
         <div class="chart-sh" style="color:var(--green);margin-top:12px">Phase Matrix — MCQs</div>
         <div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th style="text-align:left">Subject</th><th>1st</th><th>2nd</th><th>3rd</th><th>Bonus</th></tr></thead><tbody id="mcqMatrixBody"></tbody></table></div>
       </div>
-    </div><!-- /sq-daily -->
+    </div>
 
-    <!-- ── SWT TAB ── -->
+    <!-- SWT TAB -->
     <div id="sq-swt" class="sub-pane">
       <div class="card">
         <div class="card-h" style="margin-bottom:12px">SWT Analytics</div>
@@ -816,9 +855,9 @@ input[type="number"]{text-align:center;}
         <div class="perf-row"><span>Strong Subject:</span><span class="p-strong" id="swtStrong">--</span></div>
         <div class="perf-row"><span>Weak Subject:</span><span class="p-weak" id="swtWeak">--</span></div>
       </div>
-    </div><!-- /sq-swt -->
+    </div>
 
-    <!-- ── GT TAB ── -->
+    <!-- GT TAB -->
     <div id="sq-gt" class="sub-pane">
       <div class="card">
         <div class="card-h" style="margin-bottom:10px">GT Intelligence</div>
@@ -911,9 +950,9 @@ input[type="number"]{text-align:center;}
           <div id="fmgeStats"></div>
         </div>
       </div>
-    </div><!-- /sq-gt -->
+    </div>
 
-    <!-- ── RANKINGS TAB ── -->
+    <!-- RANKINGS TAB -->
     <div id="sq-rank" class="sub-pane">
       <div class="card">
         <div style="text-align:center;margin-bottom:14px">
@@ -958,17 +997,14 @@ input[type="number"]{text-align:center;}
           <div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Fetching ranks…</div>
         </div>
       </div>
-    </div><!-- /sq-rank -->
+    </div>
 
   </div><!-- /pane-quant -->
 
 
-  <!-- ════════════════════════════════════════ -->
-  <!--         QUALITATIVE PANE               -->
-  <!-- ════════════════════════════════════════ -->
+  <!-- QUALITATIVE PANE -->
   <div id="pane-qual" class="main-pane">
 
-    <!-- SLIDESHOW -->
     <div class="slideshow">
       <div class="ss-lbl">📌 High-Yield Fact Slideshow</div>
       <div class="ss-counter" id="ss-counter"></div>
@@ -976,14 +1012,12 @@ input[type="number"]{text-align:center;}
       <div class="ss-timer" id="ss-timer"></div>
     </div>
 
-    <!-- QUAL TABS -->
     <div class="qual-tabs">
       <button class="q-tab active" onclick="switchQual('qp-fact',this)">🥗 Fact Salad</button>
       <button class="q-tab" onclick="switchQual('qp-swt',this)">⚡ SWT Mistake</button>
       <button class="q-tab" onclick="switchQual('qp-gt',this)">🎯 GT Mistake</button>
     </div>
 
-    <!-- FACT SALAD -->
     <div id="qp-fact" class="qual-pane active">
       <div class="card">
         <span class="lbl">Subject</span>
@@ -996,7 +1030,6 @@ input[type="number"]{text-align:center;}
       </div>
     </div>
 
-    <!-- SWT MISTAKE -->
     <div id="qp-swt" class="qual-pane">
       <div class="card">
         <span class="lbl">Subject</span>
@@ -1016,7 +1049,6 @@ input[type="number"]{text-align:center;}
       </div>
     </div>
 
-    <!-- GT MISTAKE -->
     <div id="qp-gt" class="qual-pane">
       <div class="card">
         <span class="lbl">Exam Type</span>
@@ -1073,7 +1105,6 @@ input[type="number"]{text-align:center;}
 
 </div><!-- /wrap -->
 
-<!-- ════════════════ JAVASCRIPT ════════════════ -->
 <script>
 /* ── TELEGRAM ── */
 const tg = window.Telegram.WebApp;
@@ -1084,7 +1115,6 @@ const userId   = tgUser.id;
 document.getElementById('uName').innerText = `Dr. ${fullName}`;
 document.getElementById('uId').innerText   = `ID: ${userId}`;
 
-/* ── KEYS ── */
 const PREFIX = `SSS_PRO_V3_${userId}_`;
 const KEYS = {
   LOGS: PREFIX+'LOGS', NEET: PREFIX+'NEET', INI: PREFIX+'INI',
@@ -1092,16 +1122,15 @@ const KEYS = {
   PYQ:  PREFIX+'PYQ',  TOUGH: PREFIX+'TOUGH', QUAL: PREFIX+'QUAL'
 };
 
-/* ── SUBJECTS ── */
 const SUBS_19 = ["Anatomy","Physiology","Biochemistry","Pathology","Microbiology",
   "Pharmacology","FMT","PSM","Ophthalmology","ENT","Medicine","Surgery",
   "OBG","Pediatrics","Anaesthesia","Dermatology","Orthopedics","Psychiatry","Radiology"];
 const SUBS_ALL = [...SUBS_19, "Mixed Bag", "Integrated Systems"];
 const PHASES_CFG = [
-  { id:'r1', name:'1. First Reading',   phase:'First Reading',        badge:'🥉' },
-  { id:'r2', name:'2. Second Reading',  phase:'Second Reading',       badge:'🥈' },
-  { id:'r3', name:'3. Third Reading',   phase:'Third Reading',        badge:'🥇' },
-  { id:'r4', name:'4. Extra Bonus',     phase:'Extra Bonus',          badge:'🏆' }
+  { id:'r1', name:'1. First Reading',   phase:'First Reading',  badge:'🥉' },
+  { id:'r2', name:'2. Second Reading',  phase:'Second Reading', badge:'🥈' },
+  { id:'r3', name:'3. Third Reading',   phase:'Third Reading',  badge:'🥇' },
+  { id:'r4', name:'4. Extra Bonus',     phase:'Extra Bonus',    badge:'🏆' }
 ];
 const PYQ_CATS = [
   { id:'neet', label:'NEET PG', type:'list', start:2025, end:2020 },
@@ -1110,7 +1139,6 @@ const PYQ_CATS = [
   { id:'upsc', label:'UPSC CMS',type:'list', start:2025, end:2020 }
 ];
 
-/* ── THEME ── */
 const savedTheme = localStorage.getItem('SSS_THEME');
 if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
 function toggleTheme() {
@@ -1123,7 +1151,6 @@ function toggleTheme() {
 function tc() { return document.documentElement.getAttribute('data-theme')==='light' ? '#1a1a2e' : '#e8e8f2'; }
 function gc() { return document.documentElement.getAttribute('data-theme')==='light' ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.07)'; }
 
-/* ── TOAST ── */
 function showToast(msg, col='#3ecf7c') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.style.background = col;
@@ -1131,13 +1158,11 @@ function showToast(msg, col='#3ecf7c') {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-/* ── ACCORDION ── */
 function toggleAcc(id, hdr) {
   document.getElementById(id).classList.toggle('open');
   hdr.classList.toggle('open');
 }
 
-/* ── POPUP ── */
 function openPopup(id) {
   document.querySelectorAll('.pop-card').forEach(c => c.style.display='none');
   document.getElementById(id).style.display = 'block';
@@ -1148,18 +1173,12 @@ function closePopup() {
   stopAlarm();
 }
 
-/* ── MAIN / SUB / QUAL TAB SWITCHING ── */
 function switchMain(id, btn) {
   document.querySelectorAll('.main-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
   document.getElementById('pane-'+id).classList.add('active');
   btn.classList.add('active');
   if (id === 'qual') initQualSubjects();
-  if (id === 'quant') {
-    const activeRankBtn = document.querySelector('.rank-nav-btn.active');
-    if (document.getElementById('sq-rank').classList.contains('active') && activeRankBtn)
-      loadLeaderboard(currentRankMode);
-  }
   updateUI();
 }
 function switchSub(id, btn) {
@@ -1177,7 +1196,6 @@ function switchQual(id, btn) {
   btn.classList.add('active');
 }
 
-/* ── POPULATE QUAL SUBJECT DROPDOWNS ── */
 function initQualSubjects() {
   document.querySelectorAll('.q-sub-list').forEach(sel => {
     if (sel.options.length > 0) return;
@@ -1186,9 +1204,7 @@ function initQualSubjects() {
 }
 initQualSubjects();
 
-/* ═══════════════════════════════════════
-   LEADERBOARD
-═══════════════════════════════════════ */
+/* ═══ LEADERBOARD ═══ */
 let currentRankMode = 'streak';
 
 window.calculateAndPushLeaderboard = function() {
@@ -1269,9 +1285,7 @@ window.renderLeaderboardUI = function(data, category) {
   }).join('');
 };
 
-/* ═══════════════════════════════════════
-   TIMER
-═══════════════════════════════════════ */
+/* ═══ TIMER ═══ */
 let timerIval, activeSub='', activePhase='', wakeLock=null;
 let timeLeft=0, mode='idle', isPaused=false, currentGTMode='NEET';
 let initDur=0, elapsedDur=0, skipped=false;
@@ -1346,9 +1360,7 @@ function saveStudyLog(s,m,d,ph,sk){
   if(window.syncToCloud) window.syncToCloud();
 }
 
-/* ═══════════════════════════════════════
-   SWT (QUANTITATIVE)
-═══════════════════════════════════════ */
+/* ═══ SWT ═══ */
 function calcSWT(){
   const t=parseInt(document.getElementById('swtTotal').value)||0;
   const c=parseInt(document.getElementById('swtCorrect').value)||0;
@@ -1400,9 +1412,7 @@ function renderSWT(){
   document.getElementById('swtWeak').innerText=weak;
 }
 
-/* ═══════════════════════════════════════
-   GT (QUANTITATIVE)
-═══════════════════════════════════════ */
+/* ═══ GT ═══ */
 function calcGT(){
   if(currentGTMode==='FMGE'){
     const c1=parseInt(document.getElementById('gtP1C').value)||0;
@@ -1525,7 +1535,7 @@ function renderGT(){
     const pa=mk(avgId,{data:phases.map(p=>pd[p].n>0?(pd[p].s/pd[p].n).toFixed(1):0),backgroundColor:'#9b59b6',borderRadius:4});
     return [pc,pa];
   };
-  const makeStats=(statsId,data,goodKey='overallMax',show)=>{
+  const makeStats=(statsId,data)=>{
     if(!data.length) return;
     const max=Math.max(...data.map(x=>parseFloat(x.score)));
     const min=Math.min(...data.map(x=>parseFloat(x.score)));
@@ -1545,9 +1555,7 @@ function renderGT(){
   makeStats('fmgeStats',fd);
 }
 
-/* ═══════════════════════════════════════
-   GOALS & PHASES
-═══════════════════════════════════════ */
+/* ═══ GOALS & PHASES ═══ */
 function saveGoals(){
   const g=JSON.parse(localStorage.getItem(KEYS.GOALS))||{exams:{},phases:[]};
   g.exams={
@@ -1652,9 +1660,7 @@ function loadGoalsUI(){
   renderGoalHTML();
 }
 
-/* ═══════════════════════════════════════
-   PYQ
-═══════════════════════════════════════ */
+/* ═══ PYQ ═══ */
 function renderPYQ(){
   const root=document.getElementById('pyq-root'); if(root.innerHTML!=='') return;
   let html='';
@@ -1700,9 +1706,7 @@ function loadPYQ(){
   });
 }
 
-/* ═══════════════════════════════════════
-   TOUGH SUBJECTS
-═══════════════════════════════════════ */
+/* ═══ TOUGH SUBJECTS ═══ */
 function renderToughSelector(){
   const saved=JSON.parse(localStorage.getItem(KEYS.TOUGH)||"{}");
   const c=document.getElementById('tough-selector');
@@ -1733,9 +1737,7 @@ function renderToughDash(){
   c.innerHTML=html;
 }
 
-/* ═══════════════════════════════════════
-   MONTHLY TABLE
-═══════════════════════════════════════ */
+/* ═══ MONTHLY TABLE ═══ */
 function renderMonthlyTable(){
   const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const data={};
@@ -1755,11 +1757,11 @@ function renderMonthlyTable(){
   }).join('');
 }
 
-/* ═══════════════════════════════════════
-   DAILY / CHARTS
-═══════════════════════════════════════ */
+/* ═══ DAILY / CHARTS ═══ */
 let hChart, mChart, viewDate=new Date();
 function changeViewMonth(d){ viewDate.setMonth(viewDate.getMonth()+d); renderData(); }
+
+/* ═══ FIXED renderData — properly grouped table rows ═══ */
 function renderData(){
   const logs=JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
   const vm=viewDate.getMonth(), vy=viewDate.getFullYear();
@@ -1767,12 +1769,23 @@ function renderData(){
   document.getElementById('monthLabel').innerText=`${mNames[vm]} ${vy}`;
   const dim=new Date(vy,vm+1,0).getDate();
   const hoursData=Array(dim).fill(0), mcqsData=Array(dim).fill(0);
-  const tableLogs=[];
+
+  // Group logs by date
+  const grouped={};
   logs.forEach(l=>{
     const p=l.date.split('/'); if(p.length!==3) return;
     const ld=new Date(p[2],p[1]-1,p[0]);
-    if(ld.getMonth()===vm&&ld.getFullYear()===vy){ hoursData[parseInt(p[0])-1]+=l.duration/60; mcqsData[parseInt(p[0])-1]+=l.mcqs; tableLogs.push(l); }
+    if(ld.getMonth()===vm&&ld.getFullYear()===vy){
+      hoursData[parseInt(p[0])-1]+=l.duration/60;
+      mcqsData[parseInt(p[0])-1]+=l.mcqs;
+      if(!grouped[l.date]) grouped[l.date]={h:0,m:0,subs:new Set(),cyc:0};
+      grouped[l.date].h+=l.duration/60;
+      grouped[l.date].m+=l.mcqs;
+      grouped[l.date].subs.add(l.subject);
+      if(!l.skipped) grouped[l.date].cyc++;
+    }
   });
+
   const labels=Array.from({length:dim},(_,i)=>i+1);
   const textColor=tc(), gridColor=gc();
   const chartOpts={maintainAspectRatio:false,scales:{y:{ticks:{color:textColor},grid:{color:gridColor}},x:{ticks:{color:textColor,font:{size:9}},grid:{color:gridColor}}},plugins:{legend:{display:false}}};
@@ -1780,10 +1793,31 @@ function renderData(){
   hChart=new Chart(document.getElementById('hoursChart'),{type:'line',data:{labels,datasets:[{data:hoursData,borderColor:'#f7a94f',backgroundColor:'rgba(247,169,79,.1)',fill:true,tension:.3}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:0,max:16}}}});
   if(mChart) mChart.destroy();
   mChart=new Chart(document.getElementById('mcqChart'),{type:'line',data:{labels,datasets:[{data:mcqsData,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,.1)',fill:true,tension:.3}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,beginAtZero:true}}}});
-  const grouped={};
-  tableLogs.forEach(l=>{ if(!grouped[l.date]) grouped[l.date]={h:0,m:0,subs:new Set(),cyc:0}; grouped[l.date].h+=l.duration/60; grouped[l.date].m+=l.mcqs; grouped[l.date].subs.add(l.subject); if(!l.skipped) grouped[l.date].cyc++; });
-  document.getElementById('logBody').innerHTML=Object.keys(grouped).reverse().map(d=>`<tr><td>${d}</td><td>${grouped[d].h.toFixed(1)}h</td><td>${grouped[d].cyc}</td><td>${grouped[d].m}</td><td>${[...grouped[d].subs].join(', ')}</td></tr>`).join('')||'<tr><td colspan="5">No data</td></tr>';
+
+  // Sort dates newest first, build properly aligned table rows
+  const sortedDates = Object.keys(grouped).sort((a,b)=>{
+    const [da,ma,ya]=a.split('/'), [db,mb,yb]=b.split('/');
+    return new Date(yb,mb-1,db)-new Date(ya,ma-1,da);
+  });
+
+  document.getElementById('logBody').innerHTML = sortedDates.length
+    ? sortedDates.map(d=>{
+        const g=grouped[d];
+        const hrsVal = g.h.toFixed(1)+'h';
+        const cycVal = g.cyc;
+        const mcqVal = g.m;
+        const subsVal = [...g.subs].join(', ');
+        return `<tr>
+          <td class="td-date">${d}</td>
+          <td>${hrsVal}</td>
+          <td>${cycVal}</td>
+          <td>${mcqVal}</td>
+          <td class="td-subs">${subsVal}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">No data this month</td></tr>';
 }
+
 function renderMatrix(){
   const logs=JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
   const map={'First Reading':0,'Second Reading':1,'Third Reading':2,'Extra Bonus':3};
@@ -1796,9 +1830,7 @@ function renderMatrix(){
   document.getElementById('mcqMatrixBody').innerHTML=SUBS_19.map(s=>`<tr><td class="m-row-h">${s}</td>${mM[s].map(v=>`<td>${v||'-'}</td>`).join('')}</tr>`).join('')+`<tr><td class="m-total">TOTAL</td>${mTot.map(t=>`<td class="m-total">${t}</td>`).join('')}</tr>`;
 }
 
-/* ═══════════════════════════════════════
-   COUNTDOWNS + STREAK
-═══════════════════════════════════════ */
+/* ═══ COUNTDOWNS + STREAK ═══ */
 function updateCountdowns(){
   const now=new Date();
   const targets={
@@ -1826,9 +1858,7 @@ function updateStreak(){
   document.getElementById('streakIco').innerText='🥇'.repeat(Math.floor(u/75))+'🔥'.repeat(Math.floor((u%75)/25));
 }
 
-/* ═══════════════════════════════════════
-   BACKUP STATUS
-═══════════════════════════════════════ */
+/* ═══ BACKUP ═══ */
 function updateBackupStatus(){
   const el=document.getElementById('backup-reminder');
   const last=localStorage.getItem('SSS_LAST_BACKUP');
@@ -1859,15 +1889,12 @@ function processRestore(){
 }
 function clearData(){ if(confirm('Clear ALL local data?')){ Object.values(KEYS).forEach(k=>localStorage.removeItem(k)); location.reload(); } }
 
-/* ═══════════════════════════════════════
-   QUALITATIVE DATA
-═══════════════════════════════════════ */
+/* ═══ QUALITATIVE DATA ═══ */
 function getQualDB(){
   return JSON.parse(localStorage.getItem(KEYS.QUAL)||'{"factSalad":[],"swt":[],"gt":[]}');
 }
 function saveQualDB(db){ localStorage.setItem(KEYS.QUAL,JSON.stringify(db)); if(window.syncToCloud) window.syncToCloud(); }
 
-/* Monthly reset */
 (function(){
   const now=new Date();
   const lastDay=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
@@ -1922,9 +1949,7 @@ function saveQual(type){
   updateSlideshow();
 }
 
-/* ═══════════════════════════════════════
-   SLIDESHOW
-═══════════════════════════════════════ */
+/* ═══ SLIDESHOW ═══ */
 let curSlide=0, slideCountdown=30, slideIval=null;
 function updateSlideshow(){
   const db=getQualDB();
@@ -1949,10 +1974,15 @@ function updateSlideshow(){
 }
 updateSlideshow();
 
-/* ═══════════════════════════════════════
-   PDF REPORT (EXTERNAL BROWSER)
-═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   ULTIMATE PDF SOLUTION — Works in Telegram WebApp
+   Strategy: Generate PDF as base64 data URI, offer multiple
+   download methods with intelligent fallbacks
+═══════════════════════════════════════════════════════════ */
 let _pdfMode='daily';
+let _pdfBlobUrl = null;
+let _pdfFileName = '';
+
 function getFiltered(mode){
   const db=getQualDB();
   const now=new Date();
@@ -1961,6 +1991,7 @@ function getFiltered(mode){
   const fn=mode==='daily'?i=>i.date===todayStr:i=>i.month===mStr;
   return { fs:db.factSalad.filter(fn), swt:db.swt.filter(fn), gt:db.gt.filter(fn) };
 }
+
 function buildReportHTML(mode){
   const now=new Date();
   const rtype=mode==='daily'?'Daily Revision Report':'Monthly Revision Report';
@@ -1995,6 +2026,7 @@ function buildReportHTML(mode){
     <div class="rpt-foot">Scalpel Study Squad — Confidential — Dr. ${fullName}</div>
   </div>`;
 }
+
 function openReport(mode){
   _pdfMode=mode;
   const now=new Date();
@@ -2008,11 +2040,26 @@ function openReport(mode){
 }
 function closeOverlay(){ document.getElementById('roverlay').classList.remove('open'); document.body.style.overflow=''; }
 
-/* ── PDF DOWNLOAD — opens in external browser ── */
+function closePdfOverlay(){
+  document.getElementById('pdf-progress-overlay').classList.remove('open');
+  document.getElementById('pdf-spinner-wrap').style.display='flex';
+  document.getElementById('pdf-share-card').style.display='none';
+  // Revoke old URL
+  if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
+}
+
+/* ═══ ULTIMATE PDF DOWNLOAD ═══ */
 async function downloadPDF(){
   const btn=document.getElementById('dl-btn');
   const orig=btn.textContent;
   btn.textContent='⏳ Building…'; btn.disabled=true;
+
+  // Show progress overlay
+  document.getElementById('pdf-prog-text').textContent='Building PDF…';
+  document.getElementById('pdf-spinner-wrap').style.display='flex';
+  document.getElementById('pdf-share-card').style.display='none';
+  document.getElementById('pdf-progress-overlay').classList.add('open');
+
   try{
     const {jsPDF}=window.jspdf;
     const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
@@ -2028,11 +2075,20 @@ async function downloadPDF(){
     };
     const nPage=()=>{ doc.addPage(); y=20; addFoot(); };
     const chk=(n=15)=>{ if(y+n>H-22) nPage(); };
+
+    // Try to load logo (non-blocking)
     let logo=null;
     try{
-      const blob=await fetch('https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg').then(r=>r.blob());
+      document.getElementById('pdf-prog-text').textContent='Loading logo…';
+      const blob=await Promise.race([
+        fetch('https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg').then(r=>r.blob()),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+      ]);
       logo=await new Promise(res=>{ const fr=new FileReader(); fr.onload=e=>res(e.target.result); fr.readAsDataURL(blob); });
-    }catch(e){}
+    }catch(e){ logo=null; }
+
+    document.getElementById('pdf-prog-text').textContent='Generating pages…';
+
     // Cover
     doc.setFillColor(...Cdk); doc.rect(0,0,W,72,'F');
     doc.setFillColor(...Cac); doc.rect(0,70,W,3,'F');
@@ -2057,7 +2113,9 @@ async function downloadPDF(){
     doc.text(dstr,W/2,y,{align:'center'}); y+=12;
     doc.setDrawColor(...Cbl); doc.setLineWidth(0.7);
     doc.line(M,y,W-M,y); y+=12;
+
     const {fs,swt,gt}=getFiltered(_pdfMode);
+
     function pdfSection(title,clr,items,flds){
       if(!items.length) return;
       chk(20);
@@ -2089,6 +2147,7 @@ async function downloadPDF(){
       });
       y+=6;
     }
+
     pdfSection('1. FACT SALAD',Cgn,fs,[{lbl:'Question / Topic',key:'q'},{lbl:'Answer / Key Fact',key:'a'}]);
     pdfSection('2. SWT MISTAKE CHECKPOINT',Cbu,swt,[{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
     pdfSection('3. GT MISTAKE CHECKPOINT',Crd,gt,[{lbl:'Exam Type',key:'examType'},{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
@@ -2097,34 +2156,85 @@ async function downloadPDF(){
       doc.text('No entries found for this period.',W/2,y+20,{align:'center'});
     }
     addFoot();
+
+    // Generate filename
     const now2=new Date();
-    const fname=_pdfMode==='daily'
+    _pdfFileName=_pdfMode==='daily'
       ?`Scalpel_Daily_${now2.toLocaleDateString('en-GB').replace(/\//g,'-')}.pdf`
       :`Scalpel_Monthly_${now2.toLocaleString('default',{month:'long',year:'numeric'}).replace(' ','_')}.pdf`;
 
-    /* ── Open in external browser ── */
+    document.getElementById('pdf-prog-text').textContent='Finalizing…';
+
+    // Revoke previous
+    if(_pdfBlobUrl) URL.revokeObjectURL(_pdfBlobUrl);
+
+    // Generate blob
     const pdfBlob = doc.output('blob');
-    const blobUrl = URL.createObjectURL(pdfBlob);
-    // Telegram WebApp: window.open triggers external browser
-    const opened  = window.open(blobUrl, '_blank');
-    if (!opened) {
-      // Fallback: direct download anchor
-      const a = document.createElement('a');
-      a.href = blobUrl; a.download = fname;
+    _pdfBlobUrl   = URL.createObjectURL(pdfBlob);
+
+    // Get base64 for fallback (data URI method)
+    const pdfBase64 = doc.output('datauristring');
+
+    // Setup buttons
+    document.getElementById('pdf-open-btn').onclick = () => {
+      // METHOD 1: Try Telegram openLink (opens in external browser)
+      try{
+        if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink){
+          window.Telegram.WebApp.openLink(_pdfBlobUrl);
+          return;
+        }
+      }catch(e){}
+      // METHOD 2: window.open
+      const w = window.open(_pdfBlobUrl, '_blank');
+      if(!w){
+        // METHOD 3: data URI in same tab (last resort for Telegram)
+        window.location.href = pdfBase64;
+      }
+    };
+
+    document.getElementById('pdf-download-btn').onclick = () => {
+      // METHOD 1: Standard anchor download
+      const a=document.createElement('a');
+      a.href=_pdfBlobUrl; a.download=_pdfFileName;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    }
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-    showToast('📥 PDF opened in browser!');
+
+      // If that fails (Telegram blocks it), try data URI
+      setTimeout(()=>{
+        try{
+          const a2=document.createElement('a');
+          a2.href=pdfBase64; a2.download=_pdfFileName;
+          document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+        }catch(e){}
+      },500);
+    };
+
+    document.getElementById('pdf-copy-btn').onclick = async () => {
+      try{
+        await navigator.clipboard.writeText(_pdfBlobUrl);
+        showToast('📋 Link copied! Paste in browser.','#4f8ef7');
+      }catch(e){
+        // Show the URL for manual copy
+        prompt('Copy this link and open in your browser:', _pdfBlobUrl);
+      }
+    };
+
+    // Show share card
+    document.getElementById('pdf-spinner-wrap').style.display='none';
+    document.getElementById('pdf-share-card').style.display='block';
+
+    // Auto-revoke after 10 minutes
+    setTimeout(()=>{ if(_pdfBlobUrl){URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null;} },600000);
+
   } catch(err){
     console.error('PDF error:',err);
-    showToast('⚠️ PDF failed. Try again.','#e05c7a');
+    closePdfOverlay();
+    showToast('⚠️ PDF build failed: '+err.message,'#e05c7a');
   }
+
   btn.textContent=orig; btn.disabled=false;
 }
 
-/* ═══════════════════════════════════════
-   MASTER UPDATE
-═══════════════════════════════════════ */
+/* ═══ MASTER UPDATE ═══ */
 function updateUI(){
   updateBackupStatus();
   updateCountdowns();
