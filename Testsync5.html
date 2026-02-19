@@ -256,28 +256,15 @@ input[type="number"]{text-align:center;}
 .chart-sh{font-size:11px;font-weight:700;text-transform:uppercase;
   letter-spacing:.5px;margin:12px 0 4px;}
 
-/* ═══ FIXED LOG TABLE ═══ */
+/* ═══ LOG TABLE ═══ */
 .log-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-radius:8px;border:1px solid rgba(128,128,128,.12);}
 .log-table{width:100%;min-width:380px;font-size:11px;border-collapse:collapse;table-layout:fixed;}
-.log-table th,.log-table td{
-  padding:8px 6px;
-  border-bottom:1px solid rgba(128,128,128,.1);
-  overflow:hidden;text-overflow:ellipsis;
-  vertical-align:middle;
-}
-.log-table th{
-  font-size:9px;font-weight:800;color:var(--accent);
-  text-transform:uppercase;letter-spacing:.5px;
-  background:rgba(79,142,247,.08);
-  position:sticky;top:0;
-  white-space:nowrap;
-  text-align:center;
-}
+.log-table th,.log-table td{padding:8px 6px;border-bottom:1px solid rgba(128,128,128,.1);overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
+.log-table th{font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;background:rgba(79,142,247,.08);position:sticky;top:0;white-space:nowrap;text-align:center;}
 .log-table td{text-align:center;}
 .log-table td.td-date{text-align:left;font-size:10px;font-weight:700;color:var(--accent2);}
 .log-table td.td-subs{text-align:left;font-size:10px;color:var(--muted);white-space:normal;word-break:break-word;}
 .log-table tr:hover td{background:rgba(79,142,247,.05);}
-/* Column widths */
 .log-table .col-date{width:22%;}
 .log-table .col-hrs{width:13%;}
 .log-table .col-cyc{width:11%;}
@@ -285,8 +272,7 @@ input[type="number"]{text-align:center;}
 .log-table .col-sub{width:41%;}
 
 .matrix-table{width:100%;font-size:10px;border-collapse:collapse;}
-.matrix-table th,.matrix-table td{border:1px solid rgba(128,128,128,.12);
-  padding:5px 3px;text-align:center;}
+.matrix-table th,.matrix-table td{border:1px solid rgba(128,128,128,.12);padding:5px 3px;text-align:center;}
 .matrix-table th{background:var(--pglow);font-size:9px;font-weight:800;}
 .m-row-h{text-align:left !important;font-weight:700;background:rgba(0,0,0,.1);}
 .m-total{font-weight:800;color:var(--accent2);background:rgba(247,169,79,.08);}
@@ -392,9 +378,11 @@ input[type="number"]{text-align:center;}
   animation:pls 2s infinite;}
 @keyframes pls{0%,100%{box-shadow:none}50%{box-shadow:0 0 8px rgba(224,92,122,.4)}}
 
+/* ═══ SLIDESHOW (upgraded) ═══ */
 .slideshow{background:var(--card);border-radius:14px;border:1px solid var(--border);
-  border-left:4px solid var(--accent2);padding:15px 16px;margin-bottom:14px;
-  min-height:100px;box-shadow:var(--shadow);position:relative;}
+  border-left:4px solid var(--accent2);padding:15px 16px 44px;margin-bottom:14px;
+  min-height:110px;box-shadow:var(--shadow);position:relative;
+  user-select:none;-webkit-user-select:none;}
 .ss-lbl{font-size:10px;font-weight:800;letter-spacing:2px;
   color:var(--accent2);margin-bottom:8px;text-transform:uppercase;}
 .ss-counter{position:absolute;top:12px;right:13px;font-size:10px;
@@ -402,23 +390,81 @@ input[type="number"]{text-align:center;}
 .ss-sub{font-weight:800;color:var(--primary);margin-bottom:4px;font-size:13px;}
 .ss-q{color:var(--text);font-size:13px;line-height:1.5;}
 .ss-a{color:var(--green);font-weight:700;margin-top:5px;font-size:13px;}
-.ss-timer{position:absolute;bottom:9px;right:13px;font-size:10px;color:var(--muted);}
+/* progress bar */
+.ss-prog-bar{position:absolute;bottom:36px;left:16px;right:16px;
+  height:3px;background:rgba(128,128,128,.2);border-radius:3px;overflow:hidden;}
+.ss-prog-fill{height:100%;background:var(--accent2);border-radius:3px;
+  transition:width 1s linear;}
+/* nav row */
+.ss-nav{position:absolute;bottom:8px;left:16px;right:16px;
+  display:flex;align-items:center;justify-content:space-between;}
+.ss-nav-btn{background:rgba(255,255,255,.07);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:4px 14px;font-size:16px;
+  cursor:pointer;line-height:1;transition:background .2s;}
+.ss-nav-btn:active{background:var(--primary);border-color:var(--primary);color:#fff;}
+.ss-timer{font-size:10px;color:var(--muted);font-weight:700;}
 
-/* ═══ PDF SECTION ═══ */
-.pdf-card{background:var(--card);border-radius:14px;padding:18px;
-  border:1px solid var(--border);margin-top:14px;}
-.pdf-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
-  letter-spacing:2px;color:var(--muted);text-transform:uppercase;
-  margin-bottom:12px;text-align:center;}
-.warn-box{background:rgba(247,169,79,.1);border:1px solid var(--accent2);
-  border-radius:10px;padding:11px 13px;margin-bottom:14px;
-  font-size:11px;line-height:1.5;color:var(--accent2);}
-.pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.pdf-btn{padding:14px 8px;border-radius:11px;border:2px solid var(--primary);
-  background:transparent;color:var(--text);font-weight:800;font-size:12px;
-  letter-spacing:1px;cursor:pointer;font-family:'Rajdhani',sans-serif;
-  text-transform:uppercase;transition:all .2s;}
-.pdf-btn.mo{border-color:var(--accent2);}
+/* ═══ PDF PROGRESS OVERLAY ═══ */
+.pdf-progress-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
+  z-index:99999;justify-content:center;align-items:center;flex-direction:column;gap:16px;
+}
+.pdf-progress-overlay.open{display:flex;}
+.pdf-spinner{width:48px;height:48px;border:4px solid rgba(79,142,247,.3);
+  border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pdf-prog-text{color:#fff;font-weight:800;font-size:14px;font-family:'Rajdhani',sans-serif;
+  letter-spacing:1px;text-align:center;}
+.pdf-prog-sub{color:var(--muted);font-size:11px;}
+.pdf-share-card{
+  background:var(--card);border-radius:16px;border:2px solid var(--primary);
+  padding:22px 20px;width:88%;max-width:360px;text-align:center;
+}
+.pdf-share-card h3{color:var(--primary);margin-bottom:6px;
+  font-family:'Rajdhani',sans-serif;font-size:20px;letter-spacing:1px;}
+.pdf-share-card .pdf-method-badge{
+  display:inline-block;background:var(--green);color:#fff;
+  font-size:10px;font-weight:800;padding:2px 10px;border-radius:20px;
+  margin-bottom:12px;letter-spacing:1px;
+}
+.pdf-share-card p{color:var(--muted);font-size:11px;margin-bottom:14px;line-height:1.6;}
+.pdf-share-btns{display:flex;flex-direction:column;gap:9px;}
+
+/* ═══ PRINT VIEWER OVERLAY ═══ */
+.print-overlay{
+  display:none;position:fixed;inset:0;z-index:100000;
+  flex-direction:column;background:#f0f2f8;
+}
+.print-overlay.open{display:flex;}
+.print-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;background:#1a1a2a;border-bottom:2px solid var(--primary);
+  flex-shrink:0;
+}
+.print-bar-title{
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;
+  letter-spacing:1px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.print-bar-btns{display:flex;gap:7px;flex-shrink:0;}
+.pb-btn{padding:9px 14px;border-radius:8px;border:none;
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;cursor:pointer;
+  letter-spacing:.5px;}
+.pb-print{background:var(--green);color:#fff;}
+.pb-share{background:var(--primary);color:#fff;}
+.pb-close{background:var(--accent);color:#fff;}
+.print-body{flex:1;overflow-y:auto;padding:14px 10px;}
+.print-hint{
+  background:#fff3cd;border:1px solid #ffc107;border-radius:8px;
+  padding:10px 12px;margin-bottom:12px;font-size:11px;color:#856404;
+  font-weight:700;line-height:1.5;text-align:center;
+}
+@media print{
+  body > *{display:none !important;}
+  .print-overlay,.print-overlay.open{display:block !important;position:static !important;}
+  .print-bar,.print-hint{display:none !important;}
+  .print-body{overflow:visible !important;padding:0 !important;}
+  .rpt{box-shadow:none !important;}
+}
 
 /* ═══ REPORT OVERLAY ═══ */
 .roverlay{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;}
@@ -437,12 +483,10 @@ input[type="number"]{text-align:center;}
 .rbtn-cl{background:var(--accent);color:#fff;}
 .roverlay-body{flex:1;overflow-y:auto;padding:14px;background:#f0f2f8;}
 
-/* Report card HTML styles */
-.rpt{max-width:660px;margin:0 auto;background:#fff;border-radius:12px;
-  overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+/* ═══ REPORT HTML STYLES ═══ */
+.rpt{max-width:660px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
 .rpt-hd{background:#1a1a2a;padding:20px;text-align:center;position:relative;}
-.rpt-u{position:absolute;top:10px;right:14px;text-align:right;
-  font-size:10px;color:#aaccee;line-height:1.6;}
+.rpt-u{position:absolute;top:10px;right:14px;text-align:right;font-size:10px;color:#aaccee;line-height:1.6;}
 .rpt-u b{color:#fff;}
 .rpt-logo{width:60px;height:60px;border-radius:50%;border:3px solid #4f8ef7;margin-bottom:8px;}
 .rpt-hd-n{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:2px;}
@@ -453,21 +497,15 @@ input[type="number"]{text-align:center;}
 .rpt-rdate{font-size:11px;color:#666;margin-top:2px;}
 .rpt-body{padding:16px;}
 .rpt-sec{margin-bottom:20px;}
-.rpt-sec-h{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;
-  letter-spacing:2px;color:#fff;padding:8px 13px;border-radius:7px;
-  margin-bottom:9px;text-transform:uppercase;}
+.rpt-sec-h{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;color:#fff;padding:8px 13px;border-radius:7px;margin-bottom:9px;text-transform:uppercase;}
 .sh-g{background:#1a7a48;}.sh-b{background:#2558b0;}.sh-r{background:#9a2540;}
-.rpt-sub-h{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;
-  letter-spacing:1.5px;color:#4f8ef7;text-transform:uppercase;
-  border-left:4px solid #4f8ef7;padding:3px 10px;margin:9px 0 5px;}
-.rpt-entry{background:#f8f9fc;border-radius:8px;padding:11px 13px;
-  margin-bottom:7px;border:1px solid #e0e4f0;}
+.rpt-sub-h{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;color:#4f8ef7;text-transform:uppercase;border-left:4px solid #4f8ef7;padding:3px 10px;margin:9px 0 5px;}
+.rpt-entry{background:#f8f9fc;border-radius:8px;padding:11px 13px;margin-bottom:7px;border:1px solid #e0e4f0;}
 .rpt-enum{font-size:9px;font-weight:800;color:#bbb;letter-spacing:1px;margin-bottom:5px;}
 .rpt-fl-lbl{font-size:9px;font-weight:800;color:#e05c7a;text-transform:uppercase;letter-spacing:1px;}
 .rpt-fl-val{font-size:12px;color:#222;margin-top:1px;line-height:1.5;margin-bottom:5px;}
 .rpt-empty{text-align:center;padding:25px;font-size:13px;color:#999;}
-.rpt-foot{background:#f0f2f8;padding:9px;text-align:center;
-  font-size:9px;color:#aaa;border-top:1px solid #e0e4f0;}
+.rpt-foot{background:#f0f2f8;padding:9px;text-align:center;font-size:9px;color:#aaa;border-top:1px solid #e0e4f0;}
 
 .pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);
   z-index:2000;justify-content:center;align-items:center;flex-direction:column;}
@@ -486,8 +524,7 @@ input[type="number"]{text-align:center;}
   max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
 
-.danger-zone{margin-top:26px;padding:16px;
-  border-top:1px dashed rgba(128,128,128,.2);}
+.danger-zone{margin-top:26px;padding:16px;border-top:1px dashed rgba(128,128,128,.2);}
 
 .row2{display:flex;gap:8px;}
 .row2>*{flex:1;}
@@ -498,28 +535,17 @@ input[type="number"]{text-align:center;}
   margin-bottom:6px;font-size:13px;font-weight:800;}
 .p-strong{color:var(--green);}.p-weak{color:var(--accent);}
 .monthly-table{width:100%;font-size:11px;border-collapse:collapse;}
-.monthly-table th,.monthly-table td{padding:8px 5px;
-  border-bottom:1px solid rgba(128,128,128,.08);text-align:center;}
+.monthly-table th,.monthly-table td{padding:8px 5px;border-bottom:1px solid rgba(128,128,128,.08);text-align:center;}
 .monthly-table th{color:var(--accent);font-weight:800;font-size:10px;text-transform:uppercase;}
 .divider{border:0;border-top:1px solid rgba(128,128,128,.12);margin:14px 0;}
 
-/* ═══ PDF PROGRESS OVERLAY ═══ */
-.pdf-progress-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);
-  z-index:99999;justify-content:center;align-items:center;flex-direction:column;gap:16px;
-}
-.pdf-progress-overlay.open{display:flex;}
-.pdf-spinner{width:48px;height:48px;border:4px solid rgba(79,142,247,.3);
-  border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.pdf-prog-text{color:#fff;font-weight:800;font-size:14px;font-family:'Rajdhani',sans-serif;
-  letter-spacing:1px;text-align:center;}
-.pdf-prog-sub{color:var(--muted);font-size:11px;}
-.pdf-share-card{background:var(--card);border-radius:16px;border:2px solid var(--primary);
-  padding:20px;width:85%;max-width:340px;text-align:center;}
-.pdf-share-card h3{color:var(--primary);margin-bottom:8px;font-family:'Rajdhani',sans-serif;font-size:18px;}
-.pdf-share-card p{color:var(--muted);font-size:11px;margin-bottom:14px;line-height:1.5;}
-.pdf-share-btns{display:flex;flex-direction:column;gap:8px;}
+/* PDF section */
+.pdf-card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);margin-top:14px;}
+.pdf-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;text-align:center;}
+.warn-box{background:rgba(247,169,79,.1);border:1px solid var(--accent2);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:11px;line-height:1.5;color:var(--accent2);}
+.pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pdf-btn{padding:14px 8px;border-radius:11px;border:2px solid var(--primary);background:transparent;color:var(--text);font-weight:800;font-size:12px;letter-spacing:1px;cursor:pointer;font-family:'Rajdhani',sans-serif;text-transform:uppercase;transition:all .2s;}
+.pdf-btn.mo{border-color:var(--accent2);}
 </style>
 </head>
 <body data-theme="dark">
@@ -557,7 +583,7 @@ input[type="number"]{text-align:center;}
   </div>
 </div>
 
-<!-- ═══ PDF PROGRESS OVERLAY ═══ -->
+<!-- PDF PROGRESS OVERLAY -->
 <div class="pdf-progress-overlay" id="pdf-progress-overlay">
   <div id="pdf-spinner-wrap" style="display:flex;flex-direction:column;align-items:center;gap:12px">
     <div class="pdf-spinner"></div>
@@ -566,13 +592,28 @@ input[type="number"]{text-align:center;}
   </div>
   <div class="pdf-share-card" id="pdf-share-card" style="display:none">
     <h3>📄 PDF Ready!</h3>
-    <p>Your report has been generated. Choose how to get it:</p>
-    <div class="pdf-share-btns">
-      <button class="btn btn-g" id="pdf-open-btn">🌐 Open in Browser</button>
-      <button class="btn btn-p" id="pdf-download-btn">⬇️ Download File</button>
-      <button class="btn btn-o" id="pdf-copy-btn">📋 Copy Link</button>
-      <button class="btn btn-ol" style="margin-top:4px" onclick="closePdfOverlay()">Close</button>
+    <div class="pdf-method-badge" id="pdf-method-badge">SHARE</div>
+    <p id="pdf-share-desc">Choose how to save your report:</p>
+    <div class="pdf-share-btns" id="pdf-share-btns"></div>
+    <button class="btn btn-ol" style="margin-top:10px;width:100%;padding:10px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:transparent;border:1px solid var(--border);color:var(--text)" onclick="closePdfOverlay()">Close</button>
+  </div>
+</div>
+
+<!-- PRINT / SCREENSHOT VIEWER OVERLAY -->
+<div class="print-overlay" id="print-overlay">
+  <div class="print-bar">
+    <div class="print-bar-title" id="print-bar-title">📄 Report Viewer</div>
+    <div class="print-bar-btns">
+      <button class="pb-btn pb-print" onclick="doPrint()">🖨️ Print/Save</button>
+      <button class="pb-btn pb-share" id="pb-native-share" style="display:none" onclick="doNativeShare()">📤 Share</button>
+      <button class="pb-btn pb-close" onclick="closePrintOverlay()">✕</button>
     </div>
+  </div>
+  <div class="print-body">
+    <div class="print-hint" id="print-hint">
+      📱 <strong>Telegram Tip:</strong> Tap <strong>🖨️ Print/Save</strong> → select <em>"Save as PDF"</em> from the printer options. Or take screenshots of each page.
+    </div>
+    <div id="print-content"></div>
   </div>
 </div>
 
@@ -643,7 +684,6 @@ input[type="number"]{text-align:center;}
 
   <!-- QUANTITATIVE PANE -->
   <div id="pane-quant" class="main-pane active">
-
     <div class="sub-tabs">
       <div class="s-tab active" onclick="switchSub('sq-goal',this)"><span class="sico">🎯</span>Goal</div>
       <div class="s-tab" onclick="switchSub('sq-daily',this)"><span class="sico">📅</span>Daily</div>
@@ -726,7 +766,6 @@ input[type="number"]{text-align:center;}
     <!-- DAILY TAB -->
     <div id="sq-daily" class="sub-pane">
       <div id="tough-dash" style="margin-bottom:12px"></div>
-
       <div class="card" id="study-timer-card">
         <span class="lbl">Reading Phase</span>
         <select id="studyPhase">
@@ -779,23 +818,17 @@ input[type="number"]{text-align:center;}
         <div class="chart-h" style="color:var(--primary)">MCQs Solved Trend</div>
         <div class="chart-wrap"><canvas id="mcqChart"></canvas></div>
 
-        <!-- ═══ FIXED TABLE ═══ -->
         <div class="chart-sh" style="color:var(--accent2);margin-top:12px">📋 Study Log</div>
         <div class="log-table-wrap">
           <table class="log-table">
             <colgroup>
-              <col class="col-date">
-              <col class="col-hrs">
-              <col class="col-cyc">
-              <col class="col-mcq">
-              <col class="col-sub">
+              <col class="col-date"><col class="col-hrs"><col class="col-cyc">
+              <col class="col-mcq"><col class="col-sub">
             </colgroup>
             <thead>
               <tr>
-                <th class="col-date">Date</th>
-                <th class="col-hrs">Hours</th>
-                <th class="col-cyc">Cycles</th>
-                <th class="col-mcq">MCQs</th>
+                <th class="col-date">Date</th><th class="col-hrs">Hours</th>
+                <th class="col-cyc">Cycles</th><th class="col-mcq">MCQs</th>
                 <th class="col-sub">Subjects</th>
               </tr>
             </thead>
@@ -863,8 +896,8 @@ input[type="number"]{text-align:center;}
         <div class="card-h" style="margin-bottom:10px">GT Intelligence</div>
         <div class="gt-types">
           <div class="gt-type-btn active" id="gtTabNeet" onclick="switchGT('NEET')"><b>NEET PG</b><br><small>+4/−1</small></div>
-          <div class="gt-type-btn" id="gtTabIni" onclick="switchGT('INICET')"><b>INICET</b><br><small>+1/−0.33</small></div>
-          <div class="gt-type-btn" id="gtTabFmge" onclick="switchGT('FMGE')"><b>FMGE</b><br><small>+1/0</small></div>
+          <div class="gt-type-btn" id="gtTabINICET" onclick="switchGT('INICET')"><b>INICET</b><br><small>+1/−0.33</small></div>
+          <div class="gt-type-btn" id="gtTabFMGE" onclick="switchGT('FMGE')"><b>FMGE</b><br><small>+1/0</small></div>
         </div>
         <span class="lbl">Reading Phase</span>
         <select id="gtPhase">
@@ -1001,15 +1034,22 @@ input[type="number"]{text-align:center;}
 
   </div><!-- /pane-quant -->
 
-
   <!-- QUALITATIVE PANE -->
   <div id="pane-qual" class="main-pane">
 
-    <div class="slideshow">
+    <!-- SLIDESHOW (upgraded: 10s timer, prev/next, swipe) -->
+    <div class="slideshow" id="slideshow-card">
       <div class="ss-lbl">📌 High-Yield Fact Slideshow</div>
       <div class="ss-counter" id="ss-counter"></div>
       <div id="ss-box">Add facts in the <strong>Fact Salad</strong> tab to see them here!</div>
-      <div class="ss-timer" id="ss-timer"></div>
+      <!-- progress bar -->
+      <div class="ss-prog-bar"><div class="ss-prog-fill" id="ss-prog-fill" style="width:100%"></div></div>
+      <!-- nav row -->
+      <div class="ss-nav">
+        <button class="ss-nav-btn" onclick="slideNav(-1)" title="Previous">‹</button>
+        <div class="ss-timer" id="ss-timer"></div>
+        <button class="ss-nav-btn" onclick="slideNav(1)" title="Next">›</button>
+      </div>
     </div>
 
     <div class="qual-tabs">
@@ -1157,12 +1197,10 @@ function showToast(msg, col='#3ecf7c') {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
-
 function toggleAcc(id, hdr) {
   document.getElementById(id).classList.toggle('open');
   hdr.classList.toggle('open');
 }
-
 function openPopup(id) {
   document.querySelectorAll('.pop-card').forEach(c => c.style.display='none');
   document.getElementById(id).style.display = 'block';
@@ -1172,7 +1210,6 @@ function closePopup() {
   document.getElementById('pop-overlay').classList.remove('open');
   stopAlarm();
 }
-
 function switchMain(id, btn) {
   document.querySelectorAll('.main-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
@@ -1195,7 +1232,6 @@ function switchQual(id, btn) {
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
 }
-
 function initQualSubjects() {
   document.querySelectorAll('.q-sub-list').forEach(sel => {
     if (sel.options.length > 0) return;
@@ -1206,7 +1242,6 @@ initQualSubjects();
 
 /* ═══ LEADERBOARD ═══ */
 let currentRankMode = 'streak';
-
 window.calculateAndPushLeaderboard = function() {
   const logs = JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
   const dailyVol = {};
@@ -1217,8 +1252,7 @@ window.calculateAndPushLeaderboard = function() {
   let streak = 0, streakVol = 0;
   const today = new Date();
   for (let i = 0; i < 365; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
+    const d = new Date(today); d.setDate(today.getDate() - i);
     const key = d.toLocaleDateString('en-GB');
     const vol = dailyVol[key] || 0;
     if (i === 0 && vol < 50) continue;
@@ -1242,7 +1276,6 @@ window.calculateAndPushLeaderboard = function() {
   });
   if (window.pushToLeaderboard) window.pushToLeaderboard({ streak, streakVol, neet:mean(nd), ini:mean(id), fmge:mean(fd), swt:swtStats });
 };
-
 function switchRank(mode, btn) {
   currentRankMode = mode;
   document.querySelectorAll('.rank-nav-btn').forEach(b => b.classList.remove('active'));
@@ -1252,7 +1285,6 @@ function switchRank(mode, btn) {
   );
   loadLeaderboard(mode);
 }
-
 function loadLeaderboard(mode) {
   document.getElementById('leaderboard-list').innerHTML =
     '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Fetching Top 50…</div>';
@@ -1261,7 +1293,6 @@ function loadLeaderboard(mode) {
   else if (mode === 'swt') window.fetchLeaderboard('swt', document.getElementById('rankSubSelect').value);
   else { const cat = document.getElementById('rankGtSelect').value; window.fetchLeaderboard(cat); }
 }
-
 window.renderLeaderboardUI = function(data, category) {
   const list = document.getElementById('leaderboard-list');
   if (!data || !data.length) {
@@ -1289,16 +1320,13 @@ window.renderLeaderboardUI = function(data, category) {
 let timerIval, activeSub='', activePhase='', wakeLock=null;
 let timeLeft=0, mode='idle', isPaused=false, currentGTMode='NEET';
 let initDur=0, elapsedDur=0, skipped=false;
-
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playBeep(f,d){ const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=f; g.gain.value=0.1; o.start(); setTimeout(()=>o.stop(),d); }
 let alarmIval=null;
 function startAlarm(f){ stopAlarm(); alarmIval=setInterval(()=>playBeep(f,200),1000); }
 function stopAlarm(){ if(alarmIval){ clearInterval(alarmIval); alarmIval=null; } }
-
 const reqWL = async () => { if('wakeLock' in navigator) { try { wakeLock=await navigator.wakeLock.request('screen'); } catch(e){} } };
 document.addEventListener('visibilitychange', async () => { if(wakeLock && document.visibilityState==='visible') await reqWL(); });
-
 function startSession() {
   const s = document.getElementById('subject').value;
   if (!s) { showToast('⚠️ Please select a subject','#e05c7a'); return; }
@@ -1434,7 +1462,10 @@ function calcGT(){
 }
 function switchGT(m){
   currentGTMode=m;
-  ['NEET','INICET','FMGE'].forEach(x=>document.getElementById('gtTab'+x).classList.toggle('active',x===m));
+  ['NEET','INICET','FMGE'].forEach(x=>{
+    const el=document.getElementById('gtTab'+x);
+    if(el) el.classList.toggle('active',x===m);
+  });
   document.getElementById('gt-std-inputs').style.display=m==='FMGE'?'none':'block';
   document.getElementById('gt-fmge-inputs').style.display=m==='FMGE'?'block':'none';
   document.getElementById('neet-area').style.display=m==='NEET'?'block':'none';
@@ -1512,14 +1543,12 @@ function renderGTBreakdownGraph(){
   const textColor=tc(), gridColor=gc();
   gtBdChart=new Chart(document.getElementById('gtBreakdownChart'),{type:'bar',data:{labels:SUBS_19,datasets:[{label:'Correct %',data:SUBS_19.map(s=>g.breakdown[s]?.percent||0),backgroundColor:'#3ecf7c',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{color:textColor},grid:{color:gridColor}},x:{ticks:{color:textColor,font:{size:10},autoSkip:false,maxRotation:90},grid:{color:gridColor}}},plugins:{legend:{display:false}}}});
 }
-
 let gNeetChart, gIniChart, gFmgeChart, neetPCChart, neetPAChart, iniPCChart, iniPAChart, fmgePCChart, fmgePAChart;
 function renderGT(){
   const nd=JSON.parse(localStorage.getItem(KEYS.NEET)||"[]");
   const id=JSON.parse(localStorage.getItem(KEYS.INI)||"[]");
   const fd=JSON.parse(localStorage.getItem(KEYS.FMGE)||"[]");
   const textColor=tc(), gridColor=gc();
-
   const makeScroll=(canvasId,scrollId,data,color,maxY)=>{
     const el=document.getElementById(canvasId), si=document.getElementById(scrollId);
     if(!el||!si||!data.length) return null;
@@ -1531,9 +1560,8 @@ function renderGT(){
     const pd={'First Reading':{n:0,s:0},'Second Reading':{n:0,s:0},'Third Reading':{n:0,s:0},'Extra Bonus':{n:0,s:0}};
     data.forEach(x=>{ const p=x.phase||'First Reading'; if(pd[p]){pd[p].n++;pd[p].s+=parseFloat(x.score);} });
     const mk=(id,ds)=>new Chart(document.getElementById(id),{type:'bar',data:{labels:phases,datasets:[ds]},options:{maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{color:textColor},grid:{color:gridColor}},x:{ticks:{color:textColor,font:{size:9}},grid:{color:gridColor}}},plugins:{legend:{display:false}}}});
-    const pc=mk(countId,{data:phases.map(p=>pd[p].n),backgroundColor:'#3498db',borderRadius:4});
-    const pa=mk(avgId,{data:phases.map(p=>pd[p].n>0?(pd[p].s/pd[p].n).toFixed(1):0),backgroundColor:'#9b59b6',borderRadius:4});
-    return [pc,pa];
+    return [mk(countId,{data:phases.map(p=>pd[p].n),backgroundColor:'#3498db',borderRadius:4}),
+            mk(avgId,{data:phases.map(p=>pd[p].n>0?(pd[p].s/pd[p].n).toFixed(1):0),backgroundColor:'#9b59b6',borderRadius:4})];
   };
   const makeStats=(statsId,data)=>{
     if(!data.length) return;
@@ -1541,15 +1569,12 @@ function renderGT(){
     const min=Math.min(...data.map(x=>parseFloat(x.score)));
     document.getElementById(statsId).innerHTML=`<div class="gt-stat-grid"><div class="gt-stat-box"><span class="gs-lbl">Highest</span><span class="gs-val v-good">${max.toFixed(2)}</span></div><div class="gt-stat-box"><span class="gs-lbl">Lowest</span><span class="gs-val v-bad">${min.toFixed(2)}</span></div></div>`;
   };
-
   if(gNeetChart) gNeetChart.destroy(); gNeetChart=makeScroll('gtNeetChart','neet-scroll-inner',nd,'#f7a94f',800);
   [neetPCChart,neetPAChart].forEach(c=>c&&c.destroy()); [neetPCChart,neetPAChart]=makePhaseCharts('neetPhaseCountChart','neetPhaseAvgChart',nd);
   makeStats('neetStats',nd);
-
   if(gIniChart) gIniChart.destroy(); gIniChart=makeScroll('gtIniChart','ini-scroll-inner',id,'#3ecf7c',200);
   [iniPCChart,iniPAChart].forEach(c=>c&&c.destroy()); [iniPCChart,iniPAChart]=makePhaseCharts('iniPhaseCountChart','iniPhaseAvgChart',id);
   makeStats('iniStats',id);
-
   if(gFmgeChart) gFmgeChart.destroy(); gFmgeChart=makeScroll('gtFmgeChart','fmge-scroll-inner',fd,'#e67e22',300);
   [fmgePCChart,fmgePAChart].forEach(c=>c&&c.destroy()); [fmgePCChart,fmgePAChart]=makePhaseCharts('fmgePhaseCountChart','fmgePhaseAvgChart',fd);
   makeStats('fmgeStats',fd);
@@ -1760,8 +1785,6 @@ function renderMonthlyTable(){
 /* ═══ DAILY / CHARTS ═══ */
 let hChart, mChart, viewDate=new Date();
 function changeViewMonth(d){ viewDate.setMonth(viewDate.getMonth()+d); renderData(); }
-
-/* ═══ FIXED renderData — properly grouped table rows ═══ */
 function renderData(){
   const logs=JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
   const vm=viewDate.getMonth(), vy=viewDate.getFullYear();
@@ -1769,8 +1792,6 @@ function renderData(){
   document.getElementById('monthLabel').innerText=`${mNames[vm]} ${vy}`;
   const dim=new Date(vy,vm+1,0).getDate();
   const hoursData=Array(dim).fill(0), mcqsData=Array(dim).fill(0);
-
-  // Group logs by date
   const grouped={};
   logs.forEach(l=>{
     const p=l.date.split('/'); if(p.length!==3) return;
@@ -1785,7 +1806,6 @@ function renderData(){
       if(!l.skipped) grouped[l.date].cyc++;
     }
   });
-
   const labels=Array.from({length:dim},(_,i)=>i+1);
   const textColor=tc(), gridColor=gc();
   const chartOpts={maintainAspectRatio:false,scales:{y:{ticks:{color:textColor},grid:{color:gridColor}},x:{ticks:{color:textColor,font:{size:9}},grid:{color:gridColor}}},plugins:{legend:{display:false}}};
@@ -1793,31 +1813,23 @@ function renderData(){
   hChart=new Chart(document.getElementById('hoursChart'),{type:'line',data:{labels,datasets:[{data:hoursData,borderColor:'#f7a94f',backgroundColor:'rgba(247,169,79,.1)',fill:true,tension:.3}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:0,max:16}}}});
   if(mChart) mChart.destroy();
   mChart=new Chart(document.getElementById('mcqChart'),{type:'line',data:{labels,datasets:[{data:mcqsData,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,.1)',fill:true,tension:.3}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,beginAtZero:true}}}});
-
-  // Sort dates newest first, build properly aligned table rows
-  const sortedDates = Object.keys(grouped).sort((a,b)=>{
+  const sortedDates=Object.keys(grouped).sort((a,b)=>{
     const [da,ma,ya]=a.split('/'), [db,mb,yb]=b.split('/');
     return new Date(yb,mb-1,db)-new Date(ya,ma-1,da);
   });
-
-  document.getElementById('logBody').innerHTML = sortedDates.length
-    ? sortedDates.map(d=>{
+  document.getElementById('logBody').innerHTML=sortedDates.length
+    ?sortedDates.map(d=>{
         const g=grouped[d];
-        const hrsVal = g.h.toFixed(1)+'h';
-        const cycVal = g.cyc;
-        const mcqVal = g.m;
-        const subsVal = [...g.subs].join(', ');
         return `<tr>
           <td class="td-date">${d}</td>
-          <td>${hrsVal}</td>
-          <td>${cycVal}</td>
-          <td>${mcqVal}</td>
-          <td class="td-subs">${subsVal}</td>
+          <td>${g.h.toFixed(1)}h</td>
+          <td>${g.cyc}</td>
+          <td>${g.m}</td>
+          <td class="td-subs">${[...g.subs].join(', ')}</td>
         </tr>`;
       }).join('')
-    : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">No data this month</td></tr>';
+    :'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">No data this month</td></tr>';
 }
-
 function renderMatrix(){
   const logs=JSON.parse(localStorage.getItem(KEYS.LOGS)||"[]");
   const map={'First Reading':0,'Second Reading':1,'Third Reading':2,'Extra Bonus':3};
@@ -1949,60 +1961,147 @@ function saveQual(type){
   updateSlideshow();
 }
 
-/* ═══ SLIDESHOW ═══ */
-let curSlide=0, slideCountdown=30, slideIval=null;
-function updateSlideshow(){
-  const db=getQualDB();
-  const box=document.getElementById('ss-box');
-  const ctr=document.getElementById('ss-counter');
-  const tmr=document.getElementById('ss-timer');
-  if(!db.factSalad.length){
-    box.innerHTML='Add facts in the <strong>Fact Salad</strong> tab to see them here!';
-    ctr.textContent=''; tmr.textContent=''; return;
-  }
-  if(curSlide>=db.factSalad.length) curSlide=0;
-  const f=db.factSalad[curSlide];
-  box.innerHTML=`<div class="ss-sub">📚 ${f.sub}</div><div class="ss-q">❓ ${f.q}</div><div class="ss-a">✅ ${f.a}</div>`;
-  ctr.textContent=`${curSlide+1} / ${db.factSalad.length}`;
-  slideCountdown=30;
-  if(slideIval) clearInterval(slideIval);
-  slideIval=setInterval(()=>{
-    slideCountdown--;
-    tmr.textContent=`Next in ${slideCountdown}s`;
-    if(slideCountdown<=0){ clearInterval(slideIval); curSlide=(curSlide+1)%db.factSalad.length; updateSlideshow(); }
-  },1000);
+/* ═══════════════════════════════════════════════════
+   SLIDESHOW — 10-second auto-advance, ‹ › navigation,
+   touch swipe, animated progress bar
+═══════════════════════════════════════════════════ */
+const SLIDE_DURATION = 10; // seconds
+let curSlide = 0;
+let slideCountdown = SLIDE_DURATION;
+let slideIval = null;
+let ssSwipeX = 0;
+
+function slideNav(dir) {
+  const db  = getQualDB();
+  const len = db.factSalad.length;
+  if (!len) return;
+  curSlide = (curSlide + dir + len) % len;
+  showSlide();
 }
+
+function showSlide() {
+  const db  = getQualDB();
+  const box = document.getElementById('ss-box');
+  const ctr = document.getElementById('ss-counter');
+  const tmr = document.getElementById('ss-timer');
+  const fill= document.getElementById('ss-prog-fill');
+
+  if (!db.factSalad.length) {
+    box.innerHTML = 'Add facts in the <strong>Fact Salad</strong> tab to see them here!';
+    ctr.textContent = ''; tmr.textContent = '';
+    if (fill) fill.style.width = '0%';
+    return;
+  }
+
+  if (curSlide >= db.factSalad.length) curSlide = 0;
+  const f = db.factSalad[curSlide];
+  box.innerHTML = `<div class="ss-sub">📚 ${f.sub}</div>
+    <div class="ss-q">❓ ${f.q}</div>
+    <div class="ss-a">✅ ${f.a}</div>`;
+  ctr.textContent = `${curSlide + 1} / ${db.factSalad.length}`;
+
+  // Reset countdown & progress bar
+  slideCountdown = SLIDE_DURATION;
+  if (fill) fill.style.transition = 'none';
+  if (fill) fill.style.width = '100%';
+  // Trigger reflow so transition restarts
+  if (fill) fill.getBoundingClientRect();
+  if (fill) fill.style.transition = `width ${SLIDE_DURATION}s linear`;
+  if (fill) fill.style.width = '0%';
+
+  clearInterval(slideIval);
+  slideIval = setInterval(() => {
+    slideCountdown--;
+    if (tmr) tmr.textContent = `Next in ${slideCountdown}s`;
+    if (slideCountdown <= 0) {
+      clearInterval(slideIval);
+      curSlide = (curSlide + 1) % db.factSalad.length;
+      showSlide();
+    }
+  }, 1000);
+}
+
+function updateSlideshow() {
+  const db = getQualDB();
+  if (!db.factSalad.length) {
+    document.getElementById('ss-box').innerHTML = 'Add facts in the <strong>Fact Salad</strong> tab to see them here!';
+    document.getElementById('ss-counter').textContent = '';
+    document.getElementById('ss-timer').textContent   = '';
+    const fill = document.getElementById('ss-prog-fill');
+    if (fill) fill.style.width = '0%';
+    clearInterval(slideIval);
+    return;
+  }
+  showSlide();
+}
+
+/* Touch swipe support for slideshow */
+(function(){
+  const el = document.getElementById('slideshow-card');
+  if (!el) return;
+  el.addEventListener('touchstart', e => {
+    ssSwipeX = e.touches[0].clientX;
+  }, { passive: true });
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - ssSwipeX;
+    if (Math.abs(dx) > 40) slideNav(dx < 0 ? 1 : -1);
+  }, { passive: true });
+})();
+
 updateSlideshow();
 
-/* ═══════════════════════════════════════════════════════════
-   ULTIMATE PDF SOLUTION — Works in Telegram WebApp
-   Strategy: Generate PDF as base64 data URI, offer multiple
-   download methods with intelligent fallbacks
-═══════════════════════════════════════════════════════════ */
-let _pdfMode='daily';
-let _pdfBlobUrl = null;
-let _pdfFileName = '';
 
-function getFiltered(mode){
-  const db=getQualDB();
-  const now=new Date();
-  const todayStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-  const mStr=now.toLocaleString('default',{month:'long',year:'numeric'});
-  const fn=mode==='daily'?i=>i.date===todayStr:i=>i.month===mStr;
+/* ═══════════════════════════════════════════════════
+   PDF — Telegram-compatible: Share API → Print → Screenshot
+═══════════════════════════════════════════════════ */
+let _pdfMode = 'daily';
+let _pdfBlob = null;
+let _pdfFileName = '';
+let _pdfShareFile = null;
+
+function closePdfOverlay() {
+  document.getElementById('pdf-progress-overlay').classList.remove('open');
+  document.getElementById('pdf-spinner-wrap').style.display = 'flex';
+  document.getElementById('pdf-share-card').style.display   = 'none';
+  _pdfBlob = null; _pdfShareFile = null;
+}
+
+function closePrintOverlay() {
+  document.getElementById('print-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function doPrint() { window.print(); }
+
+async function doNativeShare() {
+  if (!_pdfShareFile) { showToast('No file ready','#e05c7a'); return; }
+  try {
+    await navigator.share({ files:[_pdfShareFile], title:_pdfFileName });
+  } catch(e) {
+    if (e.name !== 'AbortError') showToast('Share failed: '+e.message,'#e05c7a');
+  }
+}
+
+function getFiltered(mode) {
+  const db  = getQualDB();
+  const now = new Date();
+  const todayStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const mStr     = now.toLocaleString('default',{month:'long',year:'numeric'});
+  const fn = mode==='daily' ? i=>i.date===todayStr : i=>i.month===mStr;
   return { fs:db.factSalad.filter(fn), swt:db.swt.filter(fn), gt:db.gt.filter(fn) };
 }
 
-function buildReportHTML(mode){
-  const now=new Date();
-  const rtype=mode==='daily'?'Daily Revision Report':'Monthly Revision Report';
-  const dstr=mode==='daily'
-    ?now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
-    :now.toLocaleString('default',{month:'long',year:'numeric'});
-  const {fs,swt,gt}=getFiltered(mode);
-  const noData=!fs.length&&!swt.length&&!gt.length;
-  const grp=items=>{const g={};items.forEach(i=>{const s=i.sub||'General';(g[s]=g[s]||[]).push(i);});return g;};
-  const fields=(e,arr)=>arr.map(({lbl,key})=>e[key]?`<div class="rpt-fl-lbl">${lbl}</div><div class="rpt-fl-val">${e[key]}</div>`:'').join('');
-  const section=(hCls,label,items,flds)=>{
+function buildReportHTML(mode) {
+  const now   = new Date();
+  const rtype = mode==='daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
+  const dstr  = mode==='daily'
+    ? now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+    : now.toLocaleString('default',{month:'long',year:'numeric'});
+  const {fs,swt,gt} = getFiltered(mode);
+  const noData = !fs.length && !swt.length && !gt.length;
+  const grp = items => { const g={}; items.forEach(i=>{ const s=i.sub||'General'; (g[s]=g[s]||[]).push(i); }); return g; };
+  const fields = (e,arr) => arr.map(({lbl,key})=>e[key]?`<div class="rpt-fl-lbl">${lbl}</div><div class="rpt-fl-val">${e[key]}</div>`:'').join('');
+  const section = (hCls,label,items,flds) => {
     if(!items.length) return '';
     const grps=grp(items);
     return `<div class="rpt-sec"><div class="rpt-sec-h ${hCls}">${label}</div>${Object.entries(grps).map(([sub,entries])=>`<div class="rpt-sub-h">Subject: ${sub}</div>${entries.map((e,i)=>`<div class="rpt-entry"><div class="rpt-enum">ENTRY ${i+1} | ${e.date||''}</div>${fields(e,flds)}</div>`).join('')}`).join('')}</div>`;
@@ -2027,72 +2126,88 @@ function buildReportHTML(mode){
   </div>`;
 }
 
-function openReport(mode){
-  _pdfMode=mode;
-  const now=new Date();
-  const label=mode==='daily'
-    ?`Daily – ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`
-    :`Monthly – ${now.toLocaleString('default',{month:'long',year:'numeric'})}`;
-  document.getElementById('rov-title').textContent='📄 '+label;
-  document.getElementById('roverlay-body').innerHTML=buildReportHTML(mode);
-  document.getElementById('roverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+/* Opens the HTML report in the print overlay (viewer + print/share) */
+function openReport(mode) {
+  _pdfMode = mode;
+  const now   = new Date();
+  const label = mode==='daily'
+    ? `Daily – ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`
+    : `Monthly – ${now.toLocaleString('default',{month:'long',year:'numeric'})}`;
+
+  document.getElementById('print-bar-title').textContent = '📄 ' + label;
+  document.getElementById('print-content').innerHTML     = buildReportHTML(mode);
+
+  // Also fill the old roverlay in case user taps the PDF button there
+  if (document.getElementById('rov-title'))
+    document.getElementById('rov-title').textContent = '📄 ' + label;
+  if (document.getElementById('roverlay-body'))
+    document.getElementById('roverlay-body').innerHTML = buildReportHTML(mode);
+
+  // Show/hide native share button in print bar
+  const shareBarBtn = document.getElementById('pb-native-share');
+  if (shareBarBtn) shareBarBtn.style.display = 'none'; // will show after PDF is built
+
+  document.getElementById('print-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-function closeOverlay(){ document.getElementById('roverlay').classList.remove('open'); document.body.style.overflow=''; }
 
-function closePdfOverlay(){
-  document.getElementById('pdf-progress-overlay').classList.remove('open');
-  document.getElementById('pdf-spinner-wrap').style.display='flex';
-  document.getElementById('pdf-share-card').style.display='none';
-  // Revoke old URL
-  if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
+function closeOverlay() {
+  document.getElementById('roverlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
-/* ═══ ULTIMATE PDF DOWNLOAD ═══ */
-async function downloadPDF(){
-  const btn=document.getElementById('dl-btn');
-  const orig=btn.textContent;
-  btn.textContent='⏳ Building…'; btn.disabled=true;
+/* Main PDF build & Telegram-safe delivery */
+async function downloadPDF() {
+  const btn  = document.getElementById('dl-btn');
+  const orig = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = '⏳ Building…'; btn.disabled = true; }
 
-  // Show progress overlay
-  document.getElementById('pdf-prog-text').textContent='Building PDF…';
-  document.getElementById('pdf-spinner-wrap').style.display='flex';
-  document.getElementById('pdf-share-card').style.display='none';
+  document.getElementById('pdf-prog-text').textContent = 'Building PDF…';
+  document.getElementById('pdf-spinner-wrap').style.display = 'flex';
+  document.getElementById('pdf-share-card').style.display   = 'none';
   document.getElementById('pdf-progress-overlay').classList.add('open');
 
-  try{
-    const {jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const W=210,H=297,M=15; let y=0;
-    const Cdk=[30,30,42],Cbl=[52,152,219],Cac=[224,92,122],
-          Cgn=[26,122,72],Cbu=[37,88,176],Crd=[154,37,64],
-          Ctx=[40,40,60],Cmt=[130,130,160],Cwh=[255,255,255],Clb=[240,242,248];
-    const addFoot=()=>{
-      doc.setFontSize(8);doc.setTextColor(...Cmt);
-      doc.text('Scalpel Study Squad — Confidential',W/2,H-8,{align:'center'});
-      doc.text(`Dr. ${fullName}`,M,H-8);
-      doc.text(`Page ${doc.internal.getNumberOfPages()}`,W-M,H-8,{align:'right'});
-    };
-    const nPage=()=>{ doc.addPage(); y=20; addFoot(); };
-    const chk=(n=15)=>{ if(y+n>H-22) nPage(); };
+  // Hide report overlay so progress overlay is visible
+  if (document.getElementById('roverlay'))
+    document.getElementById('roverlay').classList.remove('open');
+  // Hide print overlay too
+  document.getElementById('print-overlay').classList.remove('open');
 
-    // Try to load logo (non-blocking)
-    let logo=null;
-    try{
-      document.getElementById('pdf-prog-text').textContent='Loading logo…';
-      const blob=await Promise.race([
+  try {
+    const {jsPDF} = window.jspdf;
+    const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210, H=297, M=15; let y=0;
+
+    const Cdk=[30,30,42], Cbl=[52,152,219], Cac=[224,92,122],
+          Cgn=[26,122,72], Cbu=[37,88,176], Crd=[154,37,64],
+          Ctx=[40,40,60],  Cmt=[130,130,160], Cwh=[255,255,255], Clb=[240,242,248];
+
+    const addFoot = () => {
+      doc.setFontSize(8); doc.setTextColor(...Cmt);
+      doc.text('Scalpel Study Squad — Confidential', W/2, H-8, {align:'center'});
+      doc.text(`Dr. ${fullName}`, M, H-8);
+      doc.text(`Page ${doc.internal.getNumberOfPages()}`, W-M, H-8, {align:'right'});
+    };
+    const nPage = () => { doc.addPage(); y=20; addFoot(); };
+    const chk   = (n=15) => { if (y+n > H-22) nPage(); };
+
+    // Load logo (non-blocking, 5s timeout)
+    let logo = null;
+    try {
+      document.getElementById('pdf-prog-text').textContent = 'Loading logo…';
+      const blob = await Promise.race([
         fetch('https://raw.githubusercontent.com/dhruvathaare/Scaslpel-Study-Squad-Apps/789a623092f757f3cd2b32c9bc305aa3a9c0819f/photo_2026-02-12_20-08-36.jpg').then(r=>r.blob()),
         new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
       ]);
-      logo=await new Promise(res=>{ const fr=new FileReader(); fr.onload=e=>res(e.target.result); fr.readAsDataURL(blob); });
-    }catch(e){ logo=null; }
+      logo = await new Promise(res=>{ const fr=new FileReader(); fr.onload=e=>res(e.target.result); fr.readAsDataURL(blob); });
+    } catch(e) { logo = null; }
 
-    document.getElementById('pdf-prog-text').textContent='Generating pages…';
+    document.getElementById('pdf-prog-text').textContent = 'Generating pages…';
 
-    // Cover
+    // Cover page
     doc.setFillColor(...Cdk); doc.rect(0,0,W,72,'F');
     doc.setFillColor(...Cac); doc.rect(0,70,W,3,'F');
-    if(logo) doc.addImage(logo,'JPEG',W/2-17,8,34,34);
+    if (logo) doc.addImage(logo,'JPEG',W/2-17,8,34,34);
     doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(...Cwh);
     doc.text('Scalpel Study Squad',W/2,52,{align:'center'});
     doc.setFontSize(10); doc.setTextColor(...Cac);
@@ -2101,12 +2216,14 @@ async function downloadPDF(){
     doc.text(`Dr. ${fullName}`,W-M,12,{align:'right'});
     doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(140,170,220);
     doc.text(`ID: ${userId}`,W-M,19,{align:'right'});
-    y=82;
-    const now=new Date();
-    const rtype=_pdfMode==='daily'?'Daily Revision Report':'Monthly Revision Report';
-    const dstr=_pdfMode==='daily'
-      ?now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
-      :now.toLocaleString('default',{month:'long',year:'numeric'});
+    y = 82;
+
+    const now   = new Date();
+    const rtype = _pdfMode==='daily' ? 'Daily Revision Report' : 'Monthly Revision Report';
+    const dstr  = _pdfMode==='daily'
+      ? now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+      : now.toLocaleString('default',{month:'long',year:'numeric'});
+
     doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...Cbl);
     doc.text(rtype,W/2,y,{align:'center'}); y+=8;
     doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(...Ctx);
@@ -2114,15 +2231,16 @@ async function downloadPDF(){
     doc.setDrawColor(...Cbl); doc.setLineWidth(0.7);
     doc.line(M,y,W-M,y); y+=12;
 
-    const {fs,swt,gt}=getFiltered(_pdfMode);
+    const {fs,swt,gt} = getFiltered(_pdfMode);
 
-    function pdfSection(title,clr,items,flds){
-      if(!items.length) return;
+    function pdfSection(title,clr,items,flds) {
+      if (!items.length) return;
       chk(20);
       doc.setFillColor(...clr); doc.rect(M,y-4,W-M*2,11,'F');
       doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...Cwh);
       doc.text(title,M+4,y+4); y+=14;
-      const grps={}; items.forEach(i=>{ const s=i.sub||'General'; (grps[s]=grps[s]||[]).push(i); });
+      const grps={};
+      items.forEach(i=>{ const s=i.sub||'General'; (grps[s]=grps[s]||[]).push(i); });
       Object.entries(grps).forEach(([sub,entries])=>{
         chk(14);
         doc.setFillColor(...Clb); doc.rect(M+4,y-3,W-M*2-8,9,'F');
@@ -2148,90 +2266,113 @@ async function downloadPDF(){
       y+=6;
     }
 
-    pdfSection('1. FACT SALAD',Cgn,fs,[{lbl:'Question / Topic',key:'q'},{lbl:'Answer / Key Fact',key:'a'}]);
-    pdfSection('2. SWT MISTAKE CHECKPOINT',Cbu,swt,[{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
-    pdfSection('3. GT MISTAKE CHECKPOINT',Crd,gt,[{lbl:'Exam Type',key:'examType'},{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
-    if(!fs.length&&!swt.length&&!gt.length){
+    pdfSection('1. FACT SALAD',          Cgn, fs,  [{lbl:'Question / Topic',key:'q'},{lbl:'Answer / Key Fact',key:'a'}]);
+    pdfSection('2. SWT MISTAKE CHECKPOINT', Cbu, swt, [{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
+    pdfSection('3. GT MISTAKE CHECKPOINT',  Crd, gt,  [{lbl:'Exam Type',key:'examType'},{lbl:'Question',key:'q'},{lbl:'Correct Answer',key:'a'},{lbl:'Your Incorrect Answer',key:'w'},{lbl:'Reason for Error',key:'r'}]);
+
+    if (!fs.length && !swt.length && !gt.length) {
       doc.setFont('helvetica','italic'); doc.setFontSize(12); doc.setTextColor(...Cmt);
       doc.text('No entries found for this period.',W/2,y+20,{align:'center'});
     }
     addFoot();
 
-    // Generate filename
-    const now2=new Date();
-    _pdfFileName=_pdfMode==='daily'
-      ?`Scalpel_Daily_${now2.toLocaleDateString('en-GB').replace(/\//g,'-')}.pdf`
-      :`Scalpel_Monthly_${now2.toLocaleString('default',{month:'long',year:'numeric'}).replace(' ','_')}.pdf`;
+    // Filename
+    _pdfFileName = _pdfMode==='daily'
+      ? `Scalpel_Daily_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.pdf`
+      : `Scalpel_Monthly_${now.toLocaleString('default',{month:'long',year:'numeric'}).replace(' ','_')}.pdf`;
 
-    document.getElementById('pdf-prog-text').textContent='Finalizing…';
+    document.getElementById('pdf-prog-text').textContent = 'Finalizing…';
 
-    // Revoke previous
-    if(_pdfBlobUrl) URL.revokeObjectURL(_pdfBlobUrl);
+    _pdfBlob      = doc.output('blob');
+    _pdfShareFile = new File([_pdfBlob], _pdfFileName, {type:'application/pdf'});
 
-    // Generate blob
-    const pdfBlob = doc.output('blob');
-    _pdfBlobUrl   = URL.createObjectURL(pdfBlob);
+    // Capability detection → choose best delivery method
+    const canShare = !!(navigator.canShare && navigator.canShare({files:[_pdfShareFile]}));
+    const btnsEl   = document.getElementById('pdf-share-btns');
+    const badgeEl  = document.getElementById('pdf-method-badge');
+    const descEl   = document.getElementById('pdf-share-desc');
+    btnsEl.innerHTML = '';
 
-    // Get base64 for fallback (data URI method)
-    const pdfBase64 = doc.output('datauristring');
+    if (canShare) {
+      // ── BEST: Android native share sheet ──
+      badgeEl.textContent         = '✅ NATIVE SHARE';
+      badgeEl.style.background    = 'var(--green)';
+      descEl.textContent          = 'Tap below to save or share your PDF via Files, Drive, Telegram, etc.';
+      const shareBtn              = document.createElement('button');
+      shareBtn.className          = 'btn btn-g';
+      shareBtn.style.padding      = '14px';
+      shareBtn.textContent        = '📤 Share / Save PDF';
+      shareBtn.onclick            = doNativeShare;
+      btnsEl.appendChild(shareBtn);
+      // Print fallback
+      const printBtn              = document.createElement('button');
+      printBtn.className          = 'btn btn-p';
+      printBtn.style.padding      = '12px';
+      printBtn.textContent        = '🖨️ Print / Save as PDF';
+      printBtn.onclick            = () => { closePdfOverlay(); openViewerForPrint(); };
+      btnsEl.appendChild(printBtn);
+    } else {
+      // ── FALLBACK: Print → Save as PDF ──
+      badgeEl.textContent         = '🖨️ PRINT METHOD';
+      badgeEl.style.background    = 'var(--primary)';
+      descEl.innerHTML            = '<strong>Telegram blocks direct downloads.</strong><br>Use <em>Print → Save as PDF</em>, or take screenshots of the viewer.';
+      const printBtn              = document.createElement('button');
+      printBtn.className          = 'btn btn-g';
+      printBtn.style.padding      = '14px';
+      printBtn.textContent        = '🖨️ Open Print / Save as PDF';
+      printBtn.onclick            = () => { closePdfOverlay(); openViewerForPrint(); };
+      btnsEl.appendChild(printBtn);
+      // Direct download attempt (works on desktop)
+      const dlBtn                 = document.createElement('button');
+      dlBtn.className             = 'btn btn-p';
+      dlBtn.style.padding         = '12px';
+      dlBtn.textContent           = '⬇️ Try Direct Download';
+      dlBtn.onclick               = () => {
+        try {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(_pdfBlob);
+          a.download = _pdfFileName;
+          document.body.appendChild(a); a.click();
+          setTimeout(()=>document.body.removeChild(a), 1000);
+        } catch(e) { showToast('❌ Blocked. Use Print instead.','#e05c7a'); }
+      };
+      btnsEl.appendChild(dlBtn);
+    }
 
-    // Setup buttons
-    document.getElementById('pdf-open-btn').onclick = () => {
-      // METHOD 1: Try Telegram openLink (opens in external browser)
-      try{
-        if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink){
-          window.Telegram.WebApp.openLink(_pdfBlobUrl);
-          return;
-        }
-      }catch(e){}
-      // METHOD 2: window.open
-      const w = window.open(_pdfBlobUrl, '_blank');
-      if(!w){
-        // METHOD 3: data URI in same tab (last resort for Telegram)
-        window.location.href = pdfBase64;
-      }
-    };
+    document.getElementById('pdf-spinner-wrap').style.display = 'none';
+    document.getElementById('pdf-share-card').style.display   = 'block';
 
-    document.getElementById('pdf-download-btn').onclick = () => {
-      // METHOD 1: Standard anchor download
-      const a=document.createElement('a');
-      a.href=_pdfBlobUrl; a.download=_pdfFileName;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    // Also update the print-bar native share btn visibility
+    const shareBarBtn = document.getElementById('pb-native-share');
+    if (shareBarBtn) shareBarBtn.style.display = canShare ? 'inline-block' : 'none';
 
-      // If that fails (Telegram blocks it), try data URI
-      setTimeout(()=>{
-        try{
-          const a2=document.createElement('a');
-          a2.href=pdfBase64; a2.download=_pdfFileName;
-          document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
-        }catch(e){}
-      },500);
-    };
-
-    document.getElementById('pdf-copy-btn').onclick = async () => {
-      try{
-        await navigator.clipboard.writeText(_pdfBlobUrl);
-        showToast('📋 Link copied! Paste in browser.','#4f8ef7');
-      }catch(e){
-        // Show the URL for manual copy
-        prompt('Copy this link and open in your browser:', _pdfBlobUrl);
-      }
-    };
-
-    // Show share card
-    document.getElementById('pdf-spinner-wrap').style.display='none';
-    document.getElementById('pdf-share-card').style.display='block';
-
-    // Auto-revoke after 10 minutes
-    setTimeout(()=>{ if(_pdfBlobUrl){URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null;} },600000);
-
-  } catch(err){
-    console.error('PDF error:',err);
+  } catch(err) {
+    console.error('PDF error:', err);
     closePdfOverlay();
-    showToast('⚠️ PDF build failed: '+err.message,'#e05c7a');
+    showToast('⚠️ PDF failed: '+err.message, '#e05c7a');
   }
 
-  btn.textContent=orig; btn.disabled=false;
+  if (btn) { btn.textContent = orig; btn.disabled = false; }
+}
+
+/* Opens HTML report in print overlay (for print / screenshot delivery) */
+function openViewerForPrint() {
+  const now   = new Date();
+  const label = _pdfMode==='daily'
+    ? `Daily – ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`
+    : `Monthly – ${now.toLocaleString('default',{month:'long',year:'numeric'})}`;
+
+  document.getElementById('print-bar-title').textContent = '📄 ' + label;
+  document.getElementById('print-content').innerHTML     = buildReportHTML(_pdfMode);
+
+  const shareBarBtn = document.getElementById('pb-native-share');
+  if (shareBarBtn) {
+    const canShare = !!(navigator.canShare && _pdfShareFile && navigator.canShare({files:[_pdfShareFile]}));
+    shareBarBtn.style.display = canShare ? 'inline-block' : 'none';
+  }
+
+  document.getElementById('print-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 /* ═══ MASTER UPDATE ═══ */
